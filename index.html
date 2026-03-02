@@ -1,0 +1,403 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GamesFan OS | Mark-42 Studio</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --g-blue: #1a73e8;
+            --g-bg: #ffffff;
+            --g-surface: #f8f9fa;
+            --g-border: #dadce0;
+            --g-text: #202124;
+            --g-text-light: #5f6368;
+            --orange: #ff8c00;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --g-bg: #0b0e14;
+            --g-surface: #1c2128;
+            --g-border: #444c56;
+            --g-text: #adbac7;
+            --g-text-light: #768390;
+            --g-blue: #539bf5;
+        }
+
+        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
+        body, html { height: 100%; background: var(--g-bg); color: var(--g-text); overflow: hidden; }
+
+        /* GUEST BAR */
+        #guest-notify { 
+            height: 45px; background: linear-gradient(90deg, var(--orange), #ff5e00); 
+            color: white; display: none; align-items: center; justify-content: center; 
+            font-size: 14px; font-weight: bold; cursor: pointer; z-index: 1000; position: relative;
+            box-shadow: 0 2px 10px rgba(255,140,0,0.3);
+        }
+
+        /* AUTH SCREEN */
+        #auth-screen { position: fixed; inset: 0; background: var(--g-bg); display: flex; align-items: center; justify-content: center; z-index: 5000; }
+        .auth-card { 
+            width: 400px; padding: 40px; border: 1px solid var(--g-border); 
+            border-radius: 16px; text-align: center; box-shadow: var(--shadow);
+            background: var(--g-bg);
+        }
+        .auth-card h2 { font-family: 'Montserrat', sans-serif; margin-bottom: 20px; color: var(--g-blue); }
+        input { 
+            width: 100%; padding: 14px; margin: 10px 0; border: 1px solid var(--g-border); 
+            border-radius: 8px; background: var(--g-surface); color: var(--g-text); outline: none; 
+            transition: var(--transition);
+        }
+        input:focus { border-color: var(--g-blue); box-shadow: 0 0 0 3px rgba(26,115,232,0.2); }
+        
+        .btn { padding: 12px 24px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: var(--transition); }
+        .btn-blue { background: var(--g-blue); color: white; width: 100%; margin-top: 10px; }
+        .btn-blue:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-ghost { background: transparent; color: var(--g-text-light); margin-top: 10px; font-size: 13px; }
+
+        /* MAIN APP */
+        #app { display: none; height: 100vh; grid-template-rows: auto 1fr; }
+        .app-container { display: grid; grid-template-columns: 280px 1fr; height: 100%; }
+
+        /* SIDEBAR */
+        .sidebar { background: var(--g-surface); border-right: 1px solid var(--g-border); padding: 30px 0; display: flex; flex-direction: column; }
+        .nav-item { 
+            padding: 14px 30px; cursor: pointer; color: var(--g-text-light); font-size: 15px; 
+            border-radius: 0 30px 30px 0; margin-right: 20px; margin-bottom: 8px; font-weight: 500;
+        }
+        .nav-item:hover { background: rgba(0,0,0,0.05); color: var(--g-text); }
+        .nav-item.active { background: #e8f0fe; color: var(--g-blue); border-left: 5px solid var(--g-blue); }
+        [data-theme="dark"] .nav-item.active { background: #2d333b; color: var(--g-blue); }
+
+        /* MAIN CONTENT */
+        .main { padding: 40px; overflow-y: auto; background: var(--g-bg); }
+        .view { display: none; animation: fadeIn 0.4s ease; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-family: 'Montserrat', sans-serif; margin-bottom: 30px; font-size: 28px; }
+
+        /* GAME CARDS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+        .game-card { 
+            background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 16px; 
+            padding: 25px; text-align: center; cursor: pointer; transition: var(--transition);
+        }
+        .game-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); border-color: var(--g-blue); }
+        .game-icon { font-size: 40px; margin-bottom: 15px; display: block; }
+
+        /* POSTS */
+        .post { 
+            background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 12px; 
+            padding: 20px; margin-bottom: 20px; position: relative;
+        }
+        .nick-orange { color: var(--orange) !important; font-weight: 900 !important; text-shadow: 0 0 1px rgba(255,140,0,0.2); }
+
+        /* IDENTITY SWITCHER */
+        .id-box { background: var(--g-surface); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px dashed var(--g-blue); }
+        .id-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .chip { 
+            padding: 6px 15px; border-radius: 20px; border: 1px solid var(--g-border); 
+            font-size: 13px; cursor: pointer; background: var(--g-bg); transition: 0.2s;
+        }
+        .chip.active { background: var(--g-blue); color: white; border-color: var(--g-blue); }
+
+        /* GAME OVERLAY */
+        #game-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
+        .game-bar { height: 50px; background: #202124; display: flex; align-items: center; padding: 0 20px; color: white; justify-content: space-between; }
+        iframe { flex-grow: 1; border: none; background: #fff; }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 768px) {
+            .app-container { grid-template-columns: 1fr; }
+            .sidebar { display: none; } /* Можно добавить мобильное меню позже */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="guest-notify" onclick="openRegForGuest()">
+        👑 Вы в гостевом режиме. Нажмите, чтобы создать аккаунт и сохранить прогресс!
+    </div>
+
+    <div id="auth-screen">
+        <div class="auth-card">
+            <h2 id="auth-title">Mark-42 OS</h2>
+            <div id="auth-inputs">
+                <input type="text" id="reg-nick" placeholder="Имя профиля" class="hidden">
+                <input type="email" id="reg-email" placeholder="Email">
+                <input type="password" id="reg-pass" placeholder="Пароль">
+            </div>
+            <button class="btn btn-blue" onclick="processAuth()" id="main-auth-btn">Войти</button>
+            <button class="btn btn-ghost" onclick="loginAsGuest()" id="guest-btn">Войти как гость</button>
+            <p style="font-size:12px; color:var(--g-text-light); cursor:pointer; margin-top:20px;" onclick="toggleAuthMode()" id="toggle-txt">Нет аккаунта? Создать</p>
+        </div>
+    </div>
+
+    <div id="app">
+        <div class="app-container">
+            <aside class="sidebar">
+                <div style="padding: 0 30px 40px; font-family:'Montserrat'; font-weight: 700; color: var(--g-blue); font-size: 22px;">Mark-42 Studio</div>
+                <div class="nav-item active" onclick="switchTab('games', this)">🎮 Библиотека</div>
+                <div class="nav-item" onclick="switchTab('social', this)">🌍 Сообщество</div>
+                <div class="nav-item" onclick="switchTab('settings', this)">⚙️ Настройки</div>
+                <div class="nav-item hidden" id="admin-nav" onclick="switchTab('admin', this)" style="color:#d93025; font-weight:bold;">⚡ Админ-панель</div>
+                
+                <div style="margin-top: auto; padding: 30px; border-top: 1px solid var(--g-border);">
+                    <div style="font-size: 11px; color: var(--g-text-light); text-transform: uppercase; margin-bottom: 5px;">Текущий профиль</div>
+                    <div id="user-status" style="font-weight: bold; font-size: 14px;">Загрузка...</div>
+                </div>
+            </aside>
+
+            <main class="main">
+                <div id="view-games" class="view active">
+                    <h1>Ваша библиотека</h1>
+                    <div class="grid">
+                        <div class="game-card" onclick="launchGame('Slime_Clicker/index.html', 'Slime Clicker 2D')">
+                            <span class="game-icon">🦠</span>
+                            <b>Slime Clicker 2D</b><br>
+                            <small style="color:var(--g-text-light)">Mark-42 Studio</small>
+                        </div>
+                        <div class="game-card" onclick="launchGame('ELBERR_OS/Chapter1/index.html', 'ELBERR OS: Глава 1')">
+                            <span class="game-icon">💾</span>
+                            <b>ELBERR: Chapter 1</b>
+                        </div>
+                        <div class="game-card" onclick="launchGame('ELBERR_OS/Chapter2/index.html', 'ELBERR OS: Глава 2')">
+                            <span class="game-icon">📂</span>
+                            <b>ELBERR: Chapter 2</b>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-social" class="view">
+                    <h1>Лента новостей</h1>
+                    
+                    <div id="identity-box" class="id-box hidden">
+                        <small style="font-weight: bold; color: var(--g-blue);">РЕЖИМ СОЗДАТЕЛЯ: Выберите личность</small>
+                        <div class="id-chips" id="chips-container"></div>
+                        <button onclick="addNewIdentity()" style="margin-top:10px; background:none; border:none; color:var(--g-blue); font-size:12px; cursor:pointer;">+ добавить личность</button>
+                    </div>
+
+                    <div class="post" style="border: 2px solid var(--g-blue); background: var(--g-bg);">
+                        <textarea id="post-input" placeholder="Напишите что-нибудь..." style="width:100%; height:80px; border:none; outline:none; background:transparent; color:var(--g-text); resize:none; font-size:16px;"></textarea>
+                        <hr style="margin:10px 0; border:0; border-top:1px solid var(--g-border);">
+                        <button class="btn btn-blue" style="width:auto; float:right; padding:8px 25px;" onclick="sendPost()">Опубликовать</button>
+                        <div style="clear:both"></div>
+                    </div>
+                    <div id="feed-container"></div>
+                </div>
+
+                <div id="view-settings" class="view">
+                    <h1>Настройки системы</h1>
+                    <div class="post">
+                        <h3>Имя пользователя</h3>
+                        <input type="text" id="change-nick-input" placeholder="Введите новый ник">
+                        <button class="btn btn-blue" style="width:auto" onclick="updateNick()">Обновить</button>
+                    </div>
+                    <div class="post">
+                        <h3>Оформление</h3>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn" onclick="applyTheme('light')" style="background:#eee">☀️ Светлая</button>
+                            <button class="btn" onclick="applyTheme('dark')" style="background:#222; color:white">🌙 Темная</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-ghost" onclick="auth.signOut()" style="color:#d93025">ВЫЙТИ ИЗ АККАУНТА</button>
+                </div>
+
+                <div id="view-admin" class="view">
+                    <h1 style="color:#d93025">Панель управления Mark-42</h1>
+                    <div class="post" style="border-left: 5px solid #d93025;">
+                        <p>Опасные действия:</p><br>
+                        <button class="btn" style="background:#d93025; color:white" onclick="if(confirm('Удалить все посты?')) db.ref('posts').remove()">Очистить ленту</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="game-overlay">
+        <div class="game-bar">
+            <span id="game-title-text" style="font-weight: bold; font-family: 'Montserrat';">Загрузка...</span>
+            <button class="btn" style="background:#d93025; color:white; padding:5px 15px; font-size:12px;" onclick="closeGame()">ВЕРНУТЬСЯ ✖</button>
+        </div>
+        <iframe id="game-frame"></iframe>
+    </div>
+
+    <script>
+        // FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI",
+            authDomain: "gamesfan-17986.firebaseapp.com",
+            projectId: "gamesfan-17986",
+            databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/",
+            appId: "1:311654524584:web:9283eea0aea6f7b946849d"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let isLoginMode = true;
+        let currentUserData = { nick: "Игрок", identities: [] };
+        let selectedNick = "";
+
+        // AUTH LOGIC
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? "С возвращением" : "Регистрация";
+            document.getElementById('reg-nick').classList.toggle('hidden', isLoginMode);
+            document.getElementById('main-auth-btn').innerText = isLoginMode ? "Войти" : "Создать аккаунт";
+            document.getElementById('toggle-txt').innerText = isLoginMode ? "Нет аккаунта? Создать" : "Уже есть? Войти";
+        }
+
+        async function processAuth() {
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            const nick = document.getElementById('reg-nick').value;
+            try {
+                if(isLoginMode) { await auth.signInWithEmailAndPassword(email, pass); }
+                else {
+                    const r = await auth.createUserWithEmailAndPassword(email, pass);
+                    await db.ref('users/' + r.user.uid).set({ nick: nick, identities: [nick] });
+                }
+            } catch(e) { alert(e.message); }
+        }
+
+        async function loginAsGuest() {
+            try { await auth.signInAnonymously(); } catch(e) { alert(e); }
+        }
+
+        function openRegForGuest() {
+            isLoginMode = false;
+            toggleAuthMode();
+            document.getElementById('auth-screen').style.display = 'flex';
+        }
+
+        // STATE OBSERVER
+        auth.onAuthStateChanged(user => {
+            if(user) {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('app').style.display = 'grid';
+                document.getElementById('guest-notify').style.display = user.isAnonymous ? 'flex' : 'none';
+
+                if(user.email === "vetrovlev1@gmail.com") {
+                    document.getElementById('admin-nav').classList.remove('hidden');
+                    document.getElementById('identity-box').classList.remove('hidden');
+                }
+
+                db.ref('users/' + user.uid).on('value', s => {
+                    let data = s.val() || {};
+                    currentUserData.nick = (user.email === "vetrovlev1@gmail.com") ? "Creater ktehepknh | Mark-42 Studio" : (data.nick || "Гость");
+                    currentUserData.identities = data.identities || [currentUserData.nick];
+                    
+                    const statusEl = document.getElementById('user-status');
+                    statusEl.innerText = currentUserData.nick;
+                    if(user.email === "vetrovlev1@gmail.com") statusEl.className = 'nick-orange';
+                    
+                    renderIdentities();
+                });
+                loadPosts();
+            } else {
+                document.getElementById('auth-screen').style.display = 'flex';
+                document.getElementById('app').style.display = 'none';
+                document.getElementById('guest-notify').style.display = 'none';
+            }
+        });
+
+        // IDENTITY SYSTEM
+        function renderIdentities() {
+            const container = document.getElementById('chips-container');
+            container.innerHTML = "";
+            const ids = [...new Set([currentUserData.nick, ...currentUserData.identities])];
+            ids.forEach(name => {
+                const chip = document.createElement('div');
+                chip.className = 'chip' + (selectedNick === name ? ' active' : '');
+                chip.innerText = name;
+                chip.onclick = () => { selectedNick = name; renderIdentities(); };
+                container.appendChild(chip);
+            });
+            if(!selectedNick) selectedNick = currentUserData.nick;
+        }
+
+        function addNewIdentity() {
+            const n = prompt("Введите имя новой личности:");
+            if(n) {
+                currentUserData.identities.push(n);
+                db.ref('users/' + auth.currentUser.uid + '/identities').set(currentUserData.identities);
+            }
+        }
+
+        // SOCIAL FEED
+        function sendPost() {
+            const txt = document.getElementById('post-input').value;
+            if(!txt.trim()) return;
+            const isCreator = (auth.currentUser.email === "vetrovlev1@gmail.com" && selectedNick === "Creater ktehepknh | Mark-42 Studio");
+            db.ref('posts').push({
+                author: selectedNick,
+                text: txt,
+                isCreator: isCreator,
+                time: Date.now()
+            });
+            document.getElementById('post-input').value = "";
+        }
+
+        function loadPosts() {
+            db.ref('posts').limitToLast(50).on('value', s => {
+                const feed = document.getElementById('feed-container');
+                feed.innerHTML = "";
+                let posts = [];
+                s.forEach(child => { posts.push(child.val()); });
+                posts.reverse().forEach(p => {
+                    const orangeClass = p.isCreator ? 'nick-orange' : '';
+                    feed.innerHTML += `
+                        <div class="post">
+                            <b class="${orangeClass}">${p.author}</b>
+                            <div style="margin-top:8px; line-height:1.5;">${p.text}</div>
+                        </div>`;
+                });
+            });
+        }
+
+        // UTILS
+        function switchTab(id, el) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function launchGame(path, title) {
+            document.getElementById('game-overlay').style.display = 'flex';
+            document.getElementById('game-title-text').innerText = title;
+            document.getElementById('game-frame').src = path + "?v=" + Date.now();
+        }
+
+        function closeGame() {
+            document.getElementById('game-overlay').style.display = 'none';
+            document.getElementById('game-frame').src = "";
+        }
+
+        function applyTheme(t) {
+            document.documentElement.setAttribute('data-theme', t);
+            localStorage.setItem('gf-theme', t);
+        }
+        applyTheme(localStorage.getItem('gf-theme') || 'light');
+
+        function updateNick() {
+            const n = document.getElementById('change-nick-input').value;
+            if(n) {
+                db.ref('users/' + auth.currentUser.uid + '/nick').set(n);
+                alert("Успешно!");
+            }
+        }
+    </script>
+</body>
+</html>

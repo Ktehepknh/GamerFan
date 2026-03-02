@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Parkour | Mark-42 Studio</title>
+    <style>
+        body { margin: 0; background: #0a0b0d; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        canvas { background: #16191c; border: 2px solid #333; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+    <canvas id="pCanvas"></canvas>
+
+<script>
+    const canvas = document.getElementById('pCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 800; 
+    canvas.height = 450;
+
+    // Настройки игрока
+    let player = {
+        x: 50, y: 300,
+        w: 30, h: 30,
+        vx: 0, vy: 0,
+        speed: 5,
+        jumpPower: -15,
+        onGround: false,
+        color: "#00adff"
+    };
+
+    // Гравитация
+    const gravity = 0.8;
+
+    // Платформы (добавил больше для интереса)
+    let platforms = [
+        { x: 0, y: 400, w: 200, h: 50 },
+        { x: 250, y: 330, w: 150, h: 20 },
+        { x: 450, y: 250, w: 150, h: 20 },
+        { x: 200, y: 180, w: 120, h: 20 },
+        { x: 50, y: 120, w: 100, h: 20 },
+        { x: 650, y: 100, w: 100, h: 20, goal: true } // ФИНИШ
+    ];
+
+    let keys = {};
+    window.addEventListener('keydown', e => keys[e.code] = true);
+    window.addEventListener('keyup', e => keys[e.code] = false);
+
+    function update() {
+        // Управление
+        if (keys['ArrowRight'] || keys['KeyD']) player.vx = player.speed;
+        else if (keys['ArrowLeft'] || keys['KeyA']) player.vx = -player.speed;
+        else player.vx = 0;
+
+        // Прыжок (фиксим баг двойного прыжка в воздухе)
+        if ((keys['ArrowUp'] || keys['KeyW'] || keys['Space']) && player.onGround) {
+            player.vy = player.jumpPower;
+            player.onGround = false;
+        }
+
+        // Физика
+        player.vy += gravity;
+        player.x += player.vx;
+        player.y += player.vy;
+
+        // Проверка коллизий
+        player.onGround = false; 
+        for (let p of platforms) {
+            // Проверяем касание платформы
+            if (player.x < p.x + p.w &&
+                player.x + player.w > p.x &&
+                player.y + player.h > p.y &&
+                player.y + player.h < p.y + p.vy + 10) { // Проверка, что падаем сверху
+                
+                player.y = p.y - player.h;
+                player.vy = 0;
+                player.onGround = true;
+
+                if (p.goal) {
+                    alert("УРОВЕНЬ ПРОЙДЕН! Mark-42 рулит!");
+                    resetPlayer();
+                }
+            }
+        }
+
+        // Если упал за экран
+        if (player.y > canvas.height) {
+            resetPlayer();
+        }
+
+        draw();
+        requestAnimationFrame(update);
+    }
+
+    function resetPlayer() {
+        player.x = 50;
+        player.y = 300;
+        player.vy = 0;
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Рисуем платформы
+        platforms.forEach(p => {
+            ctx.fillStyle = p.goal ? "#2ecc71" : "#3e444a";
+            ctx.fillRect(p.x, p.y, p.w, p.h);
+            if(p.goal) {
+                ctx.fillStyle = "white";
+                ctx.font = "12px sans-serif";
+                ctx.fillText("ФИНИШ", p.x + 25, p.y + 15);
+            }
+        });
+
+        // Рисуем игрока
+        ctx.fillStyle = player.color;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = player.color;
+        ctx.fillRect(player.x, player.y, player.w, player.h);
+        ctx.shadowBlur = 0; // Сброс тени для остального
+    }
+
+    update();
+</script>
+</body>
+</html>

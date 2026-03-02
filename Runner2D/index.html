@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Runner 2D | Mark-42</title>
+    <style>
+        body { margin: 0; background: #222; overflow: hidden; font-family: sans-serif; }
+        canvas { display: block; background: #333; border-bottom: 5px solid #555; }
+        .info { position: absolute; top: 10px; left: 10px; color: white; font-size: 20px; }
+    </style>
+</head>
+<body>
+    <div class="info">Счет: <span id="score">0</span></div>
+    <canvas id="game"></canvas>
+
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = 400;
+
+        let score = 0;
+        let player = { x: 50, y: 350, w: 40, h: 40, dy: 0, jump: -12, ground: true };
+        let obstacles = [];
+        let gameActive = true;
+
+        function spawnObstacle() {
+            if (gameActive) {
+                obstacles.push({ x: canvas.width, y: 360, w: 30, h: 40 });
+                setTimeout(spawnObstacle, 1000 + Math.random() * 2000);
+            }
+        }
+
+        function update() {
+            if (!gameActive) return;
+            
+            // Физика прыжка
+            player.dy += 0.6; // Гравитация
+            player.y += player.dy;
+            if (player.y > 350) { player.y = 350; player.ground = true; }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Рисуем игрока (можно заменить на картинку из assets/)
+            ctx.fillStyle = '#00adff';
+            ctx.fillRect(player.x, player.y, player.w, player.h);
+
+            // Препятствия
+            ctx.fillStyle = '#ff4444';
+            obstacles.forEach((obs, i) => {
+                obs.x -= 6; // Скорость бега
+                ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+
+                // Коллизия
+                if (player.x < obs.x + obs.w && player.x + player.w > obs.x &&
+                    player.y < obs.y + obs.h && player.y + player.h > obs.y) {
+                    gameActive = false;
+                    alert("Gane Over! Твой счет: " + score);
+                    location.reload();
+                }
+                
+                if (obs.x < -50) { obstacles.splice(i, 1); score++; document.getElementById('score').innerText = score; }
+            });
+
+            requestAnimationFrame(update);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && player.ground) {
+                player.dy = player.jump;
+                player.ground = false;
+            }
+        });
+
+        spawnObstacle();
+        update();
+    </script>
+</body>
+</html>

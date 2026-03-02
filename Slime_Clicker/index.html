@@ -1,0 +1,344 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Slime Clicker 2D | Mark-42 Studio</title>
+    <script src="https://yandex.ru/games/sdk/v2"></script>
+    <style>
+        :root { --accent: #ffcc00; --diamond: #00f2ff; --bg: #0d0d12; --panel: rgba(25, 25, 35, 0.98); }
+        * { touch-action: manipulation; -webkit-user-select: none; user-select: none; box-sizing: border-box; outline: none; }
+        body { margin: 0; height: 100vh; display: flex; background: #000 url('assets/background.jpg') center/cover; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        
+        @media (max-aspect-ratio: 1/1) { 
+            body { flex-direction: column; } 
+            #shop-side { width: 100% !important; height: 55% !important; border-left: none !important; border-top: 3px solid var(--accent); } 
+            #game-side { height: 45%; } 
+        }
+
+        #game-side { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        #ui-hud { background: rgba(0,0,0,0.8); padding: 15px 30px; border-radius: 25px; border: 2px solid var(--accent); text-align: center; z-index: 10; }
+        
+        .currency-box { display: flex; justify-content: center; gap: 20px; font-weight: bold; font-size: 1.6rem; margin: 5px 0; }
+        .currency-box img { width: 30px; vertical-align: middle; }
+
+        #main-slime { width: 180px; cursor: pointer; transition: transform 0.05s; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
+        #main-slime:active { transform: scale(0.9); }
+
+        #shop-side { width: 440px; background: var(--panel); border-left: 3px solid var(--accent); display: flex; flex-direction: column; }
+        .tabs { display: flex; background: #000; height: 60px; }
+        .tab-btn { flex: 1; border: none; background: none; color: #555; cursor: pointer; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
+        .tab-btn.active { color: var(--accent); border-bottom: 4px solid var(--accent); background: rgba(255,204,0,0.1); }
+        
+        .panel { flex: 1; overflow-y: auto; padding: 15px; display: none; }
+        .panel.active { display: block; }
+        
+        .item-card { background: rgba(255,255,255,0.05); margin-bottom: 10px; padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
+        .buy-btn { border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-coins { background: var(--accent); color: #000; }
+        .btn-diamonds { background: var(--diamond); color: #000; }
+        .buy-btn:disabled { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: none; align-items: center; justify-content: center; }
+        .window { background: #15151a; border: 3px solid var(--accent); border-radius: 20px; width: 340px; padding: 30px; text-align: center; }
+        
+        .floating-text { position: absolute; pointer-events: none; color: var(--accent); font-weight: bold; animation: floatUp 0.8s forwards; font-size: 1.6rem; text-shadow: 2px 2px #000; }
+        @keyframes floatUp { 0%{opacity:1; transform:translateY(0);} 100%{opacity:0; transform:translateY(-120px);} }
+
+        #tutorial { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: #fff; color: #000; padding: 20px; border-radius: 20px; border: 5px solid var(--accent); z-index: 2000; display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="game-side">
+        <div style="position:absolute; bottom:20px; left:20px; font-size:35px; cursor:pointer;" onclick="toggleSettings()">⚙️</div>
+        <div id="ui-hud">
+            <div style="font-size:12px; color:var(--accent); font-weight:bold; letter-spacing:2px;">MARK-42 STUDIO</div>
+            <div class="currency-box">
+                <div><img src="assets/coin.png"> <span id="coins-display">0</span></div>
+                <div style="margin-left:15px;"><img src="assets/diamond.png"> <span id="diamonds-display">0</span></div>
+            </div>
+            <div id="stats-info" style="font-size:11px; color:#888; border-top:1px solid #333; padding-top:5px; margin-top:5px;"></div>
+        </div>
+        <img src="assets/slime1.png" id="main-slime" draggable="false">
+    </div>
+
+    <div id="shop-side">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('upgrades', this)" id="tab-name-1">МАГАЗИН</button>
+            <button class="tab-btn" onclick="showTab('boosts', this)" id="tab-name-2">БУСТЫ</button>
+            <button class="tab-btn" onclick="showTab('slimes', this)" id="tab-name-3">СЛАЙМЫ</button>
+            <button class="tab-btn" onclick="showTab('quests', this)" id="tab-name-4">КВЕСТЫ</button>
+        </div>
+        <div id="upgrades" class="panel active"></div>
+        <div id="boosts" class="panel"><div id="boosts-list"></div></div>
+        <div id="slimes" class="panel"></div>
+        <div id="quests" class="panel"></div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+        <div class="window">
+            <h2 id="settings-title" style="color:var(--accent)">НАСТРОЙКИ</h2>
+            <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <button class="buy-btn btn-coins" style="flex:1; justify-content:center" onclick="setLanguage('ru')">RU</button>
+                <button class="buy-btn btn-coins" style="flex:1; justify-content:center" onclick="setLanguage('en')">EN</button>
+            </div>
+            <button class="buy-btn" style="background:#ff4444; color:#fff; width:100%; justify-content:center" onclick="resetGame()" id="reset-button-text">СБРОС ПРОГРЕССА</button>
+            <button class="buy-btn btn-coins" style="width:100%; margin-top:15px; justify-content:center" onclick="toggleSettings()">OK</button>
+        </div>
+    </div>
+
+    <div id="tutorial">
+        <img src="assets/viktor.png" style="width:65px; float:left; margin-right:15px;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1041/1041916.png'">
+        <b style="color:#d4a017">Виктор / Viktor</b>
+        <p id="tut-text" style="margin:10px 0; font-size:14px;"></p>
+        <button class="buy-btn btn-coins" style="float:right" onclick="nextTutorialStep()" id="next-button-text">ДАЛЕЕ</button>
+    </div>
+
+    <script>
+        // ЗВУКОВОЙ ДВИЖОК
+        const sfx = {
+            click: new Audio('assets/click.mp3'),
+            buy: new Audio('assets/buy.mp3'),
+            bg: new Audio('assets/music.mp3')
+        };
+        sfx.bg.loop = true;
+        sfx.bg.volume = 0.4;
+
+        function playSfx(name) {
+            const sound = sfx[name].cloneNode();
+            sound.play().catch(() => {}); // Игнорим ошибки если юзер еще не кликнул
+        }
+
+        let gameData = {
+            coins: 0, diamonds: 0, totalEarned: 0,
+            clickPower: 1, autoPower: 0,
+            ownedSlimes: [1], currentSlime: 1,
+            upgradeLevels: new Array(16).fill(0),
+            boostsActive: [0, 0, 0],
+            completedQuests: [],
+            tutorialIndex: 0,
+            lang: 'ru'
+        };
+
+        const translations = {
+            ru: {
+                t1: "МАГАЗИН", t2: "БУСТЫ", t3: "СЛАЙМЫ", t4: "КВЕСТЫ",
+                next: "ДАЛЕЕ", settings: "НАСТРОЙКИ", reset: "СБРОС ПРОГРЕССА",
+                stats: (c, a, m) => `КЛИК: +${c} | АВТО: +${a} | МНОЖИТЕЛЬ: x${m}`,
+                active: "АКТИВЕН", select: "ВЫБРАТЬ", max: "МАКС",
+                click: "КЛИК", auto: "АВТО", income: "Доход", earn: "Заработать", coinsText: "монет",
+                upgradeNames: ["Мягкое касание", "Слаймо-гель", "Липкая перчатка", "Миска еды", "Вибро-лапа", "Авто-чесалка", "Магнит слизи", "Сборщик капель", "Энерго-сфера", "Слаймо-насос", "Ионный кликер", "Завод Mark-42", "Взрыв", "Черная дыра", "Луч смерти", "Сингулярность"],
+                slimeNames: ["Розовый", "Кошачий", "Каменный", "Светляк", "Медовый", "Водяной", "Бум-слайм", "Охотник", "Радио-слайм", "Кристалл", "Лавовый", "Саблезуб", "Диско-слайм", "Зайчик", "Лужа", "Яичный", "Облачко", "Глич", "Гипер-слайм", "Тень", "Золотой", "Удачливый"],
+                tutorialSteps: ["Привет, Лев! Я Виктор. Помогу тебе развить студию! Кликай на слайма!", "В магазине улучшай силу КЛИКА и АВТО-добычу.", "В БУСТАХ можно купить вечное умножение дохода за алмазы.", "Собери все 22 слайма и стань лучшим в Mark-42 Studio!"]
+            },
+            en: {
+                t1: "SHOP", t2: "BOOSTS", t3: "SLIMES", t4: "QUESTS",
+                next: "NEXT", settings: "SETTINGS", reset: "RESET GAME",
+                stats: (c, a, m) => `CLICK: +${c} | AUTO: +${a} | MULTI: x${m}`,
+                active: "ACTIVE", select: "SELECT", max: "MAX",
+                click: "CLICK", auto: "AUTO", income: "Income", earn: "Earn", coinsText: "coins",
+                upgradeNames: ["Soft Touch", "Slime Gel", "Sticky Glove", "Food Bowl", "Vibro Paw", "Auto Scratcher", "Slime Magnet", "Drop Collector", "Energy Sphere", "Slime Pump", "Ionic Clicker", "Mark-42 Plant", "Explosion", "Black Hole", "Death Ray", "Singularity"],
+                slimeNames: ["Pink", "Tabby", "Rock", "Phosphor", "Honey", "Puddle", "Boom", "Hunter", "Rad", "Crystal", "Lava", "Saber", "Disco", "Bunny", "Splash", "Egg", "Cloudy", "Glitch", "Hyper", "Shadow", "Golden", "Lucky"],
+                tutorialSteps: ["Hi Lev! I'm Viktor. Let's grow the studio! Click the slime!", "Upgrade CLICK and AUTO power in the shop.", "Check BOOSTS for permanent income multipliers!", "Collect all 22 slimes to become a Mark-42 legend!"]
+            }
+        };
+
+        const upgradeData = [
+            { basePrice: 50, power: 1, type: 'click' }, { basePrice: 150, power: 1, type: 'auto' },
+            { basePrice: 800, power: 5, type: 'click' }, { basePrice: 2500, power: 4, type: 'auto' },
+            { basePrice: 15000, power: 40, type: 'click' }, { basePrice: 40000, power: 35, type: 'auto' },
+            { basePrice: 120000, power: 150, type: 'click' }, { basePrice: 300000, power: 250, type: 'auto' },
+            { basePrice: 1000000, power: 1200, type: 'click' }, { basePrice: 3500000, power: 1000, type: 'auto' },
+            { basePrice: 10000000, power: 8000, type: 'click' }, { basePrice: 25000000, power: 7500, type: 'auto' },
+            { basePrice: 150000000, power: 60000, type: 'click' }, { basePrice: 600000000, power: 55000, type: 'auto' },
+            { basePrice: 2000000000, power: 500000, type: 'click' }, { basePrice: 10000000000, power: 450000, type: 'auto' }
+        ];
+
+        function getMultiplier() {
+            let m = 1;
+            if (gameData.boostsActive[0]) m *= 2;
+            if (gameData.boostsActive[1]) m *= 5;
+            if (gameData.boostsActive[2]) m *= 10;
+            return m;
+        }
+
+        function refreshUI() {
+            const lang = translations[gameData.lang];
+            document.getElementById('coins-display').innerText = Math.floor(gameData.coins).toLocaleString();
+            document.getElementById('diamonds-display').innerText = gameData.diamonds.toLocaleString();
+            document.getElementById('stats-info').innerText = lang.stats(Math.floor(gameData.clickPower * getMultiplier()), Math.floor(gameData.autoPower * getMultiplier()), getMultiplier());
+            
+            renderUpgradeList();
+            renderBoostList();
+            renderSlimeList();
+            renderQuestList();
+
+            if (gameData.tutorialIndex < lang.tutorialSteps.length) {
+                document.getElementById('tutorial').style.display = 'block';
+                document.getElementById('tut-text').innerText = lang.tutorialSteps[gameData.tutorialIndex];
+            } else {
+                document.getElementById('tutorial').style.display = 'none';
+            }
+        }
+
+        function renderUpgradeList() {
+            const lang = translations[gameData.lang];
+            let html = '';
+            upgradeData.forEach((upg, i) => {
+                let cost = Math.floor(upg.basePrice * Math.pow(1.25, gameData.upgradeLevels[i]));
+                html += `
+                <div class="item-card">
+                    <div><b>${lang.upgradeNames[i]}</b><br><small style="color:var(--accent)">${upg.type === 'click' ? lang.click : lang.auto}</small></div>
+                    <button class="buy-btn btn-coins" onclick="buyUpgrade(${i}, ${cost})" ${gameData.coins < cost ? 'disabled' : ''}>
+                        ${cost.toLocaleString()} <img src="assets/coin.png" style="width:18px">
+                    </button>
+                </div>`;
+            });
+            document.getElementById('upgrades').innerHTML = html;
+        }
+
+        function renderBoostList() {
+            const lang = translations[gameData.lang];
+            let html = '';
+            const list = [{n: 'x2', p: 100}, {n: 'x5', p: 500}, {n: 'x10', p: 2000}];
+            list.forEach((boost, i) => {
+                let active = gameData.boostsActive[i];
+                html += `
+                <div class="item-card">
+                    <b>${boost.n} ${lang.income}</b>
+                    <button class="buy-btn btn-diamonds" onclick="buyBoost(${i}, ${boost.p})" ${active || gameData.diamonds < boost.p ? 'disabled' : ''}>
+                        ${active ? lang.max : boost.p + ' <img src="assets/diamond.png" style="width:18px">'}
+                    </button>
+                </div>`;
+            });
+            document.getElementById('boosts-list').innerHTML = html;
+        }
+
+        function renderSlimeList() {
+            const lang = translations[gameData.lang];
+            let html = '';
+            for (let i = 1; i <= 22; i++) {
+                let isRare = i > 15;
+                let cost = isRare ? (i - 15) * 100 : i * 5000;
+                let owned = gameData.ownedSlimes.includes(i);
+                html += `
+                <div class="item-card">
+                    <img src="assets/slime${i}.png" width="45" onerror="this.src='https://cdn-icons-png.flaticon.com/512/822/822143.png'">
+                    <b style="flex:1; margin-left:10px">${lang.slimeNames[i-1]}</b>
+                    <button class="buy-btn ${isRare ? 'btn-diamonds' : 'btn-coins'}" onclick="handleSlimeClick(${i}, ${cost}, ${isRare})" 
+                        ${!owned && (isRare ? gameData.diamonds < cost : gameData.coins < cost) ? 'disabled' : ''}>
+                        ${owned ? (gameData.currentSlime === i ? lang.active : lang.select) : cost.toLocaleString() + (isRare ? ' 💎' : ' 🟡')}
+                    </button>
+                </div>`;
+            }
+            document.getElementById('slimes').innerHTML = html;
+        }
+
+        function renderQuestList() {
+            const lang = translations[gameData.lang];
+            let html = '';
+            const goals = [10000, 100000, 1000000, 10000000, 100000000, 1000000000];
+            goals.forEach((goal, i) => {
+                let done = gameData.completedQuests.includes(i);
+                let progress = Math.min(100, (gameData.totalEarned / goal) * 100);
+                html += `
+                <div class="item-card" style="flex-direction:column; align-items:flex-start; gap:8px;">
+                    <div style="display:flex; justify-content:space-between; width:100%;">
+                        <b>${lang.earn} ${goal.toLocaleString()} ${lang.coinsText}</b>
+                        <button class="buy-btn btn-diamonds" onclick="claimQuest(${i})" ${progress < 100 || done ? 'disabled' : ''}>
+                            ${done ? '✔' : '+150 💎'}
+                        </button>
+                    </div>
+                    <div style="width:100%; height:6px; background:#222; border-radius:3px;"><div style="width:${progress}%; height:100%; background:var(--diamond); border-radius:3px;"></div></div>
+                </div>`;
+            });
+            document.getElementById('quests').innerHTML = html;
+        }
+
+        // КЛИК
+        document.getElementById('main-slime').onclick = (e) => {
+            if (sfx.bg.paused) sfx.bg.play(); // Старт музыки после первого клика
+            playSfx('click');
+            
+            let gain = Math.floor(gameData.clickPower * getMultiplier());
+            gameData.coins += gain; gameData.totalEarned += gain;
+            
+            const float = document.createElement('div');
+            float.className = 'floating-text'; float.innerText = `+${gain}`;
+            float.style.left = e.clientX + 'px'; float.style.top = e.clientY + 'px';
+            document.body.appendChild(float);
+            setTimeout(() => float.remove(), 800);
+            
+            refreshUI();
+        };
+
+        function buyUpgrade(i, cost) {
+            if (gameData.coins >= cost) {
+                playSfx('buy');
+                gameData.coins -= cost;
+                gameData.upgradeLevels[i]++;
+                if (upgradeData[i].type === 'click') gameData.clickPower += upgradeData[i].power;
+                else gameData.autoPower += upgradeData[i].power;
+                refreshUI(); saveGame();
+            }
+        }
+
+        function buyBoost(i, cost) {
+            if (gameData.diamonds >= cost) {
+                playSfx('buy');
+                gameData.diamonds -= cost;
+                gameData.boostsActive[i] = 1;
+                refreshUI(); saveGame();
+            }
+        }
+
+        function handleSlimeClick(id, cost, isRare) {
+            if (gameData.ownedSlimes.includes(id)) {
+                gameData.currentSlime = id;
+                document.getElementById('main-slime').src = `assets/slime${id}.png`;
+            } else {
+                playSfx('buy');
+                if (isRare) gameData.diamonds -= cost; else gameData.coins -= cost;
+                gameData.ownedSlimes.push(id);
+            }
+            refreshUI(); saveGame();
+        }
+
+        function claimQuest(i) { playSfx('buy'); gameData.diamonds += 150; gameData.completedQuests.push(i); refreshUI(); saveGame(); }
+        function nextTutorialStep() { playSfx('click'); gameData.tutorialIndex++; refreshUI(); saveGame(); }
+        function setLanguage(l) { gameData.lang = l; refreshUI(); saveGame(); }
+        function toggleSettings() { let m = document.getElementById('settings-modal'); m.style.display = (m.style.display === 'flex' ? 'none' : 'flex'); }
+        
+        function showTab(id, btn) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active'); btn.classList.add('active');
+        }
+
+        function saveGame() {
+            const str = JSON.stringify(gameData);
+            localStorage.setItem('m42_slime_save', str);
+        }
+
+        function loadGame() {
+            const local = localStorage.getItem('m42_slime_save');
+            if (local) gameData = Object.assign(gameData, JSON.parse(local));
+            document.getElementById('main-slime').src = `assets/slime${gameData.currentSlime}.png`;
+            refreshUI();
+        }
+
+        function resetGame() { if (confirm("СБРОСИТЬ ВСЁ?")) { localStorage.clear(); location.reload(); } }
+
+        setInterval(() => {
+            if (gameData.autoPower > 0) {
+                let gain = (gameData.autoPower * getMultiplier());
+                gameData.coins += gain; gameData.totalEarned += gain;
+                refreshUI();
+            }
+        }, 1000);
+
+        window.onload = loadGame;
+    </script>
+</body>
+</html>
