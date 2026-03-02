@@ -2,141 +2,161 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mark-42 Studio Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mark-42 Studio Portal</title>
     <style>
-        :root { --accent: #ffcc00; --bg: #0b0b0f; --panel: #15151f; --border: rgba(255,255,255,0.1); --admin: #ff4444; }
-        * { box-sizing: border-box; }
+        :root { --accent: #ffcc00; --bg: #0b0b0f; --panel: #15151f; --border: rgba(255,255,255,0.1); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
 
-        /* HEADER */
-        #top-nav { height: 65px; background: #000; border-bottom: 3px solid var(--accent); display: flex; align-items: center; padding: 0 20px; gap: 10px; z-index: 1000; position: relative; }
-        .logo { font-size: 20px; font-weight: 900; color: var(--accent); margin-right: 20px; }
-        .nav-btn { cursor: pointer; padding: 8px 15px; border-radius: 5px; font-size: 13px; font-weight: bold; transition: 0.2s; }
-        .nav-btn:hover { background: rgba(255,204,0,0.1); color: var(--accent); }
+        /* HEADER / NAVIGATION */
+        #top-nav { 
+            height: 65px; background: #000; border-bottom: 3px solid var(--accent); 
+            display: flex; align-items: center; padding: 0 15px; gap: 10px; z-index: 2000; position: relative;
+        }
+        .logo { font-size: 18px; font-weight: 900; color: var(--accent); margin-right: 10px; }
+        
+        /* Скролл-меню для мобилок */
+        .nav-scroll { display: flex; gap: 8px; overflow-x: auto; flex: 1; scrollbar-width: none; }
+        .nav-scroll::-webkit-scrollbar { display: none; }
+        
+        .nav-btn { 
+            white-space: nowrap; cursor: pointer; padding: 8px 12px; border-radius: 6px; 
+            font-size: 12px; font-weight: bold; transition: 0.2s; background: rgba(255,255,255,0.05);
+        }
         .nav-btn.active { background: var(--accent); color: #000; }
 
         /* VIEWPORT */
         #main-stage { width: 100%; height: calc(100vh - 65px); position: relative; }
         iframe { width: 100%; height: 100%; border: none; background: #000; }
 
-        /* COMMUNITY SECTION */
-        #community-layer { position: absolute; inset: 0; background: var(--bg); display: none; overflow-y: auto; padding: 30px; z-index: 500; }
-        .comm-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
-        
-        /* POSTS */
-        .post-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .badge { font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
-        .badge.admin { background: var(--admin); color: white; }
-        .post-content { font-size: 14px; line-height: 1.6; color: #ccc; }
-
-        /* INPUT AREA */
-        #post-creator { background: var(--panel); border: 2px solid var(--accent); border-radius: 12px; padding: 20px; margin-bottom: 30px; }
-        textarea { width: 100%; background: #000; border: 1px solid #333; color: white; padding: 15px; border-radius: 8px; resize: none; margin-bottom: 10px; }
-
-        /* SIDEBAR */
-        .sidebar-box { background: #000; border: 1px solid var(--border); border-radius: 10px; padding: 15px; }
-
         /* ELBERR DROPDOWN */
-        #el-menu { position: absolute; top: 65px; left: 160px; background: #000; border: 2px solid var(--accent); border-top: none; display: none; flex-direction: column; z-index: 2000; }
-        .ch-item { padding: 12px 20px; cursor: pointer; font-size: 13px; border-bottom: 1px solid #222; }
-        .ch-item:hover { background: var(--accent); color: #000; }
+        #el-menu { 
+            position: absolute; top: 65px; left: 0; width: 100%; background: #000; 
+            border-bottom: 2px solid var(--accent); display: none; flex-direction: column; z-index: 2500;
+        }
+        .ch-item { padding: 15px; border-bottom: 1px solid #222; font-size: 14px; text-align: center; }
 
-        /* MESSENGER */
-        #chat { position: fixed; bottom: 20px; right: 20px; width: 320px; height: 400px; background: var(--panel); border: 2px solid var(--accent); border-radius: 15px; display: none; flex-direction: column; z-index: 3000; }
-        #chat-view { flex: 1; padding: 15px; overflow-y: auto; font-size: 13px; }
+        /* СООБЩЕСТВО */
+        #community-layer { position: absolute; inset: 0; background: var(--bg); display: none; overflow-y: auto; padding: 15px; z-index: 1500; }
+        .post-card { background: var(--panel); border-radius: 10px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+
+        /* МЕССЕНДЖЕР (СПИСОК ПОЛЬЗОВАТЕЛЕЙ) */
+        #messenger-layer { 
+            position: absolute; inset: 0; background: var(--bg); display: none; 
+            flex-direction: column; z-index: 1600; padding: 15px;
+        }
+        .user-item { 
+            background: var(--panel); padding: 15px; border-radius: 10px; margin-bottom: 10px; 
+            display: flex; align-items: center; gap: 15px; cursor: pointer; border: 1px solid var(--border);
+        }
+        .user-avatar { width: 45px; height: 45px; border-radius: 50%; background: var(--accent); color: #000; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .user-info b { display: block; font-size: 14px; }
+        .user-info span { font-size: 11px; color: #777; }
+
+        /* ОКНО ЧАТА */
+        #chat-window { 
+            position: fixed; inset: 0; background: #000; z-index: 3000; display: none; flex-direction: column; 
+        }
+        #chat-header { padding: 20px; background: var(--accent); color: #000; font-weight: bold; display: flex; align-items: center; gap: 15px; }
+        #chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .bubble { padding: 10px; border-radius: 10px; max-width: 80%; font-size: 14px; }
+        .bubble.me { background: var(--accent); color: #000; align-self: flex-end; }
+        .bubble.them { background: #222; color: #fff; align-self: flex-start; }
+
+        @media (min-width: 768px) {
+            .logo { font-size: 22px; }
+            #el-menu { width: 300px; left: 100px; }
+            .nav-btn { font-size: 14px; }
+            #community-layer { padding: 40px; }
+            .post-card { max-width: 600px; margin: 0 auto 20px auto; }
+        }
     </style>
 </head>
 <body>
 
 <nav id="top-nav">
-    <div class="logo">MARK-42</div>
-    <div class="nav-btn active" onclick="showTab('game', 'slime')">Slime Farm 2D</div>
-    <div class="nav-btn" onclick="toggleElberr()">ELBERR OS</div>
-    <div class="nav-btn" onclick="showTab('comm')">Сообщество</div>
-    <div class="nav-btn" onclick="toggleChat()">ЛС</div>
-    <div style="margin-left: auto;"><button onclick="adminLogin()" style="background:none; border:none; color:#333; cursor:pointer;">🔑</button></div>
+    <div class="logo">M-42</div>
+    <div class="nav-scroll">
+        <div class="nav-btn active" onclick="showSection('game', 'sf')">Farm 2D</div>
+        <div class="nav-btn" onclick="showSection('game', 'sc')">Clicker 2D</div>
+        <div class="nav-btn" onclick="toggleElberr()">ELBERR OS</div>
+        <div class="nav-btn" onclick="showSection('comm')">Сообщество</div>
+        <div class="nav-btn" onclick="showSection('msgs')">ЛС</div>
+    </div>
 </nav>
 
 <div id="el-menu">
-    <div class="ch-item" onclick="showTab('game', 'e1')">Глава 1: Пробуждение</div>
-    <div class="ch-item" onclick="showTab('game', 'e2')">Глава 2: Вирус</div>
-    <div class="ch-item" onclick="showTab('game', 'e3')">Глава 3: Сеть</div>
-    <div class="ch-item" onclick="showTab('game', 'e4')">Глава 4: Протокол</div>
-    <div class="ch-item" onclick="showTab('game', 'e5')">Глава 5: Мысли</div>
-    <div class="ch-item" onclick="showTab('game', 'e6')">Глава 6: Финал</div>
+    <div class="ch-item" onclick="showSection('game', 'e1')">Глава 1</div>
+    <div class="ch-item" onclick="showSection('game', 'e2')">Глава 2</div>
+    <div class="ch-item" onclick="showSection('game', 'e3')">Глава 3</div>
+    <div class="ch-item" onclick="showSection('game', 'e4')">Глава 4</div>
+    <div class="ch-item" onclick="showSection('game', 'e5')">Глава 5</div>
+    <div class="ch-item" onclick="showSection('game', 'e6')">Глава 6</div>
 </div>
 
 <div id="main-stage">
-    <iframe id="viewport" src="Slime_Farm_2D/index.html"></iframe>
-    
+    <iframe id="view" src="Slime_Farm_2D/index.html"></iframe>
+
     <div id="community-layer">
-        <div class="comm-grid">
-            <div id="posts-column">
-                <div id="post-creator">
-                    <h3 id="creator-title" style="margin-top:0; color:var(--accent);">Написать в Сообщество</h3>
-                    <textarea id="post-text" rows="3" placeholder="Что нового в Mark-42 Studio?"></textarea>
-                    <button class="nav-btn active" onclick="publishPost()">Опубликовать</button>
-                    <label style="margin-left: 15px; font-size: 12px;"><input type="checkbox" id="is-admin-post" disabled> Admin Post</label>
-                </div>
+        <h2 style="color:var(--accent)">Новости Студии</h2>
+        <div class="post-card">
+            <b>LEV (ADMIN)</b>
+            <p>Добро пожаловать в обновленный портал! Теперь всё работает на телефонах.</p>
+        </div>
+        <div id="user-posts"></div>
+    </div>
 
-                <div id="feed">
-                    <div class="post-card">
-                        <div class="post-header">
-                            <b style="color:var(--accent)">LEV (Mark-42)</b>
-                            <span class="badge admin">ADMIN</span>
-                            <small style="color:#555">2 минуты назад</small>
-                        </div>
-                        <div class="post-content">
-                            Запустили 6 главу ELBERR OS! Ребята, проверьте финал и пишите в ЛС, если найдете баги. Всех обнял!
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="sidebar">
-                <div class="sidebar-box">
-                    <h4 style="color:var(--accent); margin-top:0;">Dev-Блог (Приват)</h4>
-                    <p style="font-size: 12px; color: #888;">Здесь публикуются только официальные новости от разработчиков.</p>
-                    <hr style="opacity: 0.1;">
-                    <div id="dev-updates" style="font-size: 11px;">
-                        <div style="margin-bottom: 10px;">• Slime Farm 2D: Добавлен режим Mobile.</div>
-                        <div style="margin-bottom: 10px;">• Портал: Обновлена система ЛС.</div>
-                    </div>
-                </div>
-            </div>
+    <div id="messenger-layer">
+        <h2 style="color:var(--accent)">Ваши диалоги</h2>
+        <div class="user-item" onclick="openChat('Виктор', 'online')">
+            <div class="user-avatar" style="background:var(--accent)">В</div>
+            <div class="user-info"><b>Виктор (Помощник)</b><span>Печатает...</span></div>
+        </div>
+        <div class="user-item" onclick="openChat('Никита_Pro', 'offline')">
+            <div class="user-avatar" style="background:#444; color:#fff">Н</div>
+            <div class="user-info"><b>Никита_Pro</b><span>Был в сети 5 мин. назад</span></div>
+        </div>
+        <div class="user-item" onclick="openChat('SlimeMaster', 'online')">
+            <div class="user-avatar" style="background:#00f2ff; color:#000">S</div>
+            <div class="user-info"><b>SlimeMaster</b><span>В сети</span></div>
         </div>
     </div>
 </div>
 
-<div id="chat">
-    <div style="padding:10px; background:var(--accent); color:#000; font-weight:bold; border-radius:13px 13px 0 0;">Чат с Виктором</div>
-    <div id="chat-view"></div>
-    <div style="padding:10px; display:flex; gap:5px;">
-        <input type="text" id="chat-in" style="flex:1; background:#000; color:#fff; border:1px solid #333; padding:5px;">
-        <button onclick="sendChat()" style="background:var(--accent); border:none; padding:5px 10px; cursor:pointer;">></button>
+<div id="chat-window">
+    <div id="chat-header">
+        <span onclick="closeChat()" style="cursor:pointer; font-size:24px;">←</span>
+        <span id="chat-user-name">Имя пользователя</span>
+    </div>
+    <div id="chat-messages"></div>
+    <div style="padding:15px; display:flex; gap:10px; background:#111;">
+        <input type="text" id="chat-input" style="flex:1; background:#000; color:#fff; border:1px solid #333; padding:12px; border-radius:8px;" placeholder="Сообщение...">
+        <button onclick="sendMsg()" style="background:var(--accent); border:none; padding:10px 20px; border-radius:8px; font-weight:bold;">></button>
     </div>
 </div>
 
 <script>
     const PATHS = {
-        slime: "Slime_Farm_2D/index.html",
+        sf: "Slime_Farm_2D/index.html",
+        sc: "Slime_Clicker_2D/index.html",
         e1: "ELBERR_OS/Chapter1/index.html", e2: "ELBERR_OS/Chapter2/index.html",
         e3: "ELBERR_OS/Chapter3/index.html", e4: "ELBERR_OS/Chapter4/index.html",
         e5: "ELBERR_OS/Chapter5/index.html", e6: "ELBERR_OS/Chapter6/index.html"
     };
 
-    let isAdmin = false;
-
-    function showTab(type, id) {
+    function showSection(type, id) {
         document.getElementById('community-layer').style.display = (type === 'comm') ? 'block' : 'none';
+        document.getElementById('messenger-layer').style.display = (type === 'msgs') ? 'flex' : 'none';
+        document.getElementById('el-menu').style.display = 'none';
+
         if(type === 'game') {
-            document.getElementById('viewport').src = PATHS[id];
-            document.getElementById('el-menu').style.display = 'none';
+            document.getElementById('view').src = PATHS[id];
         }
+
+        // Обновление активной кнопки
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        if(type === 'comm') event.target.classList.add('active');
+        if (event) event.target.classList.add('active');
     }
 
     function toggleElberr() {
@@ -144,61 +164,39 @@
         m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
     }
 
-    function adminLogin() {
-        let code = prompt("Введите код админа:");
-        if(code === "2014") {
-            isAdmin = true;
-            document.getElementById('is-admin-post').disabled = false;
-            document.getElementById('is-admin-post').checked = true;
-            document.getElementById('creator-title').innerText = "ПАНЕЛЬ АДМИНИСТРАТОРА";
-            alert("Лев, добро пожаловать в систему управления!");
-        }
+    function openChat(name, status) {
+        document.getElementById('chat-window').style.display = 'flex';
+        document.getElementById('chat-user-name').innerText = name;
+        const msgBox = document.getElementById('chat-messages');
+        msgBox.innerHTML = `<div class="bubble them">Привет! Это ${name}. Как дела?</div>`;
     }
 
-    function publishPost() {
-        const text = document.getElementById('post-text').value;
-        if(!text) return;
+    function closeChat() {
+        document.getElementById('chat-window').style.display = 'none';
+    }
 
-        const isAdm = document.getElementById('is-admin-post').checked;
-        const feed = document.getElementById('feed');
+    function sendMsg() {
+        const inp = document.getElementById('chat-input');
+        if(!inp.value) return;
+        const box = document.getElementById('chat-messages');
+        box.innerHTML += `<div class="bubble me">${inp.value}</div>`;
         
-        const card = document.createElement('div');
-        card.className = 'post-card';
-        card.innerHTML = `
-            <div class="post-header">
-                <b style="color:${isAdm ? 'var(--accent)' : '#fff'}">${isAdm ? 'LEV (Admin)' : 'Игрок'}</b>
-                ${isAdm ? '<span class="badge admin">ADMIN</span>' : ''}
-                <small style="color:#555">Только что</small>
-            </div>
-            <div class="post-content">${text}</div>
-        `;
-        
-        feed.prepend(card);
-        document.getElementById('post-text').value = "";
+        const user = document.getElementById('chat-user-name').innerText;
+        setTimeout(() => {
+            box.innerHTML += `<div class="bubble them"><b>${user}:</b> Я получил твоё сообщение, Лев! Передам остальным.</div>`;
+            box.scrollTop = box.scrollHeight;
+        }, 1000);
 
-        // Если это админ-пост, дублируем его в Dev-блог (Приватную ленту)
-        if(isAdm) {
-            const devBox = document.getElementById('dev-updates');
-            const upd = document.createElement('div');
-            upd.style.marginBottom = "10px";
-            upd.innerHTML = `• ${text.substring(0, 40)}${text.length > 40 ? '...' : ''}`;
-            devBox.prepend(upd);
+        inp.value = "";
+        box.scrollTop = box.scrollHeight;
+    }
+
+    // Обработка кнопки назад на телефоне
+    window.addEventListener('popstate', function() {
+        if (document.getElementById('chat-window').style.display === 'flex') {
+            closeChat();
         }
-    }
-
-    function toggleChat() {
-        const c = document.getElementById('chat');
-        c.style.display = (c.style.display === 'flex') ? 'none' : 'flex';
-    }
-
-    function sendChat() {
-        const input = document.getElementById('chat-in');
-        if(!input.value) return;
-        const view = document.getElementById('chat-view');
-        view.innerHTML += `<div><b>Ты:</b> ${input.value}</div>`;
-        input.value = "";
-        setTimeout(() => { view.innerHTML += `<div style="color:var(--accent)"><b>Виктор:</b> Принято, Лев! Все изменения сохранены.</div>`; view.scrollTop = view.scrollHeight; }, 600);
-    }
+    });
 </script>
 </body>
 </html>
