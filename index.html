@@ -2,264 +2,195 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mark-42 Studio Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark-42 Studio | Ultimate Portal v8.0</title>
     <style>
-        :root { --accent: #ffcc00; --bg: #0b0b0f; --panel: #15151f; --border: rgba(255,255,255,0.1); --admin: #ff4444; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body, html { margin: 0; padding: 0; height: 100vh; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-
-        /* РЕГИСТРАЦИЯ */
-        #reg-screen { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .reg-box { background: var(--panel); padding: 30px; border-radius: 20px; border: 2px solid var(--accent); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 0 30px rgba(255,204,0,0.2); }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; font-size: 14px; }
-        .btn-gold { width: 100%; padding: 14px; background: var(--accent); border: none; font-weight: bold; border-radius: 8px; cursor: pointer; color: #000; margin-top: 10px; }
-
-        /* ВЕРХНЯЯ ПАНЕЛЬ */
-        #nav { height: 65px; background: #000; border-bottom: 3px solid var(--accent); display: flex; align-items: center; padding: 0 15px; z-index: 2000; position: relative; gap: 10px; }
-        .nav-scroll { display: flex; gap: 8px; overflow-x: auto; flex: 1; scrollbar-width: none; align-items: center; }
-        .nav-scroll::-webkit-scrollbar { display: none; }
-        .btn-nav { white-space: nowrap; cursor: pointer; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: bold; background: rgba(255,255,255,0.05); transition: 0.2s; }
-        .btn-nav.active { background: var(--accent); color: #000; }
-
-        /* ВЫПАДАЮЩЕЕ МЕНЮ ELBERR */
-        #el-dropdown { position: absolute; top: 65px; left: 0; width: 100%; background: #000; border-bottom: 2px solid var(--accent); display: none; flex-direction: column; z-index: 3000; }
-        .el-item { padding: 15px; border-bottom: 1px solid #222; text-align: center; font-weight: bold; cursor: pointer; }
-        .el-item:hover { background: var(--accent); color: #000; }
-
-        /* ИГРОВОЙ ЭКРАН */
-        #stage { width: 100%; height: calc(100vh - 65px); position: relative; }
-        iframe { width: 100%; height: 100%; border: none; background: #000; }
-
-        /* СЛОИ (ЛС, СООБЩЕСТВО, ПРОФИЛЬ) */
-        .layer { position: absolute; inset: 0; background: var(--bg); display: none; overflow-y: auto; padding: 20px; z-index: 1500; }
-        .card { background: var(--panel); padding: 15px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 15px; position: relative; }
-        
-        /* ЧАТ */
-        #chat-window { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; flex-direction: column; }
-        #chat-header { padding: 20px; background: var(--accent); color: #000; font-weight: bold; display: flex; align-items: center; gap: 15px; }
-        #chat-msgs { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { padding: 12px; border-radius: 12px; max-width: 80%; font-size: 14px; line-height: 1.4; }
-        .bubble.me { background: var(--accent); color: #000; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .bubble.them { background: #222; color: #fff; align-self: flex-start; border-bottom-left-radius: 2px; }
-
-        /* АДМИН ПАНЕЛЬ */
-        .admin-badge { background: var(--admin); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 5px; }
-        .del-post { position: absolute; top: 10px; right: 10px; color: var(--admin); cursor: pointer; font-weight: bold; border: 1px solid var(--admin); padding: 2px 6px; border-radius: 4px; }
-
-        @media (min-width: 768px) {
-            #el-dropdown { width: 300px; left: 150px; border: 2px solid var(--accent); border-top: none; }
-            .btn-nav { font-size: 14px; }
+        :root { --main: #ffcc00; --bg: #000; --panel: #111; }
+        body { 
+            background: var(--bg); color: var(--main); font-family: 'Courier New', monospace; 
+            margin: 0; padding: 0; border: 4px solid var(--main); height: 100vh; 
+            display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;
         }
+        /* AUTH */
+        #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .win { border: 3px solid var(--main); background: #050505; padding: 30px; width: 320px; text-align: center; box-shadow: 10px 10px 0 #333; }
+        input, select, button { width: 100%; margin: 10px 0; padding: 12px; background: #000; border: 2px solid var(--main); color: var(--main); font-family: inherit; font-weight: bold; }
+        button:hover { background: var(--main); color: #000; cursor: pointer; }
+
+        /* NAV */
+        header { background: var(--main); color: #000; padding: 5px 15px; font-weight: bold; display: flex; justify-content: space-between; }
+        .nav { display: flex; flex-wrap: wrap; background: #111; border-bottom: 3px solid var(--main); }
+        .n-btn { padding: 12px 18px; cursor: pointer; border-right: 2px solid var(--main); font-size: 12px; }
+        .n-btn.active, .n-btn:hover { background: var(--main); color: #000; }
+
+        /* DROPDOWN */
+        #el-menu { position: absolute; top: 0; left: 150px; background: #000; border: 3px solid var(--main); display: none; flex-direction: column; z-index: 200; }
+        .el-i { padding: 10px 20px; border-bottom: 1px solid var(--main); cursor: pointer; min-width: 200px; }
+        .el-i:hover { background: #222; }
+
+        /* LAYERS */
+        #view-cont { flex: 1; position: relative; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .lay { position: absolute; inset: 0; background: #000; display: none; padding: 20px; overflow-y: auto; z-index: 100; }
+        .card { border: 2px solid var(--main); padding: 15px; margin-bottom: 15px; position: relative; }
+        .del { color: red; cursor: pointer; float: right; border: 1px solid red; padding: 0 4px; font-size: 10px; }
+
+        /* MESSENGER */
+        #chat-win { position: fixed; bottom: 10px; right: 10px; width: 320px; height: 450px; background: #000; border: 3px solid var(--main); display: none; flex-direction: column; z-index: 500; }
+        #msgs { flex: 1; padding: 10px; overflow-y: auto; font-size: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .m-line { padding: 8px; border: 1px solid #222; border-radius: 5px; max-width: 90%; }
+        .m-me { border-color: var(--main); align-self: flex-end; color: #fff; }
+        .m-them { align-self: flex-start; background: #111; }
     </style>
 </head>
 <body>
 
-<div id="reg-screen">
-    <div class="reg-box">
-        <h2 style="color:var(--accent); margin-top:0;">MARK-42 STUDIO</h2>
-        <p style="font-size: 12px; color: #777;">Создайте аккаунт для доступа к играм</p>
-        <input type="text" id="reg-nick" placeholder="Придумайте Никнейм">
-        <input type="email" id="reg-email" placeholder="Ваша Почта (Vetrovlev1@gmail.com)">
-        <select id="reg-gender">
-            <option value="male">Мужской</option>
-            <option value="female">Женский</option>
-        </select>
-        <button class="btn-gold" onclick="doRegister()">ЗАРЕГИСТРИРОВАТЬСЯ</button>
+<div id="auth-overlay">
+    <div class="win">
+        <h2>MARK-42 LOGIN</h2>
+        <input type="text" id="log-n" placeholder="NICKNAME">
+        <input type="email" id="log-e" placeholder="EMAIL (Vetrovlev1@gmail.com)">
+        <select id="log-s"><option>MALE</option><option>FEMALE</option></select>
+        <button onclick="login()">[ INITIALIZE SYSTEM ]</button>
     </div>
 </div>
 
-<nav id="nav">
-    <div class="nav-scroll">
-        <div class="btn-nav active" onclick="load('sf', this)">Farm 2D</div>
-        <div class="btn-nav" onclick="load('sc', this)">Clicker 2D</div>
-        <div class="btn-nav" id="el-btn" onclick="toggleEl()">ELBERR_OS</div>
-        <div class="btn-nav" onclick="openLayer('comm', this)">Сообщество</div>
-        <div class="btn-nav" onclick="openLayer('msgs', this)">ЛС / Поиск</div>
-        <div class="btn-nav" onclick="openLayer('profile', this)">Профиль</div>
-    </div>
-</nav>
+<header>
+    <span>MARK-42 STUDIO // v8.0</span>
+    <span id="u-top">GUEST</span>
+</header>
 
-<div id="el-dropdown">
-    <div class="el-item" onclick="load('e1')">Chapter 1: Wake Up</div>
-    <div class="el-item" onclick="load('e2')">Chapter 2: Virus.exe</div>
-    <div class="el-item" onclick="load('e3')">Chapter 3: Deep Web</div>
-    <div class="el-item" onclick="load('e4')">Chapter 4: Protocol 42</div>
-    <div class="el-item" onclick="load('e5')">Chapter 5: Thoughts</div>
-    <div class="el-item" onclick="load('e6')">Chapter 6: Final Exit</div>
+<div class="nav">
+    <div class="n-btn active" onclick="load('sf', this)">FARM 2D</div>
+    <div class="n-btn" onclick="load('sc', this)">CLICKER</div>
+    <div class="n-btn" onclick="toggleEL()">ELBERR_OS [▼]</div>
+    <div class="n-btn" onclick="openL('comm', this)">COMMUNITY</div>
+    <div class="n-btn" onclick="openL('msgs', this)">MESSAGES</div>
+    <div class="n-btn" onclick="openL('prof', this)">PROFILE</div>
 </div>
 
-<div id="stage">
-    <iframe id="main-view" src=""></iframe>
+<div id="el-menu">
+    <div class="el-i" onclick="load('e1')">CH 1: WAKE UP</div>
+    <div class="el-i" onclick="load('e2')">CH 2: VIRUS</div>
+    <div class="el-i" onclick="load('e3')">CH 3: WEB</div>
+    <div class="el-i" onclick="load('e4')">CH 4: PROTOCOL 42</div>
+    <div class="el-i" onclick="load('e5')">CH 5: THOUGHTS</div>
+    <div class="el-i" onclick="load('e6')">CH 6: FINAL</div>
+</div>
 
-    <div id="comm-layer" class="layer">
-        <h2 style="color:var(--accent)">Лента Mark-42</h2>
-        <div class="card" style="border-color: var(--accent);">
-            <textarea id="post-text" placeholder="Напиши что-нибудь..." style="width:100%; background:#000; border:1px solid #333; color:#fff; padding:10px; border-radius:8px; resize:none;"></textarea>
-            <button class="btn-gold" style="width:auto; padding:8px 20px;" onclick="sendPost()">Опубликовать</button>
-        </div>
-        <div id="feed-box"></div>
+<div id="view-cont">
+    <iframe id="ifr" src=""></iframe>
+
+    <div id="l-comm" class="lay">
+        <h2>COMMUNITY</h2>
+        <div class="card"><input type="text" id="p-in" style="width:70%"><button onclick="post()" style="width:25%">SEND</button></div>
+        <div id="feed"></div>
     </div>
 
-    <div id="msgs-layer" class="layer">
-        <h2 style="color:var(--accent)">Мессенджер</h2>
-        <div style="display:flex; gap:10px; margin-bottom:20px;">
-            <input type="text" id="search-input" placeholder="Введите ник игрока..." style="margin:0;">
-            <button class="btn-nav active" onclick="searchUser()" style="height:45px;">Найти</button>
-        </div>
-        <div id="contact-list">
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                <div><b>Виктор (Помощник)</b><br><small style="color:var(--accent)">Online</small></div>
-                <button class="btn-nav" onclick="startChat('Виктор')">Чат</button>
-            </div>
+    <div id="l-msgs" class="lay">
+        <h2>CHAT LIST</h2>
+        <input type="text" id="f-u" placeholder="Find user..."><button onclick="addU()">ADD</button>
+        <div id="u-list">
+            <div class="card"><b>Виктор (Helper)</b> <button onclick="openChat('Виктор')" style="float:right; width:auto">CHAT</button></div>
         </div>
     </div>
 
-    <div id="profile-layer" class="layer">
-        <h2 style="color:var(--accent)">Личный Кабинет</h2>
-        <div class="card">
-            <p><b>Никнейм:</b> <span id="p-nick">---</span></p>
-            <p><b>Почта:</b> <span id="p-email">---</span></p>
-            <p><b>Статус:</b> <span id="p-status">Игрок</span></p>
-            <hr style="opacity:0.1">
-            <button class="btn-gold" style="background:#333; color:white;" onclick="location.reload()">Выйти из аккаунта</button>
+    <div id="l-prof" class="lay">
+        <h2>USER DATA</h2>
+        <div class="win" style="width:100%; text-align:left;">
+            <p>NAME: <span id="p-n">?</span></p>
+            <p>MAIL: <span id="p-m">?</span></p>
+            <p>RANK: <span id="p-r">PLAYER</span></p>
+            <button onclick="logout()">LOGOUT</button>
         </div>
     </div>
 </div>
 
-<div id="chat-window">
-    <div id="chat-header">
-        <span onclick="document.getElementById('chat-window').style.display='none'" style="cursor:pointer; font-size:24px;">←</span>
-        <span id="chat-target">Чат</span>
+<div id="chat-win">
+    <div style="background:var(--main); color:#000; padding:8px; font-weight:bold; display:flex; justify-content:space-between;">
+        <span id="c-target">NAME</span><span onclick="document.getElementById('chat-win').style.display='none'" style="cursor:pointer">[X]</span>
     </div>
-    <div id="chat-msgs"></div>
-    <div style="padding:15px; background:#111; display:flex; gap:10px;">
-        <input type="text" id="msg-input" placeholder="Напишите сообщение..." style="margin:0;">
-        <button class="btn-gold" style="width:auto; padding:0 20px; margin:0;" onclick="sendMsg()">></button>
-    </div>
+    <div id="msgs"></div>
+    <div style="padding:10px; display:flex;"><input type="text" id="m-in" style="margin:0"><button onclick="send()" style="width:60px; margin:0">></button></div>
 </div>
 
 <script>
-    let user = { nick: "", email: "", isAdmin: false };
-    const PATHS = {
-        sf: "Slime_Farm_2D/index.html",
-        sc: "Slime_Clicker/index.html",
+    let user = { n: "", e: "", a: false };
+    const PATHS = { 
+        sf: "Slime_Farm_2D/index.html", sc: "Slime_Clicker/index.html",
         e1: "ELBERR_OS/Chapter1/index.html", e2: "ELBERR_OS/Chapter2/index.html",
         e3: "ELBERR_OS/Chapter3/index.html", e4: "ELBERR_OS/Chapter4/index.html",
         e5: "ELBERR_OS/Chapter5/index.html", e6: "ELBERR_OS/Chapter6/index.html"
     };
 
-    function doRegister() {
-        const nick = document.getElementById('reg-nick').value;
-        const email = document.getElementById('reg-email').value;
-        if(!nick || !email) return alert("Заполни все поля, Лев!");
-
-        user.nick = nick;
-        user.email = email;
-        user.isAdmin = (email.toLowerCase() === "vetrovlev1@gmail.com");
-
-        document.getElementById('reg-screen').style.display = 'none';
-        document.getElementById('p-nick').innerText = nick;
-        document.getElementById('p-email').innerText = email;
-        if(user.isAdmin) {
-            document.getElementById('p-status').innerHTML = "SUPER ADMIN <span class='admin-badge'>ROOT</span>";
+    window.onload = () => {
+        let saved = localStorage.getItem('m42_user');
+        if(saved) {
+            user = JSON.parse(saved);
+            applyUser();
         }
+    };
 
-        load('sf', document.querySelectorAll('.btn-nav')[0]);
-        initFeed();
+    function login() {
+        user.n = document.getElementById('log-n').value;
+        user.e = document.getElementById('log-e').value;
+        if(!user.n || !user.e) return alert("REQUIRED!");
+        user.a = (user.e.toLowerCase() === "vetrovlev1@gmail.com");
+        localStorage.setItem('m42_user', JSON.stringify(user));
+        applyUser();
     }
 
-    function load(id, btn) {
-        document.getElementById('main-view').src = PATHS[id];
-        document.querySelectorAll('.layer').forEach(l => l.style.display = 'none');
-        document.getElementById('el-dropdown').style.display = 'none';
-        if(btn) {
-            document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
+    function applyUser() {
+        document.getElementById('auth-overlay').style.display = 'none';
+        document.getElementById('u-top').innerText = "ID: " + user.n.toUpperCase();
+        document.getElementById('p-n').innerText = user.n;
+        document.getElementById('p-m').innerText = user.e;
+        if(user.a) { document.getElementById('p-r').innerText = "ROOT ADMIN"; document.getElementById('p-r').style.color = "red"; }
+        load('sf', document.querySelectorAll('.n-btn')[0]);
+        renderFeed();
     }
 
-    function toggleEl() {
-        const d = document.getElementById('el-dropdown');
-        d.style.display = (d.style.display === 'flex') ? 'none' : 'flex';
+    function logout() { localStorage.removeItem('m42_user'); location.reload(); }
+
+    function load(id, b) {
+        document.getElementById('ifr').src = PATHS[id];
+        closeL(); document.getElementById('el-menu').style.display = 'none';
+        if(b) active(b);
     }
 
-    function openLayer(id, btn) {
-        document.querySelectorAll('.layer').forEach(l => l.style.display = 'none');
-        document.getElementById(id + '-layer').style.display = 'block';
-        document.getElementById('el-dropdown').style.display = 'none';
-        document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+    function toggleEL() { let d = document.getElementById('el-menu'); d.style.display = (d.style.display==='flex')?'none':'flex'; }
+    function openL(id, b) { closeL(); document.getElementById('l-'+id).style.display = 'block'; active(b); }
+    function closeL() { document.querySelectorAll('.lay').forEach(l => l.style.display = 'none'); }
+    function active(b) { document.querySelectorAll('.n-btn').forEach(i => i.classList.remove('active')); b.classList.add('active'); }
+
+    // FEED
+    let posts = [{id: 1, u: "Виктор", t: "Лев, база данных Slime_Clicker и ELBERR_OS активна. Assets в норме."}];
+    function renderFeed() {
+        let b = document.getElementById('feed'); b.innerHTML = "";
+        posts.forEach(p => { b.innerHTML += `<div class="card">${user.a?`<span class="del" onclick="delP(${p.id})">DEL</span>`:''}<b>${p.u}:</b> ${p.t}</div>`; });
     }
+    function post() { let v = document.getElementById('p-in').value; if(!v) return; posts.push({id:Date.now(),u:user.n,t:v}); document.getElementById('p-in').value=""; renderFeed(); }
+    function delP(id) { posts = posts.filter(p => p.id !== id); renderFeed(); }
 
-    // --- СООБЩЕСТВО ---
-    let posts = [
-        {id: 1, user: "Виктор", text: "Лев, привет! Все главы ELBERR OS подключены и работают стабильно. Slime_Clicker тоже на месте!"}
-    ];
-
-    function initFeed() {
-        const box = document.getElementById('feed-box');
-        box.innerHTML = "";
-        posts.forEach(p => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                ${user.isAdmin ? `<span class="del-post" onclick="delPost(${p.id})">Удалить</span>` : ''}
-                <b style="color:var(--accent)">${p.user}</b> ${p.user === 'Виктор' ? '<span class="admin-badge">DEV</span>' : ''}
-                <p style="margin:5px 0 0 0; font-size:14px; color:#ccc;">${p.text}</p>
-            `;
-            box.prepend(card);
-        });
+    // CHAT
+    function addU() { let n = document.getElementById('f-u').value; if(!n) return; document.getElementById('u-list').innerHTML += `<div class="card"><b>${n}</b> <button onclick="openChat('${n}')" style="float:right; width:auto">CHAT</button></div>`; }
+    function openChat(t) { 
+        document.getElementById('chat-win').style.display = 'flex'; 
+        document.getElementById('c-target').innerText = t;
+        document.getElementById('msgs').innerHTML = `<div class="m-line m-them"><b>${t}:</b> Привет, ${user.n}! Как там ассеты в слаймах?</div>`;
     }
-
-    function sendPost() {
-        const txt = document.getElementById('post-text').value;
-        if(!txt) return;
-        posts.push({id: Date.now(), user: user.nick, text: txt});
-        document.getElementById('post-text').value = "";
-        initFeed();
-    }
-
-    function delPost(id) {
-        posts = posts.filter(p => p.id !== id);
-        initFeed();
-    }
-
-    // --- ЧАТ ---
-    function searchUser() {
-        const n = document.getElementById('search-input').value;
-        if(!n) return;
-        const list = document.getElementById('contact-list');
-        const d = document.createElement('div');
-        d.className = 'card';
-        d.style.display = 'flex'; d.style.justifyContent = 'space-between'; d.style.alignItems = 'center';
-        d.innerHTML = `<div><b>${n}</b><br><small style="color:#555">Offline</small></div><button class="btn-nav" onclick="startChat('${n}')">ЛС</button>`;
-        list.prepend(d);
-    }
-
-    function startChat(name) {
-        document.getElementById('chat-window').style.display = 'flex';
-        document.getElementById('chat-target').innerText = name;
-        const msgs = document.getElementById('chat-msgs');
-        msgs.innerHTML = `<div class="bubble them"><b>${name}:</b> Здарова, ${user.nick}! Чё как? Го в Slime Clicker?</div>`;
-    }
-
-    function sendMsg() {
-        const inp = document.getElementById('msg-input');
-        if(!inp.value) return;
-        const box = document.getElementById('chat-msgs');
-        box.innerHTML += `<div class="bubble me">${inp.value}</div>`;
-        
-        const target = document.getElementById('chat-target').innerText;
+    function send() {
+        let i = document.getElementById('m-in'); if(!i.value) return;
+        let b = document.getElementById('msgs');
+        b.innerHTML += `<div class="m-line m-me"><b>${user.n}:</b> ${i.value}</div>`;
+        let t = document.getElementById('c-target').innerText;
         setTimeout(() => {
-            let reply = "Ахах, ну ты даешь! 😂";
-            if(target === "Виктор") reply = "Лев, я получил твои правки. Mark-42 Studio работает над обновлением!";
-            box.innerHTML += `<div class="bubble them"><b>${target}:</b> ${reply}</div>`;
-            box.scrollTop = box.scrollHeight;
+            let r = "Сообщение доставлено.";
+            if(t === "Виктор") r = "Лев, папка Slime_Clicker/assets проверена. Всё на месте.";
+            b.innerHTML += `<div class="m-line m-them"><b>${t}:</b> ${r}</div>`;
+            b.scrollTop = b.scrollHeight;
         }, 1000);
-        
-        inp.value = "";
-        box.scrollTop = box.scrollHeight;
+        i.value = ""; b.scrollTop = b.scrollHeight;
     }
 </script>
 </body>
