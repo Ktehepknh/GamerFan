@@ -3,119 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mark-42 Studio | Ultimate Portal v8.0</title>
+    <title>Mark-42 Studio | Classic Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
     <style>
-        :root { --main: #ffcc00; --bg: #000; --panel: #111; }
-        body { 
-            background: var(--bg); color: var(--main); font-family: 'Courier New', monospace; 
-            margin: 0; padding: 0; border: 4px solid var(--main); height: 100vh; 
-            display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;
+        /* ТОТ САМЫЙ ПРЕЖНИЙ СТИЛЬ */
+        body, html {
+            background: #000; color: #ffcc00;
+            font-family: "Courier New", Courier, monospace;
+            margin: 0; padding: 0; height: 100vh;
+            overflow: hidden; box-sizing: border-box;
         }
-        /* AUTH */
-        #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .win { border: 3px solid var(--main); background: #050505; padding: 30px; width: 320px; text-align: center; box-shadow: 10px 10px 0 #333; }
-        input, select, button { width: 100%; margin: 10px 0; padding: 12px; background: #000; border: 2px solid var(--main); color: var(--main); font-family: inherit; font-weight: bold; }
-        button:hover { background: var(--main); color: #000; cursor: pointer; }
+        
+        /* ОКНО ВХОДА */
+        #login-screen {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .login-box {
+            border: 1px solid #ffcc00; padding: 20px; width: 280px; text-align: center;
+        }
+        input, select, button {
+            width: 100%; margin: 8px 0; background: #000; border: 1px solid #ffcc00;
+            color: #ffcc00; font-family: inherit; padding: 8px; font-size: 13px;
+        }
+        button:hover { background: #ffcc00; color: #000; cursor: pointer; }
 
-        /* NAV */
-        header { background: var(--main); color: #000; padding: 5px 15px; font-weight: bold; display: flex; justify-content: space-between; }
-        .nav { display: flex; flex-wrap: wrap; background: #111; border-bottom: 3px solid var(--main); }
-        .n-btn { padding: 12px 18px; cursor: pointer; border-right: 2px solid var(--main); font-size: 12px; }
-        .n-btn.active, .n-btn:hover { background: var(--main); color: #000; }
+        /* ВЕРХНЯЯ ШАПКА */
+        header {
+            border-bottom: 1px solid #ffcc00; padding: 10px;
+            display: flex; justify-content: space-between; font-weight: bold;
+        }
 
-        /* DROPDOWN */
-        #el-menu { position: absolute; top: 0; left: 150px; background: #000; border: 3px solid var(--main); display: none; flex-direction: column; z-index: 200; }
-        .el-i { padding: 10px 20px; border-bottom: 1px solid var(--main); cursor: pointer; min-width: 200px; }
-        .el-i:hover { background: #222; }
+        /* КЛАССИЧЕСКАЯ НАВИГАЦИЯ */
+        nav {
+            display: flex; border-bottom: 1px solid #ffcc00; background: #000;
+        }
+        .nav-btn {
+            padding: 10px 15px; cursor: pointer; border-right: 1px solid #ffcc00;
+            font-size: 12px; text-transform: uppercase;
+        }
+        .nav-btn.active { background: #ffcc00; color: #000; }
 
-        /* LAYERS */
-        #view-cont { flex: 1; position: relative; }
+        /* ИГРОВОЕ ПОЛЕ */
+        #stage { flex: 1; position: relative; height: calc(100vh - 85px); }
         iframe { width: 100%; height: 100%; border: none; }
-        .lay { position: absolute; inset: 0; background: #000; display: none; padding: 20px; overflow-y: auto; z-index: 100; }
-        .card { border: 2px solid var(--main); padding: 15px; margin-bottom: 15px; position: relative; }
-        .del { color: red; cursor: pointer; float: right; border: 1px solid red; padding: 0 4px; font-size: 10px; }
 
-        /* MESSENGER */
-        #chat-win { position: fixed; bottom: 10px; right: 10px; width: 320px; height: 450px; background: #000; border: 3px solid var(--main); display: none; flex-direction: column; z-index: 500; }
-        #msgs { flex: 1; padding: 10px; overflow-y: auto; font-size: 12px; display: flex; flex-direction: column; gap: 8px; }
-        .m-line { padding: 8px; border: 1px solid #222; border-radius: 5px; max-width: 90%; }
-        .m-me { border-color: var(--main); align-self: flex-end; color: #fff; }
-        .m-them { align-self: flex-start; background: #111; }
+        /* ВЫПАДАЮЩИЕ ГЛАВЫ */
+        #el-dropdown {
+            position: absolute; top: 0; left: 180px; background: #000;
+            border: 1px solid #ffcc00; display: none; flex-direction: column; z-index: 500;
+        }
+        .el-opt { padding: 8px 15px; border-bottom: 1px solid #ffcc00; cursor: pointer; font-size: 12px; }
+        .el-opt:hover { background: #111; }
+
+        /* СЛОИ (ЧАТ, ПРОФИЛЬ) */
+        .page {
+            position: absolute; inset: 0; background: #000; display: none;
+            padding: 20px; overflow-y: auto; z-index: 100;
+        }
+
+        /* РЕАЛЬНЫЙ МУЛЬТИПЛЕЕРНЫЙ ЧАТ */
+        .chat-layout { display: flex; height: 100%; border: 1px solid #ffcc00; }
+        .online-list { width: 140px; border-right: 1px solid #ffcc00; padding: 10px; font-size: 11px; }
+        .chat-area { flex: 1; display: flex; flex-direction: column; padding: 10px; }
+        #chat-logs { flex: 1; overflow-y: auto; margin-bottom: 10px; }
+        .m-line { margin-bottom: 6px; border-bottom: 1px solid #111; padding-bottom: 2px; }
+        .m-line b { color: #fff; }
+
+        /* АДМИНКА */
+        .admin-tag { color: #ff0000; font-size: 10px; border: 1px solid #ff0000; padding: 1px 3px; margin-left: 5px; }
     </style>
 </head>
 <body>
 
-<div id="auth-overlay">
-    <div class="win">
-        <h2>MARK-42 LOGIN</h2>
-        <input type="text" id="log-n" placeholder="NICKNAME">
-        <input type="email" id="log-e" placeholder="EMAIL (Vetrovlev1@gmail.com)">
-        <select id="log-s"><option>MALE</option><option>FEMALE</option></select>
-        <button onclick="login()">[ INITIALIZE SYSTEM ]</button>
+<div id="login-screen">
+    <div class="login-box">
+        <div style="margin-bottom:15px;">MARK-42 STUDIO [ROOT]</div>
+        <input type="text" id="n-in" placeholder="NICKNAME">
+        <input type="email" id="m-in" placeholder="EMAIL">
+        <button onclick="doLogin()">INITIALIZE</button>
     </div>
 </div>
 
 <header>
-    <span>MARK-42 STUDIO // v8.0</span>
-    <span id="u-top">GUEST</span>
+    <span>MARK-42 CORE // V.10</span>
+    <span id="header-user">ID: NONE</span>
 </header>
 
-<div class="nav">
-    <div class="n-btn active" onclick="load('sf', this)">FARM 2D</div>
-    <div class="n-btn" onclick="load('sc', this)">CLICKER</div>
-    <div class="n-btn" onclick="toggleEL()">ELBERR_OS [▼]</div>
-    <div class="n-btn" onclick="openL('comm', this)">COMMUNITY</div>
-    <div class="n-btn" onclick="openL('msgs', this)">MESSAGES</div>
-    <div class="n-btn" onclick="openL('prof', this)">PROFILE</div>
+<nav>
+    <div class="nav-btn active" onclick="load('sf', this)">FARM 2D</div>
+    <div class="nav-item nav-btn" onclick="load('sc', this)">CLICKER 2D</div>
+    <div class="nav-item nav-btn" onclick="toggleEL()">ELBERR_OS</div>
+    <div class="nav-item nav-btn" onclick="openPage('chat', this)">REAL CHAT</div>
+    <div class="nav-item nav-btn" onclick="openPage('prof', this)">PROFILE</div>
+</nav>
+
+<div id="el-dropdown">
+    <div class="el-opt" onclick="load('e1')">CHAPTER 1</div>
+    <div class="el-opt" onclick="load('e2')">CHAPTER 2</div>
+    <div class="el-opt" onclick="load('e3')">CHAPTER 3</div>
+    <div class="el-opt" onclick="load('e4')">CHAPTER 4</div>
+    <div class="el-opt" onclick="load('e5')">CHAPTER 5</div>
+    <div class="el-opt" onclick="load('e6')">CHAPTER 6</div>
 </div>
 
-<div id="el-menu">
-    <div class="el-i" onclick="load('e1')">CH 1: WAKE UP</div>
-    <div class="el-i" onclick="load('e2')">CH 2: VIRUS</div>
-    <div class="el-i" onclick="load('e3')">CH 3: WEB</div>
-    <div class="el-i" onclick="load('e4')">CH 4: PROTOCOL 42</div>
-    <div class="el-i" onclick="load('e5')">CH 5: THOUGHTS</div>
-    <div class="el-i" onclick="load('e6')">CH 6: FINAL</div>
-</div>
+<div id="stage">
+    <iframe id="viewport" src=""></iframe>
 
-<div id="view-cont">
-    <iframe id="ifr" src=""></iframe>
-
-    <div id="l-comm" class="lay">
-        <h2>COMMUNITY</h2>
-        <div class="card"><input type="text" id="p-in" style="width:70%"><button onclick="post()" style="width:25%">SEND</button></div>
-        <div id="feed"></div>
-    </div>
-
-    <div id="l-msgs" class="lay">
-        <h2>CHAT LIST</h2>
-        <input type="text" id="f-u" placeholder="Find user..."><button onclick="addU()">ADD</button>
-        <div id="u-list">
-            <div class="card"><b>Виктор (Helper)</b> <button onclick="openChat('Виктор')" style="float:right; width:auto">CHAT</button></div>
+    <div id="p-chat" class="page">
+        <div class="chat-layout">
+            <div class="online-list">
+                <div style="border-bottom: 1px solid #ffcc00; margin-bottom: 10px;">ONLINE:</div>
+                <div id="users-online"></div>
+            </div>
+            <div class="chat-area">
+                <div id="chat-logs"></div>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="msg-input" placeholder="Введите сообщение..." style="margin:0;">
+                    <button onclick="sendMsg()" style="width:80px; margin:0;">SEND</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="l-prof" class="lay">
-        <h2>USER DATA</h2>
-        <div class="win" style="width:100%; text-align:left;">
-            <p>NAME: <span id="p-n">?</span></p>
-            <p>MAIL: <span id="p-m">?</span></p>
-            <p>RANK: <span id="p-r">PLAYER</span></p>
-            <button onclick="logout()">LOGOUT</button>
+    <div id="p-prof" class="page">
+        <div class="login-box" style="width:100%; text-align:left;">
+            <p>USER: <span id="st-n">?</span></p>
+            <p>MAIL: <span id="st-m">?</span></p>
+            <p>RANK: <span id="st-r">USER</span></p>
+            <button onclick="logOut()" style="width:120px;">DISCONNECT</button>
         </div>
     </div>
-</div>
-
-<div id="chat-win">
-    <div style="background:var(--main); color:#000; padding:8px; font-weight:bold; display:flex; justify-content:space-between;">
-        <span id="c-target">NAME</span><span onclick="document.getElementById('chat-win').style.display='none'" style="cursor:pointer">[X]</span>
-    </div>
-    <div id="msgs"></div>
-    <div style="padding:10px; display:flex;"><input type="text" id="m-in" style="margin:0"><button onclick="send()" style="width:60px; margin:0">></button></div>
 </div>
 
 <script>
-    let user = { n: "", e: "", a: false };
+    // Инициализация GunDB (Сетевой мост между игроками)
+    const gun = Gun(['https://gun-manhattan.herokuapp.com/gun']);
+    const chatDB = gun.get('mark42_chat_final');
+    const userStatus = gun.get('mark42_users_online');
+
+    let user = { n: "", m: "", a: false };
     const PATHS = { 
         sf: "Slime_Farm_2D/index.html", sc: "Slime_Clicker/index.html",
         e1: "ELBERR_OS/Chapter1/index.html", e2: "ELBERR_OS/Chapter2/index.html",
@@ -124,73 +151,87 @@
     };
 
     window.onload = () => {
-        let saved = localStorage.getItem('m42_user');
-        if(saved) {
-            user = JSON.parse(saved);
-            applyUser();
-        }
+        let data = localStorage.getItem('m42_save');
+        if(data) { user = JSON.parse(data); apply(); }
     };
 
-    function login() {
-        user.n = document.getElementById('log-n').value;
-        user.e = document.getElementById('log-e').value;
-        if(!user.n || !user.e) return alert("REQUIRED!");
-        user.a = (user.e.toLowerCase() === "vetrovlev1@gmail.com");
-        localStorage.setItem('m42_user', JSON.stringify(user));
-        applyUser();
+    function doLogin() {
+        user.n = document.getElementById('n-in').value;
+        user.m = document.getElementById('m-in').value;
+        if(!user.n) return;
+        user.a = (user.m.toLowerCase() === "vetrovlev1@gmail.com");
+        localStorage.setItem('m42_save', JSON.stringify(user));
+        apply();
     }
 
-    function applyUser() {
-        document.getElementById('auth-overlay').style.display = 'none';
-        document.getElementById('u-top').innerText = "ID: " + user.n.toUpperCase();
-        document.getElementById('p-n').innerText = user.n;
-        document.getElementById('p-m').innerText = user.e;
-        if(user.a) { document.getElementById('p-r').innerText = "ROOT ADMIN"; document.getElementById('p-r').style.color = "red"; }
-        load('sf', document.querySelectorAll('.n-btn')[0]);
-        renderFeed();
+    function apply() {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('header-user').innerText = "ID: " + user.n.toUpperCase();
+        document.getElementById('st-n').innerText = user.n;
+        document.getElementById('st-m').innerText = user.m;
+        if(user.a) { document.getElementById('st-r').innerHTML = "SUPER ADMIN <span class='admin-tag'>ROOT</span>"; }
+        
+        load('sf', document.querySelectorAll('.nav-btn')[0]);
+        
+        // Входим в сеть
+        userStatus.get(user.n).put({ name: user.n, active: Date.now() });
+        listenNet();
     }
 
-    function logout() { localStorage.removeItem('m42_user'); location.reload(); }
+    function logOut() { localStorage.removeItem('m42_save'); location.reload(); }
 
     function load(id, b) {
-        document.getElementById('ifr').src = PATHS[id];
-        closeL(); document.getElementById('el-menu').style.display = 'none';
+        document.getElementById('viewport').src = PATHS[id];
+        hideAll(); document.getElementById('el-dropdown').style.display = 'none';
         if(b) active(b);
     }
 
-    function toggleEL() { let d = document.getElementById('el-menu'); d.style.display = (d.style.display==='flex')?'none':'flex'; }
-    function openL(id, b) { closeL(); document.getElementById('l-'+id).style.display = 'block'; active(b); }
-    function closeL() { document.querySelectorAll('.lay').forEach(l => l.style.display = 'none'); }
-    function active(b) { document.querySelectorAll('.n-btn').forEach(i => i.classList.remove('active')); b.classList.add('active'); }
-
-    // FEED
-    let posts = [{id: 1, u: "Виктор", t: "Лев, база данных Slime_Clicker и ELBERR_OS активна. Assets в норме."}];
-    function renderFeed() {
-        let b = document.getElementById('feed'); b.innerHTML = "";
-        posts.forEach(p => { b.innerHTML += `<div class="card">${user.a?`<span class="del" onclick="delP(${p.id})">DEL</span>`:''}<b>${p.u}:</b> ${p.t}</div>`; });
+    function toggleEL() {
+        let d = document.getElementById('el-dropdown');
+        d.style.display = (d.style.display==='flex')?'none':'flex';
     }
-    function post() { let v = document.getElementById('p-in').value; if(!v) return; posts.push({id:Date.now(),u:user.n,t:v}); document.getElementById('p-in').value=""; renderFeed(); }
-    function delP(id) { posts = posts.filter(p => p.id !== id); renderFeed(); }
 
-    // CHAT
-    function addU() { let n = document.getElementById('f-u').value; if(!n) return; document.getElementById('u-list').innerHTML += `<div class="card"><b>${n}</b> <button onclick="openChat('${n}')" style="float:right; width:auto">CHAT</button></div>`; }
-    function openChat(t) { 
-        document.getElementById('chat-win').style.display = 'flex'; 
-        document.getElementById('c-target').innerText = t;
-        document.getElementById('msgs').innerHTML = `<div class="m-line m-them"><b>${t}:</b> Привет, ${user.n}! Как там ассеты в слаймах?</div>`;
+    function openPage(id, b) { hideAll(); document.getElementById('p-'+id).style.display='block'; active(b); }
+    function hideAll() { document.querySelectorAll('.page').forEach(p => p.style.display='none'); }
+    function active(b) { document.querySelectorAll('.nav-btn').forEach(i => i.classList.remove('active')); b.classList.add('active'); }
+
+    // --- СЕТЕВАЯ ЛОГИКА ---
+    function sendMsg() {
+        let inp = document.getElementById('msg-input');
+        if(!inp.value) return;
+        chatDB.set({ sender: user.n, msg: inp.value, timestamp: Date.now() });
+        inp.value = "";
     }
-    function send() {
-        let i = document.getElementById('m-in'); if(!i.value) return;
-        let b = document.getElementById('msgs');
-        b.innerHTML += `<div class="m-line m-me"><b>${user.n}:</b> ${i.value}</div>`;
-        let t = document.getElementById('c-target').innerText;
-        setTimeout(() => {
-            let r = "Сообщение доставлено.";
-            if(t === "Виктор") r = "Лев, папка Slime_Clicker/assets проверена. Всё на месте.";
-            b.innerHTML += `<div class="m-line m-them"><b>${t}:</b> ${r}</div>`;
-            b.scrollTop = b.scrollHeight;
-        }, 1000);
-        i.value = ""; b.scrollTop = b.scrollHeight;
+
+    function listenNet() {
+        // Слушаем сообщения
+        chatDB.map().once((data) => {
+            if(!data || !data.msg) return;
+            let logs = document.getElementById('chat-logs');
+            let div = document.createElement('div');
+            div.className = 'm-line';
+            div.innerHTML = `<b>${data.sender}:</b> ${data.msg}`;
+            logs.appendChild(div);
+            logs.scrollTop = logs.scrollHeight;
+        });
+
+        // Слушаем игроков онлайн
+        userStatus.map().on((data) => {
+            if(!data || !data.name) return;
+            if(Date.now() - data.active < 120000) { // Если был в сети последние 2 мин
+                let list = document.getElementById('users-online');
+                if(!document.getElementById('online-'+data.name)) {
+                    let uDiv = document.createElement('div');
+                    uDiv.id = 'online-'+data.name;
+                    uDiv.innerText = "> " + data.name;
+                    uDiv.style.marginBottom = "5px";
+                    list.appendChild(uDiv);
+                }
+            }
+        });
+        
+        // Пинг присутствия
+        setInterval(() => { userStatus.get(user.n).put({ name: user.n, active: Date.now() }); }, 60000);
     }
 </script>
 </body>
