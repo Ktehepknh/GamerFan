@@ -1,0 +1,168 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>ELBERR OS: ГЛАВА 5 - ПОЛНАЯ ВЕРСИЯ</title>
+    <style>
+        :root { 
+            --bg: #050508; --main: #00ff41; --thought: #00d0ff; 
+            --harvey: #ffab40; --arch: #ffffff; --oliver: #ba68c8; --danger: #ff4444; --pierre: #ffd700;
+        }
+        body { 
+            background: var(--bg); color: #e0e0e0; font-family: 'Segoe UI', sans-serif;
+            margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh;
+            overflow: hidden;
+        }
+        #game-container {
+            width: 1000px; height: 780px; border: 2px solid #2a2a2e; background: #000;
+            padding: 40px; position: relative; overflow-y: auto; border-radius: 15px;
+            box-shadow: 0 0 60px rgba(0,0,0,1); display: flex; flex-direction: column;
+        }
+        .screen { display: none; animation: fadeIn 0.8s forwards; width: 100%; }
+        .active { display: block; }
+        
+        /* Стили персонажей */
+        .char-h { color: var(--harvey); font-weight: bold; }
+        .char-o { color: var(--oliver); font-weight: bold; }
+        .char-a { color: var(--arch); font-weight: bold; text-shadow: 0 0 10px var(--thought); }
+        .char-r { color: var(--main); font-weight: bold; }
+        .char-p { color: var(--pierre); font-weight: bold; }
+
+        /* ТАБЛИЧКА МЫСЛЕЙ СПРАВА */
+        .thought-table {
+            float: right; width: 300px; margin: 0 0 20px 25px;
+            background: rgba(0, 208, 255, 0.04); border: 1px solid rgba(0, 208, 255, 0.4);
+            padding: 15px; border-radius: 4px; font-style: italic; color: var(--thought);
+            font-size: 0.85em; line-height: 1.5; box-shadow: -5px 0 15px rgba(0,208,255,0.05);
+            position: relative; border-left: 4px solid var(--thought);
+        }
+        .thought-header {
+            font-size: 0.7em; text-transform: uppercase; letter-spacing: 2px;
+            color: var(--thought); margin-bottom: 8px; opacity: 0.8; font-weight: bold;
+        }
+
+        .system-msg { background: #111; border: 1px solid #444; padding: 20px; margin: 20px 0; border-radius: 5px; clear: both; }
+        
+        .btn { 
+            background: transparent; color: var(--main); border: 1px solid var(--main); padding: 15px 25px;
+            margin: 10px 0; cursor: pointer; width: 100%; text-align: left; font-size: 1.1em; transition: 0.3s;
+            clear: both;
+        }
+        .btn:hover { background: rgba(0,255,65,0.1); box-shadow: 0 0 15px var(--main); color: white; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+        
+        .repair-progress { width: 100%; height: 25px; border: 1px solid #333; margin: 25px 0; background: #050505; clear: both;}
+        #bar { width: 0%; height: 100%; background: var(--main); box-shadow: 0 0 10px var(--main); transition: 0.3s; }
+        
+        .glitch-active { animation: shake 0.2s infinite; border: 3px solid red !important; }
+        @keyframes shake { 0% {transform:translate(0)} 25% {transform:translate(-2px,2px)} 50% {transform:translate(2px,-2px)} 100% {transform:translate(0)} }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="sc1" class="screen active">
+        <h3 style="text-align:center; color:#555;">[ ДОМ ХАРВИ - ПОДГОТОВКА К ГЛАВЕ 5 ]</h3>
+        <div class="thought-table">
+            <div class="thought-header">System.Thought_Process</div>
+            Имя "Лейт Пьер" вызывает каскад ошибок... Кёрли не удалила его, она спрятала его в коде времени. Чтобы спасти душу, ей пришлось разорвать её на части.
+        </div>
+        <p><span class="char-o">ОЛИВЕР:</span> Пап... а когда придет <b>Лейт Пьер</b>? Ты обещал, что мы все встретимся дома.</p>
+        <p><span class="char-h">ХАРВИ:</span> Пьер на Фабрике, Оливер. Его разум расколот на части: 1975, 1980, 2001 и 2012. Кёрли заперла его там, чтобы вирус не добрался до его сердца.</p>
+        <p><span class="char-r">РЕЙЗЕР:</span> Почему "Удалено"? Почему он помечен так в архивах?</p>
+        <p><span class="char-a">| RAILARCHIVE |:</span> Пьер вошел в систему без защиты в 1980-м. Его голос — единственный пароль, который Кёрли еще слышит. Пора идти.</p>
+        <button class="btn" onclick="go(2)">[ УЗНАТЬ ПРО ЗОЛОТУЮ ФЛЕШКУ ]</button>
+    </div>
+
+    <div id="sc2" class="screen">
+        <div class="thought-table">
+            <div class="thought-header">System.Thought_Process</div>
+            Флешка — это не просто память. Это оружие против 1006. Правда, которую Харви Людвиг прятал 50 лет.
+        </div>
+        <p><span class="char-h">ХАРВИ:</span> У Кёрли находится <b>Золотая Флешка</b>. Там записаны секретные отчеты и диалоги со Стивом. Без них нам не победить 1006-го.</p>
+        <button class="btn" onclick="go(3)">[ ВЫЙТИ К ВОРОТАМ ФАБРИКИ ]</button>
+    </div>
+
+    <div id="sc3" class="screen">
+        <h2>[ ВОРОТА ФАБРИКИ - 1975 ]</h2>
+        <div class="thought-table">
+            <div class="thought-header">System.Thought_Process</div>
+            Даже в бесконечном цикле боли всегда есть один лишний бит... и этот бит называется надеждой.
+        </div>
+        <p>Ржавые ворота "Elberr Toys". В почтовом ящике лежит аудиокассета.</p>
+        <div class="system-msg">
+            <b>ГОЛОС ПЬЕРА (1975):</b> "Кёрли, солнышко, это я... впусти меня, пожалуйста."
+        </div>
+        <p>Ворота открываются со скрипом. Путь в цех открыт.</p>
+        <button class="btn" onclick="go(4)">[ ВОЙТИ В ЗАЛ ИСПЫТАНИЙ ]</button>
+    </div>
+
+    <div id="sc4" class="screen">
+        <h2>[ МАСТЕРСКАЯ: СПАСЕНИЕ ДРУГА ]</h2>
+        <div class="thought-table">
+            <div class="thought-header">System.Thought_Process</div>
+            Сталь может сломаться, код — стереться, но верность друга — это единственная константа. Я не дам ему отключиться.
+        </div>
+        <p>Архивариус прикрыл нас своим телом! Он серьезно поврежден. Рейзер, используй запчасти роботов-стражей!</p>
+        <div class="repair-progress"><div id="bar"></div></div>
+        <button class="btn" onclick="work()">[ ПРИПАЯТЬ НОВУЮ ТИТАНОВУЮ ПЛАСТИНУ ]</button>
+    </div>
+
+    <div id="sc5" class="screen">
+        <h2>[ ЯДРО КЁРЛИ - ВОСКРЕШЕНИЕ ]</h2>
+        <div class="thought-table">
+            <div class="thought-header">System.Thought_Process</div>
+            Синхронизация фрагментов... 1975.. 1980.. 2001.. 2012.. Кёрли, ты больше не одна. Он вернулся.
+        </div>
+        <p>Рейзер вставляет кабель в ядро Кёрли. Весь цех дрожит, фрагменты Пьера соединяются.</p>
+        <div class="system-msg">ЗАГРУЗКА ЛЕЙТА ПЬЕРА... 100%. ГЛАЗА АНДРОИДА ВСПЫХИВАЮТ ЗОЛОТЫМ.</div>
+        <p><span class="char-p">ПЬЕР:</span> Друзья... Харви... я снова слышу вас. Идемте домой.</p>
+        <button class="btn" onclick="go(6)">[ ВЕРНУТЬСЯ ДОМОЙ НА ПРАЗДНИК ]</button>
+    </div>
+
+    <div id="sc6" class="screen">
+        <h2 style="text-align:center; color:var(--pierre);">[ ТЕПЛО РОДНОГО ДОМА ]</h2>
+        <div id="final-content">
+            <div class="thought-table">
+                <div class="thought-header">System.Thought_Process</div>
+                Самая сложная броня — та, что защищает право оставаться собой до последней команды. Мы справились.
+            </div>
+            <p><span class="char-p">ПЬЕР (в теле Кёрли):</span> Знаете, в 1975-м я не думал, что буду пить чай с андроидом и кибер-детективом. Спасибо за этот шанс.</p>
+            <p><span class="char-o">ОЛИВЕР:</span> Пьер, а ты научишь меня делать роботов? Добрых!</p>
+            <p><span class="char-h">ХАРВИ:</span> За нашу семью. Мы вернули Пьера. Мы выжили.</p>
+            
+            <br><br>
+            <h1 style="text-align:center; color:var(--main); letter-spacing:8px; text-shadow: 0 0 15px var(--main);">КОНЕЦ 5 ГЛАВЫ</h1>
+            <p style="text-align:center; color:#555; font-style:italic;">"В самом темном коде всегда найдется место для света."</p>
+            <button class="btn" style="text-align:center;" onclick="triggerSawyer()">[ ??? ]</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let p = 0;
+    function go(n) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('sc' + n).classList.add('active');
+    }
+    function work() {
+        p += 25; document.getElementById('bar').style.width = p + '%';
+        if(p >= 100) { alert("АРХИВАРИУС ПОЧИНЕН!"); go(5); }
+    }
+    function triggerSawyer() {
+        document.getElementById('game-container').classList.add('glitch-active');
+        document.getElementById('game-container').innerHTML = `
+            <div class="system-msg" style="border: 2px solid red; background: #200; color: white; text-align:center;">
+                <h2 style="color:red;">[ ВХОДЯЩИЙ СИГНАЛ: ХАРВИ СОУЕР ]</h2>
+                <p style="font-size:1.4em;">"Харви... Я жду тебя в Бункере-2. Приходи домой, оригинал."</p>
+            </div>
+            <div class="thought-table" style="float:none; width:100%; border-color:red; color:red; margin-left:0;">
+                <div class="thought-header" style="color:red;">DANGER.DETECTED</div>
+                ЛИЧНОСТЬ "ХАРВИ СОУЕР" — ЭТО ЦИФРОВАЯ МАСКА ПРОТОТИПА 1006. ГЛАВА 6 БУДЕТ БИТВОЙ ЗА РАЗУМ.
+            </div>
+        `;
+    }
+</script>
+</body>
+</html>
