@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>ELBERR OS - CHAPTER 4: THE FINAL BATTLE</title>
+    <style>
+        :root { --main: #00ff41; --bg: #000; --oliver: #8800ff; --harvey: #ff9800; --warn: #ff0000; }
+        body { background: var(--bg); color: var(--main); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
+        #monitor { width: 1000px; min-height: 98vh; border: 4px solid #1a1a1a; background: #000; padding: 35px; margin: 10px auto; box-shadow: inset 0 0 150px rgba(0,255,65,0.1); position: relative; }
+        
+        .char-h { color: var(--harvey); font-weight: bold; } 
+        .char-r { color: #00d0ff; font-weight: bold; } 
+        .char-a { color: #ffffff; font-weight: bold; text-shadow: 0 0 8px var(--main); } 
+        .char-o { color: var(--oliver); font-weight: bold; text-shadow: 0 0 10px var(--oliver); }
+        .char-arc { color: #00ff41; font-weight: bold; text-decoration: underline; }
+        .char-k { color: var(--warn); font-weight: bold; background: #300; padding: 0 4px; }
+
+        .log-box { border-left: 4px solid var(--main); padding: 20px; background: rgba(0,255,65,0.05); margin: 20px 0; border-radius: 0 20px 20px 0; }
+        .btn { background: #050505; color: var(--main); border: 2px solid var(--main); padding: 15px; cursor: pointer; margin: 10px 0; width: 100%; text-align: left; font-family: inherit; transition: 0.3s; }
+        .btn:hover { background: var(--main); color: #000; box-shadow: 0 0 25px var(--main); }
+        
+        .game-zone { background: #0a0a0a; padding: 20px; border: 2px dashed var(--main); margin: 20px 0; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(3, 80px); gap: 10px; justify-content: center; margin: 20px 0; }
+        .cell { width: 80px; height: 80px; border: 2px solid #333; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .cell.active { background: var(--main); color: #000; }
+        .cell.hit { background: var(--warn); color: white; }
+
+        .hp-bar { width: 100%; height: 20px; background: #222; margin: 10px 0; border: 1px solid var(--main); }
+        .hp-fill { height: 100%; background: var(--main); transition: 0.3s; }
+    </style>
+</head>
+<body>
+
+<div id="monitor">
+    <div id="stage">
+        <h1 style="text-align:center; letter-spacing: 10px;">ГЛАВА 4: ПРОТОКОЛ ОМЕГА</h1>
+        <div class="log-box">
+            <p><span class="char-h">ХАРВИ:</span> (Тяжело дышит) Вот она. Массивная стальная дверь Бункера Омега. С 1975 года здесь никто не проходил.</p>
+            <p><span class="char-a">RAIL:</span> Терминал заблокирован. Он требует мастер-код администратора, который был в твоих старых файлах, Рейзер.</p>
+            <p><span class="char-o">ОЛИВЕР:</span> (Голос из динамика двери) Давай, брат... Вводи его. Я жду вас внутри.</p>
+        </div>
+        <button class="btn" onclick="checkDoorCode()">[ВВЕСТИ КОД АДМИНИСТРАТОРА #(A...)]</button>
+    </div>
+</div>
+
+<script>
+    let bossHP = 100;
+    let sequence = [];
+    let playerPos = 0;
+
+    // 0. ПРОВЕРКА ДВЕРИ
+    function checkDoorCode() {
+        let val = prompt("ENTER MASTER CODE:");
+        if(val && val.toUpperCase() === "#(ADMIN)#") {
+            archiveBattle();
+        } else {
+            alert("ОТКАЗАНО В ДОСТУПЕ. КОД ИЗ 1 ГЛАВЫ НЕВЕРЕН.");
+        }
+    }
+
+    // 1. БИТВА С ЗАХВАЧЕННЫМ АРХИВАРИУСОМ
+    function archiveBattle() {
+        document.getElementById('stage').innerHTML = `
+            <div class="log-box">
+                <p>Двери со скрежетом расходятся. Вы входите в архив. Внезапно старое тело Архивариуса вспыхивает КРАСНЫМ!</p>
+                <p><span class="char-k">xELBERRx:</span> ВЫ ПРИШЛИ УМЕРЕТЬ ТАМ, ГДЕ ВСЁ НАЧАЛОСЬ!</p>
+                <p class="char-h">БЕЙТЕ ПО УЗЛАМ ЕГО ПИТАНИЯ (КРАСНЫЕ КЛЕТКИ), ПОКА ОН НЕ УНИЧТОЖИЛ НАС!</p>
+            </div>
+            <div class="game-zone">
+                <p>ЗДОРОВЬЕ ВИРУСА:</p>
+                <div class="hp-bar"><div id="hp" class="hp-fill" style="width: 100%"></div></div>
+                <div id="grid" class="grid"></div>
+            </div>
+        `;
+        const grid = document.getElementById('grid');
+        for(let i=0; i<9; i++) {
+            let cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.id = 'b-'+i;
+            cell.onclick = () => hitBoss(i);
+            grid.appendChild(cell);
+        }
+        startBossCycle();
+    }
+
+    function startBossCycle() {
+        if(bossHP <= 0) return;
+        let target = Math.floor(Math.random() * 9);
+        let cell = document.getElementById('b-'+target);
+        cell.classList.add('hit');
+        setTimeout(() => {
+            cell.classList.remove('hit');
+            if(bossHP > 0) startBossCycle();
+        }, 900);
+    }
+
+    function hitBoss(id) {
+        if(document.getElementById('b-'+id).classList.contains('hit')) {
+            bossHP -= 20;
+            document.getElementById('hp').style.width = bossHP + "%";
+            document.getElementById('b-'+id).classList.remove('hit');
+            if(bossHP <= 0) sceneTragedy();
+        }
+    }
+
+    // 2. ТРАГЕДИЯ И МАСТЕРСКАЯ
+    function sceneTragedy() {
+        document.getElementById('stage').innerHTML = `
+            <div class="log-box">
+                <p>Вирус изгнан! Архивариус замирает, но в последнюю секунду xELBERRx делает рывок и ОТРЫВАЕТ РУКУ RAIL!</p>
+                <p><span class="char-a">RAIL:</span> АААРГХ! МОЙ МАНИПУЛЯТОР! ПАПА, МНЕ БОЛЬНО!</p>
+                <p><span class="char-h">ХАРВИ:</span> БЫСТРЕЕ В МАСТЕРСКУЮ! МЫ ЕГО НЕ ПОТЕРЯЕМ!</p>
+            </div>
+            <button class="btn" onclick="startRepair()">[ПОЧИНИТЬ RAIL В МАСТЕРСКУЮ]</button>
+        `;
+    }
+
+    function startRepair() {
+        document.getElementById('stage').innerHTML = `
+            <div class="game-zone">
+                <h3>МАСТЕРСКАЯ: УПРОЩЕННЫЙ РЕМОНТ РУКИ</h3>
+                <p>Повторите 5 вспышек, чтобы приварить деталь:</p>
+                <div id="grid" class="grid"></div>
+                <button class="btn" onclick="playRepair()" id="rep-btn" style="text-align:center">НАЧАТЬ ТЕСТ</button>
+            </div>
+        `;
+        const grid = document.getElementById('grid');
+        for(let i=0; i<9; i++) {
+            let cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.id = 'r-'+i;
+            cell.onclick = () => checkRepair(i);
+            grid.appendChild(cell);
+        }
+    }
+
+    function playRepair() {
+        sequence = Array.from({length: 5}, () => Math.floor(Math.random() * 9));
+        playerPos = 0;
+        let i = 0;
+        let interval = setInterval(() => {
+            let c = document.getElementById('r-'+sequence[i]);
+            c.classList.add('active');
+            setTimeout(() => c.classList.remove('active'), 500);
+            i++;
+            if(i >= sequence.length) clearInterval(interval);
+        }, 800);
+    }
+
+    function checkRepair(id) {
+        if(id === sequence[playerPos]) {
+            playerPos++;
+            if(playerPos === sequence.length) sceneOliver();
+        } else {
+            alert("ОШИБКА!");
+            playerPos = 0;
+            playRepair();
+        }
+    }
+
+    // 3. ОЛИВЕР
+    function sceneOliver() {
+        document.getElementById('stage').innerHTML = `
+            <div class="log-box">
+                <p>Рука RAIL на месте. Теперь главная цель: Оливер. Его код готов к переносу в тело прототипа.</p>
+                <p><span class="char-o">ОЛИВЕР:</span> Рейзер, вводи код из 2 главы, чтобы открыть шлюзы сознания!</p>
+            </div>
+            <input type="text" id="code" placeholder="КОД ИЗ 3 ЧАСТЕЙ" style="background:#000; color:lime; border:1px solid lime; padding:10px; width:250px; font-family:inherit;">
+            <button class="btn" onclick="oliverWake()">[АКТИВИРОВАТЬ ОЛИВЕРА]</button>
+        `;
+    }
+
+    function oliverWake() {
+        if(document.getElementById('code').value.toUpperCase() === "#KILL_VIRUS_98#") {
+            document.getElementById('stage').innerHTML = `
+                <div class="log-box">
+                    <p>Оливер открывает глаза. Он жив! Но из серверной выходит <b>Killer_ARC</b>!</p>
+                    <p><span class="char-k">Killer_ARC:</span> ЦЕЛЬ: СЕМЬЯ ХАРВИ. СТАТУС: УНИЧТОЖИТЬ.</p>
+                    <p><span class="char-arc">АРХИВАРИУС:</span> БЕГИТЕ! Я ЗАДЕРЖУ ЕГО! ЭТО МОЙ ГРЕХ!</p>
+                </div>
+                <button class="btn" onclick="theLongTalk()">[БЕЖАТЬ НА ПОВЕРХНОСТЬ (ФИНАЛ)]</button>
+            `;
+        } else alert("НЕВЕРНЫЙ КОД");
+    }
+
+    // 4. ФИНАЛ
+    function theLongTalk() {
+        document.body.style.background = "#001a00";
+        document.getElementById('stage').innerHTML = `
+            <div style="padding:40px; border:2px solid white; background:rgba(0,0,0,0.8)">
+                <h1 style="text-align:center">ЭПИЛОГ: РАССВЕТ</h1>
+                <div class="log-box">
+                    <p>Вы сидите на поляне. Спустя время выходит Архивариус с головой Killer_ARC в руках.</p>
+                    <p><span class="char-arc">АРХИВАРИУС:</span> (Садится рядом) Мы победили. Рейзер, ты спрашивал, зачем я его создал? В 1975-м я был напуган. Killer_ARC был моей "красной кнопкой" — он должен был уничтожить ВМСМ, если проект станет опасным. Злой Архивариус просто разбудил его.</p>
+                    <p><span class="char-o">ОЛИВЕР:</span> Папа, посмотри! Солнце! Настоящее!</p>
+                    <p><span class="char-h">ХАРВИ:</span> Да, Оливер. Мы дома. Все вместе.</p>
+                    <hr>
+                    <h2 style="text-align:center">КОНЕЦ САГИ ELBERR OS</h2>
+                </div>
+            </div>
+        `;
+    }
+</script>
+</body>
+</html>

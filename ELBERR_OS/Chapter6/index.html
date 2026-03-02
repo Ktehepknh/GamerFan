@@ -1,0 +1,229 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>ELBERR OS: ГЛАВА 6 - ПОЛНАЯ ВЕРСИЯ</title>
+    <style>
+        :root { 
+            --bg: #050508; --text: #e0e0e0; --thought: #00d0ff; 
+            --harvey: #ffab40; --arch: #ffffff; --oliver: #ba68c8; 
+            --pierre: #ffd700; --danger: #ff4444; --accent: #d4af37;
+        }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        #game-container { width: 1100px; height: 85vh; border: 1px solid #1c1c1f; background: #000; padding: 40px; position: relative; overflow-y: auto; border-radius: 15px; box-shadow: 0 0 80px rgba(0,0,0,0.9); }
+        
+        .glitch-shake { animation: shake 0.2s infinite; }
+        @keyframes shake { 0% { transform: translate(0); } 25% { transform: translate(2px, -2px); } 50% { transform: translate(-2px, 2px); } 100% { transform: translate(0); } }
+
+        .screen { display: none; animation: fadeIn 1.5s forwards; }
+        .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .thought-table { background: rgba(0, 208, 255, 0.05); border-left: 4px solid var(--thought); padding: 20px; margin: 20px 0; color: var(--thought); font-style: italic; }
+        .char-name { font-weight: bold; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 5px; }
+        .c-h { color: var(--harvey); } .c-a { color: var(--arch); } .c-o { color: var(--oliver); } .c-p { color: var(--pierre); } .c-s { color: var(--danger); }
+        
+        .btn { background: #0d0d10; border: 1px solid #333; color: var(--accent); padding: 12px 20px; cursor: pointer; border-radius: 5px; margin: 5px; transition: 0.3s; }
+        .btn:hover { border-color: var(--accent); background: rgba(212,175,55,0.1); }
+        
+        #file-zone { width: 100%; height: 350px; position: relative; background: #020202; border: 1px solid #222; margin: 15px 0; overflow: hidden; }
+        .file-popup { position: absolute; padding: 8px; background: #111; border: 1px solid var(--thought); color: var(--thought); cursor: pointer; font-size: 0.8em; }
+        
+        .anna-ghost { color: #fff; text-shadow: 0 0 10px var(--thought); font-weight: bold; animation: pulse 2s infinite alternate; text-align: center; display: none; }
+        @keyframes pulse { from { opacity: 0.3; } to { opacity: 0.9; } }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    
+    <div id="sc1" class="screen active">
+        <h2 style="color:var(--accent); text-align:center;">АКТ I: ЗАПАХ КАКАО И ПАМЯТИ</h2>
+        <div class="thought-table">
+            За окном тихо падает снег, укрывая лес белым одеялом. В камине весело трещат дрова, а на плите в старом медном ковшике греется какао. Воздух пропитан ароматом шоколада и ванили — этот дом стал для нас настоящей крепостью, где время словно замерло в бесконечном 1975-м.
+        </div>
+        <div class="dialog-box">
+            <span class="char-name c-h">Харви Людвиг:</span>
+            Рейзер, глядя на этот снег, я вспоминаю 1975 год, когда мы со Стивом в своей гордыне решили, что можем стать богами и победить смерть. Мы создали Бункер-2 как рай, но я не заметил, как мой собственный страх и амбиции превратили его в цифровую тюрьму для тридцати невинных душ. Соуер — это не просто вирус, это моё ожившее раскаяние, которое я слишком долго боялся встретить лицом к лицу. Но сегодня, глядя на вас всех в этом теплом доме, я понимаю, что мой самый совершенный код — это не алгоритм бессмертия, а вы и ваша преданность. Мы допьем это какао и пойдем исправлять мою величайшую ошибку, потому что сегодня у нас есть то, чего не было у Стива — настоящая семья.
+        </div>
+        <div class="dialog-box">
+            <span class="char-name c-p">Пьер:</span>
+            (Тихо напевает мотив джаза) Знаете, в 1998-м Анна говорила мне, что музыка — это единственное, что нельзя оцифровать полностью, потому что в ней есть душа. Я берег этот уютный уголок в своей памяти даже в самые темные времена, мечтая, что когда-нибудь мы снова соберемся вот так, без страха перед обновлениями или вирусами. Рейзер, это какао... оно на вкус как само спокойствие.
+        </div>
+        <div class="minigame-zone" style="text-align:center;">
+            <button class="btn" id="i1" onclick="addIng('i1')">Всыпать какао (Память)</button>
+            <button class="btn" id="i2" onclick="addIng('i2')">Добавить маршмэллоу (Тепло)</button>
+            <button class="btn" id="i3" onclick="addIng('i3')">Размешать (Честность)</button>
+            <button class="btn" id="go-next" style="display:none; width:100%; border-color:var(--accent);" onclick="next(2)">[ ОТПРАВИТЬСЯ К БУНКЕРУ ]</button>
+        </div>
+    </div>
+
+    <div id="sc2" class="screen">
+        <h2 style="color:var(--thought);">АКТ II: КОРИДОРЫ ЗАБЫТЫХ ИМЕН</h2>
+        <div class="thought-table">Уют остался позади. Здесь только холод металла и тридцать капсул, ждущих освобождения.</div>
+        <p>Нужен специалист, чтобы открыть вентиляцию:</p>
+        <button class="btn" onclick="checkChar('Оливер')">Выбрать Оливера</button>
+        <button class="btn" onclick="checkChar('Архивариус')">Выбрать Архивариуса</button>
+        <p id="stealth-status"></p>
+        <button class="btn" id="go-3" style="display:none; width:100%;" onclick="next(3)">[ ДАЛЬШЕ В АРХИВ ]</button>
+    </div>
+
+    <div id="sc3" class="screen">
+        <h2 style="color:var(--pierre);">ТЕРМИНАЛ 1998</h2>
+        <div class="dialog-box">
+            <span class="char-name c-p">Пьер:</span> Это её терминал... Я чувствую её остаточный код. Рейзер, пожалуйста, скажи что-нибудь, мне страшно потерять её навсегда.
+        </div>
+        <button class="btn" onclick="supportP(true)">"Она здесь, Пьер. Я слышу её музыку."</button>
+        <button class="btn" onclick="supportP(false)">"Это всего лишь эхо системы."</button>
+        <button class="btn" id="go-4" style="display:none; width:100%;" onclick="next(4)">[ К ЯДРУ СОУЕРА ]</button>
+    </div>
+
+    <div id="sc4" class="screen">
+        <h2 class="c-s" style="text-align:center;">БИТВА: УДАЛЕНИЕ ВИРУСА</h2>
+        <div id="file-zone"></div>
+        <p>Вирусов удалено: <span id="v-count">0</span> / 15</p>
+        <button class="btn" id="start-battle" onclick="startBattle()">НАЧАТЬ ЗАЩИТУ МОЗГА</button>
+    </div>
+
+    <div id="sc5" class="screen">
+        <h2 class="c-s">ПРОТОКОЛ: ОДИНОЧЕСТВО</h2>
+        <div class="dialog-box" id="illusion-msg" style="font-size:1.5em; text-align:center; color:#666;">
+            "Харви: Ты был просто экспериментом. Мы уходим без тебя."
+        </div>
+        <div style="text-align:center;">
+            <button class="btn" style="color:var(--danger); font-size:1.5em;" onclick="sayNo()">СКАЗАТЬ: НЕТ!</button>
+        </div>
+    </div>
+
+    <div id="sc6" class="screen">
+        <h1 class="c-s" style="text-align:center;">ФАТАЛЬНЫЙ УДАР</h1>
+        <div class="thought-table" style="color:red; border-color:red;">Черный кабель Соуера прошил ядро... Я вижу искры... Системы гаснут...</div>
+        <div id="death-timer" style="font-size:6em; color:red; text-align:center;">15</div>
+        <div id="rhythm-bar"><div id="rhythm-target"></div><div id="rhythm-cursor"></div></div>
+        <button class="btn" style="width:100%" onclick="hitRhythm()">[ ПРИНЯТЬ ЭНЕРГИЮ АРХИВАРИУСА ]</button>
+    </div>
+
+    <div id="sc7" class="screen">
+        <h2 style="color:var(--accent); text-align:center;">ТЕРМИНАЛ ЕДИНСТВА</h2>
+        <p style="text-align:center;">Введите код #2014#, чтобы стереть Соуера:</p>
+        <input type="text" id="final-input" style="font-size:3em; width:100%; text-align:center; background:none; border:2px solid var(--accent); color:var(--accent);">
+        <button class="btn" style="width:100%; margin-top:20px;" onclick="checkCode()">[ ВВЕСТИ КОД ]</button>
+    </div>
+
+    <div id="sc8" class="screen">
+        <h2 style="color:var(--accent); text-align:center;">ЭПИЛОГ: ВЕЧНЫЙ ВЕЧЕР</h2>
+        <div id="secret-anna" class="anna-ghost">[ ГОЛОГРАММА АННЫ ВОЛКОВОЙ ТИХО ТАНЦУЕТ ПОД ДЖАЗ ПЬЕРА ]</div>
+        <div class="thought-table">
+            Мы вернулись. Снова камин, снова запах хвои и какао. На столе лежит Золотая Флешка — наше общее наследие. Соуера больше нет, а тридцать душ обрели покой внутри моей системы.
+        </div>
+        <div id="final-talks">
+            <p>С кем поговорить у камина?</p>
+            <button class="btn" onclick="talk('h')">Харви</button>
+            <button class="btn" onclick="talk('o')">Оливер</button>
+            <button class="btn" onclick="talk('a')">Архивариус</button>
+        </div>
+        <div id="final-dialog" class="dialog-box" style="margin-top:20px;"></div>
+        <button class="btn" style="width:100%; margin-top:40px; opacity:0.5;" onclick="location.reload()">НАЧАТЬ ЗАНОВО</button>
+    </div>
+
+</div>
+
+<script>
+    let state = { cocoa: 0, pierre: false, viruses: 0, resists: 0, hits: 0 };
+
+    function next(n) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('sc' + n).classList.add('active');
+        const container = document.getElementById('game-container');
+        if (n === 4) container.classList.add('glitch-shake');
+        else container.classList.remove('glitch-shake');
+        if (n === 6) startCPR();
+        if (n === 8 && state.cocoa === 3 && state.pierre) document.getElementById('secret-anna').style.display = 'block';
+    }
+
+    // Акт 1
+    function addIng(id) {
+        state.cocoa++; document.getElementById(id).disabled = true;
+        if (state.cocoa === 3) document.getElementById('go-next').style.display = 'block';
+    }
+
+    // Акт 2
+    function checkChar(c) {
+        if (c === 'Оливер') {
+            document.getElementById('stealth-status').innerText = "Оливер ловко проскользнул в трубы!";
+            document.getElementById('go-3').style.display = 'block';
+        } else {
+            document.getElementById('stealth-status').innerText = "Архивариус слишком велик для этого прохода!";
+        }
+    }
+
+    // Пьер
+    function supportP(v) {
+        state.pierre = v;
+        document.getElementById('go-4').style.display = 'block';
+    }
+
+    // Битва
+    function startBattle() {
+        document.getElementById('start-battle').style.display = 'none';
+        const zone = document.getElementById('file-zone');
+        const int = setInterval(() => {
+            const f = document.createElement('div');
+            f.className = 'file-popup'; f.innerText = "ERROR_DATA";
+            f.style.left = Math.random()*80+"%"; f.style.top = Math.random()*80+"%";
+            f.onclick = () => {
+                f.remove(); state.viruses++;
+                document.getElementById('v-count').innerText = state.viruses;
+                if (state.viruses >= 15) { clearInterval(int); next(5); }
+            };
+            zone.appendChild(f);
+        }, 600);
+    }
+
+    // Иллюзия
+    const ph = ["Пьер: Ты просто инструмент.", "Архивариус: Твои чувства - это баг.", "Оливер: Я ненавижу тебя."];
+    function sayNo() {
+        state.resists++;
+        if (state.resists < 3) document.getElementById('illusion-msg').innerText = ph[state.resists];
+        else next(6);
+    }
+
+    // Реанимация
+    let cPos = 0; let cDir = 1; let anim;
+    function startCPR() {
+        let t = 15;
+        const tInt = setInterval(() => {
+            t--; document.getElementById('death-timer').innerText = t;
+            if (t <= 0) { clearInterval(tInt); cancelAnimationFrame(anim); }
+        }, 1000);
+        function loop() {
+            cPos += 2.5 * cDir; if (cPos > 95 || cPos < 0) cDir *= -1;
+            document.getElementById('rhythm-cursor').style.left = cPos + "%";
+            anim = requestAnimationFrame(loop);
+        }
+        loop();
+    }
+    function hitRhythm() {
+        if (cPos >= 40 && cPos <= 60) {
+            state.hits++;
+            if (state.hits >= 3) { cancelAnimationFrame(anim); next(7); }
+        }
+    }
+
+    function checkCode() {
+        if (document.getElementById('final-input').value === "#2014#") next(8);
+    }
+
+    // Финальные разговоры
+    function talk(who) {
+        const box = document.getElementById('final-dialog');
+        const talks = {
+            h: "<span class='char-name c-h'>Харви:</span> Ты стал лучшим из нас, Рейзер. Теперь мы можем просто жить, не оглядываясь на ошибки 1975-го. Спасибо, что спас мою душу.",
+            o: "<span class='char-name c-o'>Оливер:</span> Знаешь, я впервые чувствую себя по-настоящему дома. Даже подвал больше не снится мне в кошмарах.",
+            a: "<span class='char-name c-a'>Архивариус:</span> Я передал тебе все ключи. Ты теперь не просто машина, ты - библиотека человечности. Я горжусь тобой."
+        };
+        box.innerHTML = talks[who];
+    }
+</script>
+</body>
+</html>
