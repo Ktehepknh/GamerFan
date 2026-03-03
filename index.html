@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GamesFan OS | Mark-42 Studio</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -22,18 +22,15 @@
             --g-text: #adbac7; --g-text-light: #768390; --vk-bg: #15151a; --vk-white: #1c2128;
         }
 
-        body.mode-phone #app { grid-template-columns: 80px 1fr; }
-        body.mode-phone .sidebar span, body.mode-phone #logo-text { display: none; }
-
         * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
         body, html { height: 100%; background: var(--g-bg); color: var(--g-text); overflow: hidden; }
 
-        /* AUTH */
+        /* --- AUTH --- */
         #auth-screen { position: fixed; inset: 0; background: var(--g-bg); display: flex; align-items: center; justify-content: center; z-index: 5000; }
         .auth-card { width: 380px; padding: 35px; border: 1px solid var(--g-border); border-radius: 20px; text-align: center; box-shadow: var(--shadow); background: var(--g-bg); }
         input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--g-border); border-radius: 8px; background: var(--g-surface); color: var(--g-text); outline: none; }
-        
-        /* OS LAYOUT */
+
+        /* --- LAYOUT --- */
         #app { display: none; height: 100vh; grid-template-columns: 260px 1fr; transition: 0.3s; }
         .sidebar { background: var(--g-surface); border-right: 1px solid var(--g-border); padding: 25px 0; display: flex; flex-direction: column; }
         .nav-item { padding: 14px 25px; cursor: pointer; color: var(--g-text-light); border-radius: 0 30px 30px 0; margin-right: 15px; margin-bottom: 5px; font-weight: 500; display: flex; align-items: center; gap: 12px; }
@@ -41,84 +38,94 @@
         .main { padding: 30px; overflow-y: auto; }
         .view { display: none; animation: fadeIn 0.3s ease; }
         .view.active { display: block; }
-
         .card-box { background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 12px; padding: 20px; margin-bottom: 20px; position: relative; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
         .btn-blue { background: var(--g-blue); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
 
-        /* GAMER'S MESSENGER (FULLSCREEN) */
+        /* --- GAMER'S MESSENGER --- */
         #messenger-overlay { position: fixed; inset: 0; background: var(--vk-bg); z-index: 10001; display: none; flex-direction: column; }
         .ms-header { height: 60px; background: var(--vk-blue); color: white; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; font-weight: bold; }
-        .ms-body { flex: 1; display: grid; grid-template-columns: 300px 1fr; overflow: hidden; }
-        
+        .ms-body { flex: 1; display: grid; grid-template-columns: 320px 1fr; overflow: hidden; }
         .u-list { background: var(--vk-white); border-right: 1px solid rgba(0,0,0,0.1); overflow-y: auto; }
         .u-card { padding: 15px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); display: flex; align-items: center; gap: 12px; }
-        .u-card.active { background: #e7f2ff; }
-        .ava { width: 40px; height: 40px; border-radius: 50%; background: #5181b8; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        
-        #pm-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 10px 15px; border-radius: 16px; max-width: 70%; font-size: 14px; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .m-in { background: var(--vk-white); align-self: flex-start; border-bottom-left-radius: 2px; color: #000; }
-        .m-out { background: #ceeafe; align-self: flex-end; border-bottom-right-radius: 2px; color: #000; }
+        .u-card.active { background: #e7f2ff; border-right: 3px solid var(--vk-blue); }
+        .ava { width: 45px; height: 45px; border-radius: 50%; background: #5181b8; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+        .chat-area { display: flex; flex-direction: column; position: relative; background: var(--vk-bg); height: 100%; }
+        #pm-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 100px; }
+        .msg { padding: 10px 15px; border-radius: 16px; max-width: 70%; font-size: 14px; position: relative; }
+        .m-in { background: var(--vk-white); align-self: flex-start; border-bottom-left-radius: 2px; }
+        .m-out { background: #ceeafe; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .ms-input-area { position: absolute; bottom: 0; left: 0; right: 0; padding: 15px 20px; background: var(--vk-white); border-top: 1px solid rgba(0,0,0,0.1); display: flex; gap: 12px; align-items: flex-end; z-index: 10; }
+        #pm-in { flex: 1; min-height: 40px; max-height: 150px; resize: none; border-radius: 12px; padding: 10px 15px; border: 1px solid var(--g-border); background: #f2f3f5; }
 
-        .ms-input-area { padding: 15px; background: var(--vk-white); border-top: 1px solid rgba(0,0,0,0.1); display: flex; gap: 10px; align-items: flex-end; }
-        #pm-in { flex: 1; min-height: 40px; max-height: 120px; resize: none; border-radius: 20px; padding: 10px 15px; margin: 0; background: #f2f3f5; }
+        /* --- GAME & PROJECT OVERLAY --- */
+        #game-overlay { position: fixed; inset: 0; background: #000; z-index: 20000; display: none; flex-direction: column; }
+        .game-header { height: 50px; background: #1c1c1c; color: white; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
+        #game-frame { flex: 1; border: none; width: 100%; height: 100%; }
 
-        /* COMMUNITY TABS */
-        .comm-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .c-tab { padding: 8px 15px; background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 20px; cursor: pointer; font-size: 14px; }
-        .c-tab.active { background: var(--g-blue); color: white; border-color: var(--g-blue); }
+        /* --- COMMUNITY TABS --- */
+        .comm-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; }
+        .c-tab { padding: 10px 20px; background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 25px; cursor: pointer; white-space: nowrap; }
+        .c-tab.active { background: var(--g-blue); color: white; }
+
+        /* --- TOAST & UTILS --- */
+        #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 20px; display: none; z-index: 30000; }
+        .nick-orange { color: var(--orange) !important; font-weight: bold; }
+        .hidden { display: none !important; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .hidden { display: none !important; }
     </style>
 </head>
 <body class="mode-pc">
 
+    <div id="toast"></div>
+
     <div id="auth-screen">
         <div class="auth-card">
             <h2 style="color:var(--g-blue); margin-bottom:10px;">Mark-42 Studio</h2>
-            <input type="text" id="reg-n" placeholder="Никнейм" class="hidden">
+            <input type="text" id="reg-n" placeholder="Ваш Никнейм" class="hidden">
             <input type="email" id="reg-e" placeholder="Email">
             <input type="password" id="reg-p" placeholder="Пароль">
-            <button class="btn-blue" style="width:100%; margin-top:10px;" onclick="handleAuth()">Войти / Регистрация</button>
-            <p style="margin-top:15px; font-size:12px; cursor:pointer;" onclick="isLog=!isLog; document.getElementById('reg-n').classList.toggle('hidden')">Сменить режим</p>
+            <button class="btn-blue" style="width:100%; margin-top:10px;" onclick="handleAuth()">ВОЙТИ</button>
+            <p style="margin-top:15px; font-size:12px; cursor:pointer;" onclick="isLog=!isLog; document.getElementById('reg-n').classList.toggle('hidden'); this.innerText=isLog?'Нужен аккаунт? Регистрация':'Уже есть аккаунт? Войти'">Нужен аккаунт? Регистрация</p>
         </div>
     </div>
 
     <div id="app">
         <aside class="sidebar">
-            <div id="logo-text" style="padding:0 25px 30px; color:var(--g-blue); font-weight:700; font-size:20px;">GamesFan OS</div>
-            <div class="nav-item active" onclick="tab('lib', this)">🎮 <span>Библиотека</span></div>
+            <div style="padding:0 25px 30px; color:var(--g-blue); font-weight:700; font-size:20px;">GamesFan OS</div>
+            <div class="nav-item active" onclick="tab('lib', this)">🎮 <span>Игры</span></div>
             <div class="nav-item" onclick="tab('comm', this)">📢 <span>Сообщества</span></div>
-            <div class="nav-item" onclick="openMessenger()" style="color:var(--vk-blue); font-weight:bold;">💬 <span>Gamer`s Messenger</span></div>
+            <div class="nav-item" onclick="openMessenger()" style="color:var(--vk-blue); font-weight:bold;">💬 <span>Gamer's Messenger</span></div>
             <div class="nav-item" onclick="tab('set', this)">⚙️ <span>Настройки</span></div>
-            <div id="adm-nav" class="nav-item hidden" onclick="tab('adm', this)" style="color:#d93025; border-top:1px solid var(--g-border); margin-top:10px;">🛡️ <span>АДМИН</span></div>
+            <div id="adm-nav" class="nav-item hidden" onclick="tryAdminAccess(this)" style="color:#d93025; border-top:1px solid var(--g-border); margin-top:10px;">🛡️ <span>ROOT CONTROL</span></div>
             <div id="cur-u" style="margin-top:auto; padding:25px; border-top:1px solid var(--g-border); font-size:13px; font-weight:bold;">...</div>
         </aside>
 
         <main class="main">
             <div id="v-lib" class="view active">
-                <h1>Библиотека</h1><br>
+                <h1>Библиотека Игр</h1><br>
                 <div class="grid">
-                    <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('Slime_Farm_2D/index.html', 'Slime Farm 2D')">🚜<br><b>Farm 2D</b></div>
-                    <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('Slime_Clicker/index.html', 'Slime Clicker')">🦠<br><b>Clicker</b></div>
-                    <div class="card-box" style="text-align:center; cursor:pointer; background:#e7f2ff;" onclick="openMessenger()">💬<br><b>Messenger</b></div>
-                </div><br>
-                <h3>Главы ELBERR_OS</h3><br>
+                    <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('Slime_Clicker_2D/index.html', 'Slime Clicker 2D')">
+                        <div style="font-size:40px;">🦠</div><br><b>Slime Clicker 2D</b>
+                    </div>
+                    <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('Slime_Farm_2D/index.html', 'Slime Farm 2D')">
+                        <div style="font-size:40px;">🚜</div><br><b>Slime Farm 2D</b>
+                    </div>
+                </div>
+                <br><h3>Проекты ELBERR_OS</h3><br>
                 <div class="grid" id="chapters-grid"></div>
             </div>
 
             <div id="v-comm" class="view">
-                <h1>Сообщества</h1><br>
                 <div class="comm-tabs">
                     <div class="c-tab active" onclick="setComm('news', this)">📢 Новости</div>
                     <div class="c-tab" onclick="setComm('suggest', this)">💡 Предложения</div>
                     <div class="c-tab" onclick="setComm('fan', this)">👥 Фандом</div>
                 </div>
-                <div class="card-box">
-                    <textarea id="post-in" placeholder="Напишите что-нибудь..." style="height:60px;"></textarea>
-                    <button class="btn-blue" style="float:right;" onclick="sendPost()">Опубликовать</button>
+                <div class="card-box" id="post-ui" style="display:none;">
+                    <textarea id="post-in" placeholder="Написать в эту ветку..." oninput="autoResize(this)"></textarea>
+                    <button class="btn-blue" style="float:right" onclick="sendPost()">Опубликовать</button>
                     <div style="clear:both"></div>
                 </div>
                 <div id="feed"></div>
@@ -127,52 +134,64 @@
             <div id="v-set" class="view">
                 <h1>Настройки</h1><br>
                 <div class="card-box">
-                    <p><b>Режим экрана:</b></p><br>
-                    <button class="btn-blue" onclick="setMode('mode-pc')">ПК</button>
-                    <button class="btn-blue" onclick="setMode('mode-phone')">Телефон</button>
+                    <p><b>Тема оформления</b></p><br>
+                    <button class="btn-blue" onclick="setTheme('light')">Светлая</button>
+                    <button class="btn-blue" style="background:#222;" onclick="setTheme('dark')">Темная</button>
                 </div>
-                <button class="btn-blue" style="background:#ea4335;" onclick="auth.signOut()">Выйти из профиля</button>
+                <button class="btn-blue" style="background:#ea4335;" onclick="auth.signOut()">ВЫЙТИ ИЗ ОС</button>
             </div>
 
             <div id="v-adm" class="view">
-                <h1 style="color:red">ROOT</h1>
-                <div class="card-box" id="adm-chats-list"></div>
+                <h1 style="color:#d93025;">🛡️ АДМИН ПАНЕЛЬ</h1><br>
+                <div class="card-box" style="border-color:red">
+                    <p><b>Список чатов:</b></p><br>
+                    <div id="adm-chats-list"></div><br>
+                    <p><b>Пользователи:</b></p><br>
+                    <div id="adm-users-list"></div>
+                </div>
             </div>
         </main>
     </div>
 
     <div id="messenger-overlay">
         <div class="ms-header">
-            <span>Gamer`s Messenger | Mark-42 Studio</span>
+            <span>Gamer's Messenger | Mark-42 Studio</span>
             <button onclick="closeMessenger()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:5px 15px; border-radius:5px; cursor:pointer;">ЗАКРЫТЬ ✖</button>
         </div>
         <div class="ms-body">
             <div class="u-list" id="ms-u-box"></div>
-            <div style="display:flex; flex-direction:column; background:var(--vk-bg);">
-                <div id="ms-target-name" style="padding:15px; background:white; border-bottom:1px solid rgba(0,0,0,0.1); font-weight:bold;">Выберите чат</div>
+            <div class="chat-area">
+                <div id="ms-target-name" style="padding:15px; background:white; font-weight:bold; border-bottom:1px solid rgba(0,0,0,0.1);">Выберите чат</div>
                 <div id="pm-messages"></div>
                 <div class="ms-input-area">
-                    <textarea id="pm-in" placeholder="Напишите сообщение..." oninput="this.style.height='';this.style.height=this.scrollHeight+'px'"></textarea>
-                    <button class="btn-blue" style="height:40px; border-radius:50%; width:40px; padding:0;" onclick="sendPM()">></button>
+                    <textarea id="pm-in" placeholder="Напишите сообщение..." oninput="autoResize(this)"></textarea>
+                    <button class="btn-blue" style="height:45px; width:45px; border-radius:50%; padding:0;" onclick="sendPM()">➤</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="overlay">
-        <div class="game-bar"><span id="game-title">...</span><button onclick="closeGame()" style="background:red; color:white; border:none; padding:5px 10px; cursor:pointer;">✖</button></div>
+    <div id="game-overlay">
+        <div class="game-header">
+            <b id="game-title">Загрузка...</b>
+            <button onclick="closeGame()" style="background:red; border:none; color:white; padding:5px 15px; border-radius:5px; cursor:pointer;">ЗАКРЫТЬ ИГРУ ✖</button>
+        </div>
         <iframe id="game-frame"></iframe>
     </div>
 
     <script>
+        // --- КОНФИГУРАЦИЯ FIREBASE ---
         const cfg = { apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI", authDomain: "gamesfan-17986.firebaseapp.com", databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/", projectId: "gamesfan-17986" };
         firebase.initializeApp(cfg);
         const auth = firebase.auth(), db = firebase.database();
-        let isLog = true, myNick = "", selUID = null, curComm = "news";
 
-        // Chapters
-        document.getElementById('chapters-grid').innerHTML = [1,2,3,4,5,6].map(i => `<div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('ELBERR_OS/Chapter${i}/index.html','Глава ${i}')">${i}</div>`).join('');
+        let isLog = true, myNick = "", selUID = null, curComm = "news", adminUnlocked = false;
 
+        // --- ПОМОЩНИКИ ---
+        function toast(m) { const t = document.getElementById('toast'); t.innerText=m; t.style.display='block'; setTimeout(()=>t.style.display='none',3000); }
+        function autoResize(el) { el.style.height='auto'; el.style.height=el.scrollHeight+'px'; }
+
+        // --- АВТОРИЗАЦИЯ ---
         async function handleAuth() {
             const e = document.getElementById('reg-e').value, p = document.getElementById('reg-p').value, n = document.getElementById('reg-n').value;
             try {
@@ -181,18 +200,22 @@
                     const r = await auth.createUserWithEmailAndPassword(e, p);
                     await db.ref('users/' + r.user.uid).set({ nick: n, email: e, friends: {} });
                 }
-            } catch(ex) { alert(ex.message); }
+            } catch(ex) { toast(ex.message); }
         }
 
         auth.onAuthStateChanged(u => {
             if(u) {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'grid';
-                const isAdm = (u.email === "vetrovlev1@gmail.com");
-                if(isAdm) document.getElementById('adm-nav').classList.remove('hidden');
+                const isOwner = (u.email === "vetrovlev1@gmail.com");
+                if(isOwner) {
+                    document.getElementById('adm-nav').classList.remove('hidden');
+                    document.getElementById('post-ui').style.display = 'block';
+                }
                 db.ref('users/' + u.uid).on('value', s => {
                     myNick = s.val()?.nick || "User";
                     document.getElementById('cur-u').innerText = myNick;
+                    if(isOwner) document.getElementById('cur-u').classList.add('nick-orange');
                 });
                 loadUsers(); loadPosts();
             } else {
@@ -201,26 +224,38 @@
             }
         });
 
-        // MESSENGER LOGIC
+        // --- ИГРЫ ---
+        function play(path, name) {
+            document.getElementById('game-overlay').style.display = 'flex';
+            document.getElementById('game-title').innerText = name;
+            document.getElementById('game-frame').src = path;
+        }
+        function closeGame() {
+            document.getElementById('game-overlay').style.display = 'none';
+            document.getElementById('game-frame').src = "";
+        }
+        // Генерация глав ELBERR_OS
+        document.getElementById('chapters-grid').innerHTML = [1,2,3,4,5,6].map(i => `<div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('ELBERR_OS/Chapter${i}/index.html','Глава ${i}')"><b>${i}</b></div>`).join('');
+
+        // --- МЕССЕНДЖЕР ---
         function openMessenger() { document.getElementById('messenger-overlay').style.display = 'flex'; }
         function closeMessenger() { document.getElementById('messenger-overlay').style.display = 'none'; }
-
+        
         function loadUsers() {
             db.ref('users').on('value', s => {
                 const box = document.getElementById('ms-u-box'); box.innerHTML = "";
                 s.forEach(u => {
                     if(u.key === auth.currentUser.uid) return;
-                    const userData = u.val();
                     const div = document.createElement('div');
                     div.className = 'u-card';
-                    div.innerHTML = `<div class="ava" style="background:hsl(${u.key.length*15}, 60%, 50%)">${userData.nick[0]}</div>
-                                     <div style="flex:1"><b>${userData.nick}</b></div>
-                                     <button class="btn-blue" style="font-size:10px; padding:4px 8px;" onclick="addFriend('${u.key}', event)">+ Друг</button>`;
+                    div.innerHTML = `<div class="ava" style="background:hsl(${u.key.length*15},60%,50%)">${u.val().nick[0]}</div>
+                                     <div style="flex:1"><b>${u.val().nick}</b></div>
+                                     <button class="btn-blue" style="font-size:10px; padding:4px" onclick="addFriend('${u.key}', event)">+ Друг</button>`;
                     div.onclick = () => {
                         selUID = u.key;
                         document.querySelectorAll('.u-card').forEach(c => c.classList.remove('active'));
                         div.classList.add('active');
-                        document.getElementById('ms-target-name').innerText = userData.nick;
+                        document.getElementById('ms-target-name').innerText = u.val().nick;
                         openChat();
                     };
                     box.appendChild(div);
@@ -228,19 +263,13 @@
             });
         }
 
-        function addFriend(uid, e) {
-            e.stopPropagation();
-            db.ref(`users/${auth.currentUser.uid}/friends/${uid}`).set(true);
-            alert("Пользователь добавлен в друзья!");
-        }
-
         function openChat() {
             const id = [auth.currentUser.uid, selUID].sort().join('_');
             db.ref('chats/' + id).on('value', s => {
                 const box = document.getElementById('pm-messages'); box.innerHTML = "";
                 s.forEach(m => {
-                    const data = m.val();
-                    box.innerHTML += `<div class="msg ${data.from===auth.currentUser.uid?'m-out':'m-in'}">${data.t}</div>`;
+                    const d = m.val();
+                    box.innerHTML += `<div class="msg ${d.from===auth.currentUser.uid?'m-out':'m-in'}">${d.t}</div>`;
                 });
                 box.scrollTop = box.scrollHeight;
             });
@@ -249,49 +278,64 @@
         function sendPM() {
             const t = document.getElementById('pm-in').value; if(!t.trim() || !selUID) return;
             const id = [auth.currentUser.uid, selUID].sort().join('_');
-            db.ref('chats/' + id).push({ from: auth.currentUser.uid, t: t });
+            db.ref('chats/' + id).push({ from: auth.currentUser.uid, t: t, time: Date.now() });
             document.getElementById('pm-in').value = "";
             document.getElementById('pm-in').style.height = '40px';
         }
 
-        // COMMUNITY LOGIC
-        function setComm(type, el) {
-            curComm = type;
-            document.querySelectorAll('.c-tab').forEach(t => t.classList.remove('active'));
+        // --- СООБЩЕСТВА ---
+        function setComm(t, el) {
+            curComm = t;
+            document.querySelectorAll('.c-tab').forEach(x => x.classList.remove('active'));
             el.classList.add('active');
             loadPosts();
         }
-
         function sendPost() {
             const t = document.getElementById('post-in').value; if(!t.trim()) return;
             db.ref('community/' + curComm).push({ author: myNick, txt: t, time: Date.now() });
             document.getElementById('post-in').value = "";
+            toast("Пост опубликован!");
         }
-
         function loadPosts() {
             db.ref('community/' + curComm).on('value', s => {
                 const feed = document.getElementById('feed'); feed.innerHTML = "";
-                let posts = []; s.forEach(p => posts.push(p.val()));
-                posts.reverse().forEach(p => {
-                    feed.innerHTML += `<div class="card-box"><b>${p.author}</b><p style="margin-top:10px">${p.txt}</p></div>`;
+                let a = []; s.forEach(p => a.push(p.val()));
+                a.reverse().forEach(p => {
+                    feed.innerHTML += `<div class="card-box"><b>${p.author}</b><p style="margin-top:8px">${p.txt}</p></div>`;
                 });
             });
         }
 
-        // SYSTEM
-        function setMode(m) { document.body.className = m; }
+        // --- АДМИНКА ---
+        function tryAdminAccess(el) {
+            if(adminUnlocked) return tab('adm', el);
+            if(prompt("ROOT PASSWORD:") === "12.02.2014") {
+                adminUnlocked = true; tab('adm', el); loadAdminData();
+            } else toast("ОШИБКА!");
+        }
+        function loadAdminData() {
+            db.ref('users').on('value', s => {
+                const box = document.getElementById('adm-users-list'); box.innerHTML = "";
+                s.forEach(u => {
+                    box.innerHTML += `<div style="padding:5px; border-bottom:1px solid #eee;">${u.val().nick} <button onclick="db.ref('users/${u.key}').remove()">X</button></div>`;
+                });
+            });
+            db.ref('chats').on('value', s => {
+                const box = document.getElementById('adm-chats-list'); box.innerHTML = "";
+                s.forEach(c => {
+                    box.innerHTML += `<div style="padding:5px; border-bottom:1px solid #eee;">ID: ${c.key} <button onclick="db.ref('chats/${c.key}').remove()">CLEAR</button></div>`;
+                });
+            });
+        }
+
+        // --- СИСТЕМА ---
         function tab(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById('v-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
         }
-        function play(p, n) {
-            document.getElementById('overlay').style.display = 'flex';
-            document.getElementById('game-title').innerText = n;
-            document.getElementById('game-frame').src = p;
-        }
-        function closeGame() { document.getElementById('overlay').style.display = 'none'; document.getElementById('game-frame').src = ""; }
+        function setTheme(t) { document.documentElement.setAttribute('data-theme', t); }
     </script>
 </body>
 </html>
