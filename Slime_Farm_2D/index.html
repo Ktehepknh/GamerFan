@@ -8,37 +8,49 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root { --accent: #ffcc00; --diam: #00f2ff; --panel: rgba(20, 20, 25, 0.98); --border: rgba(255, 255, 255, 0.1); --bg-color: #000; }
+        :root { 
+            --accent: #ffcc00; 
+            --diam: #00f2ff; 
+            --panel: rgba(20, 20, 25, 0.98); 
+            --border: rgba(255, 255, 255, 0.1); 
+            --bg-color: #000; 
+        }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; user-select: none; outline: none; }
         body { margin: 0; background: var(--bg-color); color: white; overflow: hidden; height: 100vh; }
         #bg { position: fixed; inset: 0; background: url('assets/background.jpg') center/cover; filter: brightness(0.2); z-index: 1; }
         #app { position: relative; z-index: 10; display: flex; height: 100vh; width: 100vw; }
         
+        /* Игровое поле */
         #main { flex: 1; display: flex; flex-direction: column; padding: 15px; }
         #grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 10px; flex: 1; }
         .paddock { background: rgba(255,255,255,0.03); border: 2px solid var(--border); border-radius: 20px; position: relative; cursor: pointer; overflow: hidden; transition: 0.2s; }
         .paddock:hover { border-color: var(--accent); }
+        .paddock:active { transform: scale(0.98); }
         
-        /* Оптимизированные слаймы */
-        .slime-img { position: absolute; width: 42px; height: 42px; will-change: transform; transition: transform 2.5s ease-in-out; pointer-events: none; }
+        /* Слаймы с оптимизированной анимацией */
+        .slime-img { position: absolute; width: 42px; height: 42px; will-change: transform; transition: transform 2.5s ease-in-out; pointer-events: none; z-index: 3; }
         
+        /* HUD */
         #hud { display: flex; gap: 15px; background: rgba(0,0,0,0.6); padding: 12px; border-radius: 15px; border: 1px solid var(--border); align-items: center; margin-bottom: 15px; backdrop-filter: blur(10px); }
         .stat { font-size: 18px; font-weight: bold; display: flex; align-items: center; }
         .res-icon { width: 18px; height: 18px; margin-right: 5px; vertical-align: middle; }
+        .price-icon { width: 14px; height: 14px; vertical-align: sub; margin-right: 3px; }
 
+        /* Боковая панель */
         #side { width: 380px; background: var(--panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; }
         .tabs { display: flex; background: rgba(0,0,0,0.3); }
-        .tab { flex: 1; padding: 15px 5px; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; color: #666; }
-        .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+        .tab { flex: 1; padding: 15px 5px; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; color: #666; transition: 0.3s; }
+        .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); background: rgba(255,204,0,0.05); }
 
-        .list { flex: 1; overflow-y: auto; padding: 15px; }
+        .list { flex: 1; overflow-y: auto; padding: 15px; scroll-behavior: smooth; }
         .card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 15px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
-        .btn { background: var(--accent); color: #000; border: none; padding: 8px 12px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .btn:disabled { opacity: 0.3; filter: grayscale(1); }
+        .btn { background: var(--accent); color: #000; border: none; padding: 8px 12px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .btn:disabled { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .modal-box { background: #15151a; border: 1px solid var(--accent); padding: 25px; border-radius: 20px; width: 300px; }
-        .set-row { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; }
+        /* Модальные окна */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        .modal-box { background: #15151a; border: 1px solid var(--accent); padding: 25px; border-radius: 20px; width: 300px; box-shadow: 0 0 30px rgba(255,204,0,0.15); }
+        .set-row { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -50,12 +62,13 @@
 
 <div id="m-sets" class="modal">
     <div class="modal-box">
-        <h3 style="color:var(--accent); margin: 0 0 20px 0; text-align: center;">НАСТРОЙКИ</h3>
+        <h3 style="color:var(--accent); margin: 0 0 20px 0; text-align: center; letter-spacing: 1px;">MARK-42 STUDIO</h3>
         <div class="set-row"><span>Музыка</span><input type="checkbox" id="set-music" onchange="updSet()"></div>
         <div class="set-row"><span>Звуки</span><input type="checkbox" id="set-sfx" onchange="updSet()"></div>
-        <div class="set-row"><span>Эффекты</span><input type="checkbox" id="set-hd" onchange="updSet()"></div>
-        <button class="btn" style="width:100%; margin-top:10px; background:#ff4444; color:#fff;" onclick="fullReset()">СБРОС ПРОГРЕССА</button>
-        <button class="btn" style="width:100%; margin-top:10px; background:#444; color:#fff;" onclick="toggleModal(false)">ЗАКРЫТЬ</button>
+        <div class="set-row"><span>HD Эффекты</span><input type="checkbox" id="set-hd" onchange="updSet()"></div>
+        <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
+        <button class="btn" style="width:100%; margin-top:5px; background:#ff4444; color:#fff;" onclick="fullReset()">СБРОС ПРОГРЕССА</button>
+        <button class="btn" style="width:100%; margin-top:10px; background:#333; color:#fff;" onclick="toggleModal(false)">ЗАКРЫТЬ</button>
     </div>
 </div>
 
@@ -64,20 +77,23 @@
         <div id="hud">
             <div class="stat"><img src="assets/coin.png" class="res-icon"><span id="c-val">0</span></div>
             <div class="stat"><img src="assets/diamond.png" class="res-icon"><span id="d-val">0</span></div>
-            <div style="margin-left:auto; font-size:12px; color:var(--accent);">x<span id="m-val">1.0</span></div>
-            <button class="btn" style="background:none; color:#fff; font-size:20px;" onclick="toggleModal(true)">⚙️</button>
+            <div style="margin-left:auto; font-size:12px; color:var(--accent); font-weight: bold;">x<span id="m-val">1.0</span></div>
+            <button class="btn" style="background:none; color:#fff; font-size:22px; padding:0 5px;" onclick="toggleModal(true)">⚙️</button>
         </div>
+        
         <div id="grid"></div>
-        <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
-            <button class="btn" onclick="setPage(0)">1</button>
-            <button class="btn" onclick="setPage(1)">2</button>
-            <button class="btn" onclick="setPage(2)">3</button>
+        
+        <div style="display:flex; justify-content:center; gap:12px; margin-top:15px;">
+            <button class="btn" style="min-width:60px" onclick="setPage(0)">1</button>
+            <button class="btn" style="min-width:60px" onclick="setPage(1)">2</button>
+            <button class="btn" style="min-width:60px" onclick="setPage(2)">3</button>
         </div>
     </div>
+
     <aside id="side">
         <div class="tabs">
             <div class="tab active" id="t-s" onclick="openTab('s')">МАГАЗИН</div>
-            <div class="tab" id="t-u" onclick="openTab('u')">АПГРЕЙДЫ</div>
+            <div class="tab" id="t-u" onclick="openTab('u')">УЛУЧШЕНИЯ</div>
             <div class="tab" id="t-q" onclick="openTab('q')">КВЕСТЫ</div>
             <div class="tab" id="t-b" onclick="openTab('b')">БУСТЫ</div>
         </div>
@@ -89,11 +105,13 @@
 </div>
 
 <script>
+    // Firebase Config
     const config = { apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI", authDomain: "gamesfan-17986.firebaseapp.com", databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/", projectId: "gamesfan-17986" };
     firebase.initializeApp(config);
     const db = firebase.database();
     let uID = null;
 
+    // Данные игры
     const PRICES = [0, 50, 250, 700, 2000, 5000, 15000, 40000, 100000, 250000, 600000, 1500000, 4000000, 10000000, 25000000, 60000000, 150000000, 400000000, 1000000000, 2500000000, 6000000000, 15000000000, 40000000000, 100000000000, 250000000000];
     const RANKS = [{n:"Медный", c:"#cd7f32"}, {n:"Железный", c:"#aaa"}, {n:"Золотой", c:"#ffcc00"}, {n:"Алмазный", c:"#00f2ff"}];
 
@@ -103,9 +121,10 @@
         rank: 0, upg: 0, 
         clicks: 0, boost: 1, boostEnd: 0,
         settings: { music: true, sfx: true, hd: true },
-        quests: [{t:"Первые клики", trg:100, cur:0, r:10, d:false}]
+        quests: [{t:"Первые шаги", trg:100, cur:0, r:10, d:false}, {t:"Профи", trg:1000, cur:0, r:50, d:false}]
     };
 
+    // Сокращение чисел (1.5k, 2.0M и т.д.)
     function f(n) {
         if (n < 1000) return Math.floor(n);
         let s = ["", "k", "M", "B", "T"];
@@ -118,6 +137,7 @@
         return (1 + (sp * 0.5)) * (1 + (game.rank * 2) + (game.upg * 0.2)) * game.boost;
     }
 
+    // Главный рендер
     function render() {
         document.getElementById('c-val').innerText = f(game.coins);
         document.getElementById('d-val').innerText = game.diams;
@@ -125,19 +145,30 @@
         renderGrid(); renderShop(); renderUpg(); renderQuests(); renderBoosts();
     }
 
+    // Рендер загонов (исправлено отображение 1 страницы)
     function renderGrid() {
         const g = document.getElementById('grid'); g.innerHTML = "";
         let start = game.page * 8 + 1;
         for(let i=0; i<8; i++){
             let id = start+i; if(id>24) break;
             let p = document.createElement('div'); p.className = 'paddock';
-            p.innerHTML = `<div style="position:absolute;top:5px;left:8px;font-size:9px;color:#666;z-index:2;">№${id}</div>`;
-            p.onclick = () => { if(game.inv[id]>0){ game.coins += (id * game.inv[id] * getMult()); game.clicks++; checkQ(); play('click'); render(); } };
+            p.innerHTML = `<div style="position:absolute;top:5px;left:8px;font-size:9px;color:#777;z-index:2;font-weight:bold;">№${id} [${game.inv[id]}]</div>`;
+            p.onclick = () => { 
+                if(game.inv[id]>0){ 
+                    game.coins += (id * game.inv[id] * getMult()); 
+                    game.clicks++; 
+                    checkQ(); play('click'); 
+                    render(); 
+                } 
+            };
             
+            // Слаймы в загоне
             for(let n=0; n<Math.min(game.inv[id], 4); n++){
-                let s = document.createElement('img'); s.className = 'slime-img'; 
+                let s = document.createElement('img'); 
+                s.className = 'slime-img'; 
                 s.src = `assets/slime${id}.png`;
-                s.style.left = Math.random()*60+10+"%"; s.style.top = Math.random()*50+15+"%";
+                s.style.left = Math.random()*60+10+"%"; 
+                s.style.top = Math.random()*50+15+"%";
                 s.onerror = () => s.src = 'https://cdn-icons-png.flaticon.com/512/825/825561.png';
                 p.appendChild(s);
             }
@@ -145,7 +176,7 @@
         }
     }
 
-    // Оптимизированная физика (CSS Translate)
+    // Плавное движение слаймов
     setInterval(() => {
         if(!game.settings.hd) return;
         document.querySelectorAll('.slime-img').forEach(s => {
@@ -158,8 +189,8 @@
     function renderShop() {
         let h = "";
         for(let i=1; i<=24; i++){
-            h += `<div class="card"><img src="assets/slime${i}.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/825/825561.png'" style="width:35px">
-            <div style="flex:1"><b>Слайм #${i}</b><br><small><img src="assets/coin.png" class="res-icon">${f(PRICES[i])}</small></div>
+            h += `<div class="card"><img src="assets/slime${i}.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/825/825561.png'" style="width:38px">
+            <div style="flex:1"><b>Слайм #${i}</b><br><small><img src="assets/coin.png" class="price-icon">${f(PRICES[i])}</small></div>
             <button class="btn" onclick="buyS(${i})" ${game.coins<PRICES[i]?'disabled':''}>КУПИТЬ</button></div>`;
         }
         document.getElementById('list-s').innerHTML = h;
@@ -168,13 +199,14 @@
     function renderUpg() {
         let r = RANKS[game.rank];
         let cost = (game.upg + 1) * 5000 * (game.rank + 1);
-        let h = `<div style="text-align:center; padding:10px; color:${r.c}"><b>${r.n} Ранг</b></div>`;
+        let h = `<div style="text-align:center; padding:12px; color:${r.c}; background:rgba(255,255,255,0.03); border-radius:15px; margin-bottom:10px;"><b>${r.n} Ранг</b><br><small>Уровень прокачки: ${game.upg}/8</small></div>`;
+        
         if(game.upg < 8) {
-            h += `<div class="card"><div style="flex:1"><b>Апгрейд ${game.upg+1}</b><br><small><img src="assets/coin.png" class="res-icon">${f(cost)}</small></div>
+            h += `<div class="card"><div style="flex:1"><b>Улучшение ${game.upg+1}</b><br><small><img src="assets/coin.png" class="price-icon">${f(cost)}</small></div>
             <button class="btn" onclick="buyU(${cost})" ${game.coins<cost?'disabled':''}>КУПИТЬ</button></div>`;
         } else if(game.rank < 3) {
             let nc = (game.rank + 1) * 100000;
-            h += `<button class="btn" style="width:100%" onclick="nextR(${nc})" ${game.coins<nc?'disabled':''}>НОВЫЙ РАНГ (<img src="assets/coin.png" class="res-icon">${f(nc)})</button>`;
+            h += `<button class="btn" style="width:100%; padding:12px;" onclick="nextR(${nc})" ${game.coins<nc?'disabled':''}>НОВЫЙ РАНГ (<img src="assets/coin.png" class="price-icon">${f(nc)})</button>`;
         }
         document.getElementById('list-u').innerHTML = h;
     }
@@ -184,18 +216,19 @@
         game.quests.forEach(q => {
             let p = Math.min(100, (q.cur/q.trg)*100);
             h += `<div class="card" style="opacity:${q.d?0.5:1}"><div style="flex:1"><b>${q.t}</b><br><small>${q.cur}/${q.trg}</small>
-            <div style="width:100%;height:4px;background:#000;margin-top:5px"><div style="width:${p}%;height:100%;background:var(--accent)"></div></div></div>
-            <div style="color:var(--diam)">+${q.r} <img src="assets/diamond.png" class="res-icon"></div></div>`;
+            <div style="width:100%;height:5px;background:#000;margin-top:6px;border-radius:3px;overflow:hidden;"><div style="width:${p}%;height:100%;background:var(--accent)"></div></div></div>
+            <div style="color:var(--diam); font-weight:bold;">+${q.r} <img src="assets/diamond.png" class="price-icon"></div></div>`;
         });
         document.getElementById('list-q').innerHTML = h;
     }
 
     function renderBoosts() {
         document.getElementById('list-b').innerHTML = `
-        <div class="card"><div style="flex:1"><b>Буст x2</b><br><small>2 мин.</small></div><button class="btn" onclick="buyB(2,120,5)" ${game.diams<5?'disabled':''}>5 <img src="assets/diamond.png" class="res-icon"></button></div>
-        <div class="card"><div style="flex:1"><b>Буст x5</b><br><small>5 мин.</small></div><button class="btn" onclick="buyB(5,300,15)" ${game.diams<15?'disabled':''}>15 <img src="assets/diamond.png" class="res-icon"></button></div>`;
+        <div class="card"><div style="flex:1"><b>Буст x2</b><br><small>Длительность: 2 мин.</small></div><button class="btn" onclick="buyB(2,120,5)" ${game.diams<5?'disabled':''}>5 <img src="assets/diamond.png" class="price-icon"></button></div>
+        <div class="card"><div style="flex:1"><b>Буст x5</b><br><small>Длительность: 5 мин.</small></div><button class="btn" onclick="buyB(5,300,15)" ${game.diams<15?'disabled':''}>15 <img src="assets/diamond.png" class="price-icon"></button></div>`;
     }
 
+    // Игровая логика
     function buyS(id){ if(game.coins>=PRICES[id]){ game.coins-=PRICES[id]; game.inv[id]++; play('buy'); save(); render(); } }
     function buyU(c){ if(game.coins>=c){ game.coins-=c; game.upg++; play('buy'); save(); render(); } }
     function nextR(c){ if(game.coins>=c){ game.coins-=c; game.rank++; game.upg=0; play('buy'); save(); render(); } }
@@ -205,8 +238,10 @@
     function play(id){ if(!game.settings.sfx) return; let a=document.getElementById('s-'+id); if(a){ a.currentTime=0; a.play().catch(()=>{}); } }
     function setPage(p){ game.page=p; renderGrid(); }
     
+    // Управление модалкой настроек
     function toggleModal(s){ 
-        document.getElementById('m-sets').style.display = s ? 'flex' : 'none'; 
+        const m = document.getElementById('m-sets');
+        m.style.display = s ? 'flex' : 'none'; 
         if(s) {
             document.getElementById('set-music').checked = game.settings.music;
             document.getElementById('set-sfx').checked = game.settings.sfx;
@@ -228,6 +263,7 @@
         document.getElementById('list-'+t).style.display='block'; document.getElementById('t-'+t).classList.add('active');
     }
 
+    // Сохранение и загрузка
     function save() { localStorage.setItem('slime_m42_v4', JSON.stringify(game)); if(uID) db.ref('users/'+uID+'/farm').set(game); }
     
     function load() {
@@ -235,13 +271,21 @@
         if(s) { let ld = JSON.parse(s); game = {...game, ...ld}; }
         firebase.auth().onAuthStateChanged(u => { if(u){ uID=u.uid; db.ref('users/'+uID+'/farm').once('value', s=>{ if(s.exists()){game=s.val(); render();} }); } });
         render();
+        if(game.settings.music) document.getElementById('s-music').play().catch(()=>{});
     }
 
+    // Сброс прогресса с бонусом для Льва
     function fullReset(){ 
-        if(confirm("Сбросить прогресс? (Вы получите 500 монет и 10 алмазов!)")){ 
+        if(confirm("Сбросить всё? Ты начнешь заново, но получишь стартовый капитал: 500 монет и 10 алмазов!")){ 
             localStorage.clear(); 
-            game.coins = 500; 
-            game.diams = 10;
+            game = {
+                coins: 500, diams: 10, page: 0, 
+                inv: new Array(25).fill(0), 
+                rank: 0, upg: 0, 
+                clicks: 0, boost: 1, boostEnd: 0,
+                settings: { music: true, sfx: true, hd: true },
+                quests: [{t:"Первые шаги", trg:100, cur:0, r:10, d:false}, {t:"Профи", trg:1000, cur:0, r:50, d:false}]
+            };
             save();
             location.reload(); 
         } 
