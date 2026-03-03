@@ -12,66 +12,64 @@
 
     <style>
         :root {
-            --vk-blue: #0077ff;
-            --vk-bg: #ebedf0;
-            --vk-white: #ffffff;
+            --vk-blue: #0077ff; --vk-bg: #ebedf0; --vk-white: #ffffff;
             --g-blue: #1a73e8; --g-bg: #ffffff; --g-surface: #f8f9fa;
             --g-border: #dadce0; --g-text: #202124; --g-text-light: #5f6368;
             --orange: #ff8c00; --shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
         [data-theme="dark"] {
             --g-bg: #0b0e14; --g-surface: #1c2128; --g-border: #444c56;
-            --g-text: #adbac7; --g-text-light: #768390; --g-blue: #539bf5;
-            --vk-bg: #15151a; --vk-white: #1c2128;
+            --g-text: #adbac7; --g-text-light: #768390; --vk-bg: #15151a; --vk-white: #1c2128;
         }
 
-        /* Адаптивные режимы */
         body.mode-phone #app { grid-template-columns: 80px 1fr; }
         body.mode-phone .sidebar span, body.mode-phone #logo-text { display: none; }
-        body.mode-phone .nav-item { justify-content: center; padding: 15px 0; margin-right: 0; border-radius: 0; }
 
         * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
-        body, html { height: 100%; background: var(--g-bg); color: var(--g-text); overflow: hidden; transition: background 0.3s; }
+        body, html { height: 100%; background: var(--g-bg); color: var(--g-text); overflow: hidden; }
 
         /* AUTH */
         #auth-screen { position: fixed; inset: 0; background: var(--g-bg); display: flex; align-items: center; justify-content: center; z-index: 5000; }
         .auth-card { width: 380px; padding: 35px; border: 1px solid var(--g-border); border-radius: 20px; text-align: center; box-shadow: var(--shadow); background: var(--g-bg); }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--g-border); border-radius: 8px; background: var(--g-surface); color: var(--g-text); outline: none; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--g-border); border-radius: 8px; background: var(--g-surface); color: var(--g-text); outline: none; }
         
-        /* LAYOUT */
+        /* OS LAYOUT */
         #app { display: none; height: 100vh; grid-template-columns: 260px 1fr; transition: 0.3s; }
         .sidebar { background: var(--g-surface); border-right: 1px solid var(--g-border); padding: 25px 0; display: flex; flex-direction: column; }
         .nav-item { padding: 14px 25px; cursor: pointer; color: var(--g-text-light); border-radius: 0 30px 30px 0; margin-right: 15px; margin-bottom: 5px; font-weight: 500; display: flex; align-items: center; gap: 12px; }
         .nav-item.active { background: #e8f0fe; color: var(--g-blue); border-left: 5px solid var(--g-blue); }
-
         .main { padding: 30px; overflow-y: auto; }
         .view { display: none; animation: fadeIn 0.3s ease; }
         .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card-box { background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .card-box { background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 12px; padding: 20px; margin-bottom: 20px; position: relative; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
-        .btn-blue { background: var(--g-blue); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-blue:hover { opacity: 0.9; }
+        .btn-blue { background: var(--g-blue); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        /* VK MESSENGER STYLE */
-        .chat-layout { display: grid; grid-template-columns: 240px 1fr; height: 550px; border: 1px solid var(--g-border); border-radius: 15px; overflow: hidden; background: var(--vk-bg); }
-        .u-list { background: var(--vk-white); border-right: 1px solid var(--g-border); overflow-y: auto; }
-        .u-card { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); display: flex; align-items: center; gap: 10px; }
-        .u-card.active { background: #e7f2ff; border-right: 3px solid var(--vk-blue); }
-        .ava { width: 35px; height: 35px; border-radius: 50%; background: var(--vk-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
-
-        #pm-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 8px; background: var(--vk-bg); }
-        .msg { padding: 10px 15px; border-radius: 18px; max-width: 75%; font-size: 14px; line-height: 1.4; position: relative; }
-        .m-in { background: var(--vk-white); align-self: flex-start; border-bottom-left-radius: 4px; color: #000; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
-        .m-out { background: #ceeafe; align-self: flex-end; border-bottom-right-radius: 4px; color: #000; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
-
-        /* GAME OVERLAY */
-        #overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: none; flex-direction: column; }
-        .game-bar { height: 50px; background: #202124; display: flex; align-items: center; padding: 0 20px; color: white; justify-content: space-between; }
-        iframe { flex: 1; border: none; }
+        /* GAMER'S MESSENGER (FULLSCREEN) */
+        #messenger-overlay { position: fixed; inset: 0; background: var(--vk-bg); z-index: 10001; display: none; flex-direction: column; }
+        .ms-header { height: 60px; background: var(--vk-blue); color: white; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; font-weight: bold; }
+        .ms-body { flex: 1; display: grid; grid-template-columns: 300px 1fr; overflow: hidden; }
         
-        .nick-orange { color: var(--orange) !important; font-weight: bold; }
+        .u-list { background: var(--vk-white); border-right: 1px solid rgba(0,0,0,0.1); overflow-y: auto; }
+        .u-card { padding: 15px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); display: flex; align-items: center; gap: 12px; }
+        .u-card.active { background: #e7f2ff; }
+        .ava { width: 40px; height: 40px; border-radius: 50%; background: #5181b8; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        #pm-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px 15px; border-radius: 16px; max-width: 70%; font-size: 14px; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .m-in { background: var(--vk-white); align-self: flex-start; border-bottom-left-radius: 2px; color: #000; }
+        .m-out { background: #ceeafe; align-self: flex-end; border-bottom-right-radius: 2px; color: #000; }
+
+        .ms-input-area { padding: 15px; background: var(--vk-white); border-top: 1px solid rgba(0,0,0,0.1); display: flex; gap: 10px; align-items: flex-end; }
+        #pm-in { flex: 1; min-height: 40px; max-height: 120px; resize: none; border-radius: 20px; padding: 10px 15px; margin: 0; background: #f2f3f5; }
+
+        /* COMMUNITY TABS */
+        .comm-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .c-tab { padding: 8px 15px; background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 20px; cursor: pointer; font-size: 14px; }
+        .c-tab.active { background: var(--g-blue); color: white; border-color: var(--g-blue); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -79,102 +77,90 @@
 
     <div id="auth-screen">
         <div class="auth-card">
-            <h2 style="margin-bottom:15px; color:var(--g-blue);">Mark-42 Studio</h2>
+            <h2 style="color:var(--g-blue); margin-bottom:10px;">Mark-42 Studio</h2>
             <input type="text" id="reg-n" placeholder="Никнейм" class="hidden">
             <input type="email" id="reg-e" placeholder="Email">
             <input type="password" id="reg-p" placeholder="Пароль">
             <button class="btn-blue" style="width:100%; margin-top:10px;" onclick="handleAuth()">Войти / Регистрация</button>
-            <p style="margin-top:15px; font-size:12px; cursor:pointer; color:var(--g-text-light);" onclick="isLog=!isLog; document.getElementById('reg-n').classList.toggle('hidden')">Сменить режим входа</p>
+            <p style="margin-top:15px; font-size:12px; cursor:pointer;" onclick="isLog=!isLog; document.getElementById('reg-n').classList.toggle('hidden')">Сменить режим</p>
         </div>
     </div>
 
     <div id="app">
         <aside class="sidebar">
             <div id="logo-text" style="padding:0 25px 30px; color:var(--g-blue); font-weight:700; font-size:20px;">GamesFan OS</div>
-            <div class="nav-item active" onclick="tab('lib', this)">🎮 <span>Проекты</span></div>
-            <div class="nav-item" onclick="tab('comm', this)">📢 <span>Новости</span></div>
-            <div class="nav-item" onclick="tab('pms', this)">✉️ <span>Мессенджер</span></div>
+            <div class="nav-item active" onclick="tab('lib', this)">🎮 <span>Библиотека</span></div>
+            <div class="nav-item" onclick="tab('comm', this)">📢 <span>Сообщества</span></div>
+            <div class="nav-item" onclick="openMessenger()" style="color:var(--vk-blue); font-weight:bold;">💬 <span>Gamer`s Messenger</span></div>
             <div class="nav-item" onclick="tab('set', this)">⚙️ <span>Настройки</span></div>
-            <div id="adm-nav" class="nav-item hidden" onclick="tab('adm', this)" style="color:#d93025; border-top: 1px solid var(--g-border); margin-top: 10px;">🛡️ <span>АДМИН-ПАНЕЛЬ</span></div>
+            <div id="adm-nav" class="nav-item hidden" onclick="tab('adm', this)" style="color:#d93025; border-top:1px solid var(--g-border); margin-top:10px;">🛡️ <span>АДМИН</span></div>
             <div id="cur-u" style="margin-top:auto; padding:25px; border-top:1px solid var(--g-border); font-size:13px; font-weight:bold;">...</div>
         </aside>
 
         <main class="main">
             <div id="v-lib" class="view active">
-                <h1>Библиотека Mark-42</h1><br>
+                <h1>Библиотека</h1><br>
                 <div class="grid">
-                    <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('Slime_Farm_2D/index.html', 'Slime Farm 2D')"><span style="font-size:30px;">🚜</span><br><b>Farm 2D</b></div>
-                    <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('Slime_Clicker/index.html', 'Slime Clicker')"><span style="font-size:30px;">🦠</span><br><b>Clicker</b></div>
-                </div>
-                <br><h3>Серия ELBERR_OS</h3><br>
+                    <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('Slime_Farm_2D/index.html', 'Slime Farm 2D')">🚜<br><b>Farm 2D</b></div>
+                    <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('Slime_Clicker/index.html', 'Slime Clicker')">🦠<br><b>Clicker</b></div>
+                    <div class="card-box" style="text-align:center; cursor:pointer; background:#e7f2ff;" onclick="openMessenger()">💬<br><b>Messenger</b></div>
+                </div><br>
+                <h3>Главы ELBERR_OS</h3><br>
                 <div class="grid" id="chapters-grid"></div>
             </div>
 
-            <div id="v-pms" class="view">
-                <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
-                    <h1>Мессенджер</h1>
-                    <button class="btn-blue" style="font-size:12px;" onclick="alert('Выберите человека слева, чтобы начать чат!')">+ СОЗДАТЬ ЧАТ</button>
-                </div>
-                <div class="chat-layout">
-                    <div class="u-list" id="u-box"></div>
-                    <div style="display:flex; flex-direction:column; background:var(--vk-white);">
-                        <div id="pm-target" style="padding:15px; border-bottom:1px solid var(--g-border); font-weight:bold;">Выберите диалог</div>
-                        <div id="pm-messages"></div>
-                        <div style="padding:15px; display:flex; gap:10px; border-top:1px solid var(--g-border);">
-                            <input type="text" id="pm-in" placeholder="Ваше сообщение..." style="margin:0; border-radius:20px; padding-left:15px;" onkeypress="if(event.key==='Enter') sendPM()">
-                            <button class="btn-blue" style="border-radius:50%; width:42px; padding:0;" onclick="sendPM()">></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div id="v-comm" class="view">
-                <h1>Новости Студии</h1><br>
-                <div class="card-box" id="post-box" style="display:none;">
-                    <textarea id="post-in" style="width:100%; height:80px; border:1px solid var(--g-border); border-radius:8px; padding:10px; resize:none; outline:none;"></textarea>
-                    <button class="btn-blue" style="margin-top:10px; float:right;" onclick="sendPost()">Опубликовать</button>
+                <h1>Сообщества</h1><br>
+                <div class="comm-tabs">
+                    <div class="c-tab active" onclick="setComm('news', this)">📢 Новости</div>
+                    <div class="c-tab" onclick="setComm('suggest', this)">💡 Предложения</div>
+                    <div class="c-tab" onclick="setComm('fan', this)">👥 Фандом</div>
+                </div>
+                <div class="card-box">
+                    <textarea id="post-in" placeholder="Напишите что-нибудь..." style="height:60px;"></textarea>
+                    <button class="btn-blue" style="float:right;" onclick="sendPost()">Опубликовать</button>
                     <div style="clear:both"></div>
                 </div>
                 <div id="feed"></div>
             </div>
 
             <div id="v-set" class="view">
-                <h1>Настройки системы</h1><br>
+                <h1>Настройки</h1><br>
                 <div class="card-box">
-                    <p><b>Вид интерфейса</b></p><br>
-                    <button class="btn-blue" onclick="setMode('mode-pc')">💻 Режим ПК</button>
-                    <button class="btn-blue" style="background:#34a853;" onclick="setMode('mode-phone')">📱 Режим Телефона</button>
+                    <p><b>Режим экрана:</b></p><br>
+                    <button class="btn-blue" onclick="setMode('mode-pc')">ПК</button>
+                    <button class="btn-blue" onclick="setMode('mode-phone')">Телефон</button>
                 </div>
-                <div class="card-box">
-                    <p><b>Оформление</b></p><br>
-                    <button class="btn-blue" style="background:#f1f3f4; color:#000;" onclick="setTheme('light')">Светлая</button>
-                    <button class="btn-blue" style="background:#222;" onclick="setTheme('dark')">Темная</button>
-                </div>
-                <div class="card-box">
-                    <p><b>Профиль</b></p><br>
-                    <input type="text" id="new-nick" placeholder="Новый никнейм">
-                    <button class="btn-blue" onclick="changeNick()">Обновить имя</button>
-                </div>
-                <button class="btn-blue" style="background:#ea4335;" onclick="auth.signOut()">Выйти из системы</button>
+                <button class="btn-blue" style="background:#ea4335;" onclick="auth.signOut()">Выйти из профиля</button>
             </div>
 
             <div id="v-adm" class="view">
-                <h1 style="color:#d93025;">ROOT CONTROL</h1><br>
-                <div class="card-box" style="border-color:#d93025;">
-                    <p><b>Активные переписки:</b></p><br>
-                    <div id="adm-chats-list" style="max-height:250px; overflow-y:auto; background:rgba(0,0,0,0.05); padding:10px; border-radius:8px;"></div>
-                </div>
-                <div class="card-box">
-                    <p><b>Глобальные действия:</b></p><br>
-                    <button class="btn-blue" style="background:#d93025;" onclick="if(confirm('Очистить ленту новостей?')) db.ref('posts').remove()">Удалить все посты</button>
-                    <button class="btn-blue" style="background:#000; margin-left:10px;" onclick="if(confirm('Удалить ВСЕ переписки из базы?')) db.ref('chats').remove()">Сбросить базу ЛС</button>
-                </div>
+                <h1 style="color:red">ROOT</h1>
+                <div class="card-box" id="adm-chats-list"></div>
             </div>
         </main>
     </div>
 
+    <div id="messenger-overlay">
+        <div class="ms-header">
+            <span>Gamer`s Messenger | Mark-42 Studio</span>
+            <button onclick="closeMessenger()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:5px 15px; border-radius:5px; cursor:pointer;">ЗАКРЫТЬ ✖</button>
+        </div>
+        <div class="ms-body">
+            <div class="u-list" id="ms-u-box"></div>
+            <div style="display:flex; flex-direction:column; background:var(--vk-bg);">
+                <div id="ms-target-name" style="padding:15px; background:white; border-bottom:1px solid rgba(0,0,0,0.1); font-weight:bold;">Выберите чат</div>
+                <div id="pm-messages"></div>
+                <div class="ms-input-area">
+                    <textarea id="pm-in" placeholder="Напишите сообщение..." oninput="this.style.height='';this.style.height=this.scrollHeight+'px'"></textarea>
+                    <button class="btn-blue" style="height:40px; border-radius:50%; width:40px; padding:0;" onclick="sendPM()">></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="overlay">
-        <div class="game-bar"><span id="game-title">...</span><button onclick="closeGame()" style="background:#ea4335; color:white; border:none; padding:6px 15px; border-radius:6px; cursor:pointer;">ЗАКРЫТЬ ✖</button></div>
+        <div class="game-bar"><span id="game-title">...</span><button onclick="closeGame()" style="background:red; color:white; border:none; padding:5px 10px; cursor:pointer;">✖</button></div>
         <iframe id="game-frame"></iframe>
     </div>
 
@@ -182,10 +168,10 @@
         const cfg = { apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI", authDomain: "gamesfan-17986.firebaseapp.com", databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/", projectId: "gamesfan-17986" };
         firebase.initializeApp(cfg);
         const auth = firebase.auth(), db = firebase.database();
-        let isLog = true, myNick = "", selUID = null;
+        let isLog = true, myNick = "", selUID = null, curComm = "news";
 
-        // Генерация глав
-        document.getElementById('chapters-grid').innerHTML = [1,2,3,4,5,6].map(i => `<div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('ELBERR_OS/Chapter${i}/index.html','Глава ${i}')">${i<10?'0'+i:i}</div>`).join('');
+        // Chapters
+        document.getElementById('chapters-grid').innerHTML = [1,2,3,4,5,6].map(i => `<div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('ELBERR_OS/Chapter${i}/index.html','Глава ${i}')">${i}</div>`).join('');
 
         async function handleAuth() {
             const e = document.getElementById('reg-e').value, p = document.getElementById('reg-p').value, n = document.getElementById('reg-n').value;
@@ -193,7 +179,7 @@
                 if(isLog) await auth.signInWithEmailAndPassword(e, p);
                 else {
                     const r = await auth.createUserWithEmailAndPassword(e, p);
-                    await db.ref('users/' + r.user.uid).set({ nick: n, email: e });
+                    await db.ref('users/' + r.user.uid).set({ nick: n, email: e, friends: {} });
                 }
             } catch(ex) { alert(ex.message); }
         }
@@ -202,15 +188,11 @@
             if(u) {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'grid';
-                const isAdmin = (u.email === "vetrovlev1@gmail.com");
-                if(isAdmin) {
-                    document.getElementById('adm-nav').classList.remove('hidden');
-                    document.getElementById('post-box').style.display = 'block';
-                }
+                const isAdm = (u.email === "vetrovlev1@gmail.com");
+                if(isAdm) document.getElementById('adm-nav').classList.remove('hidden');
                 db.ref('users/' + u.uid).on('value', s => {
-                    myNick = isAdmin ? "Creater ktehepknh | Mark-42 Studio" : (s.val()?.nick || "Пользователь");
+                    myNick = s.val()?.nick || "User";
                     document.getElementById('cur-u').innerText = myNick;
-                    if(isAdmin) document.getElementById('cur-u').classList.add('nick-orange');
                 });
                 loadUsers(); loadPosts();
             } else {
@@ -219,97 +201,97 @@
             }
         });
 
-        // МЕССЕНДЖЕР
+        // MESSENGER LOGIC
+        function openMessenger() { document.getElementById('messenger-overlay').style.display = 'flex'; }
+        function closeMessenger() { document.getElementById('messenger-overlay').style.display = 'none'; }
+
         function loadUsers() {
             db.ref('users').on('value', s => {
-                const b = document.getElementById('u-box'); b.innerHTML = "";
+                const box = document.getElementById('ms-u-box'); box.innerHTML = "";
                 s.forEach(u => {
                     if(u.key === auth.currentUser.uid) return;
-                    let d = document.createElement('div'); d.className = 'u-card';
-                    d.innerHTML = `<div class="ava">${u.val().nick[0].toUpperCase()}</div><span>${u.val().nick}</span>`;
-                    d.onclick = () => { 
-                        selUID = u.key; 
+                    const userData = u.val();
+                    const div = document.createElement('div');
+                    div.className = 'u-card';
+                    div.innerHTML = `<div class="ava" style="background:hsl(${u.key.length*15}, 60%, 50%)">${userData.nick[0]}</div>
+                                     <div style="flex:1"><b>${userData.nick}</b></div>
+                                     <button class="btn-blue" style="font-size:10px; padding:4px 8px;" onclick="addFriend('${u.key}', event)">+ Друг</button>`;
+                    div.onclick = () => {
+                        selUID = u.key;
                         document.querySelectorAll('.u-card').forEach(c => c.classList.remove('active'));
-                        d.classList.add('active');
-                        document.getElementById('pm-target').innerText = u.val().nick; 
-                        openChat(); 
+                        div.classList.add('active');
+                        document.getElementById('ms-target-name').innerText = userData.nick;
+                        openChat();
                     };
-                    b.appendChild(d);
+                    box.appendChild(div);
                 });
             });
+        }
+
+        function addFriend(uid, e) {
+            e.stopPropagation();
+            db.ref(`users/${auth.currentUser.uid}/friends/${uid}`).set(true);
+            alert("Пользователь добавлен в друзья!");
         }
 
         function openChat() {
             const id = [auth.currentUser.uid, selUID].sort().join('_');
             db.ref('chats/' + id).on('value', s => {
-                const m = document.getElementById('pm-messages'); m.innerHTML = "";
-                s.forEach(x => {
-                    m.innerHTML += `<div class="msg ${x.val().from===auth.currentUser.uid?'m-out':'m-in'}">${x.val().t}</div>`;
+                const box = document.getElementById('pm-messages'); box.innerHTML = "";
+                s.forEach(m => {
+                    const data = m.val();
+                    box.innerHTML += `<div class="msg ${data.from===auth.currentUser.uid?'m-out':'m-in'}">${data.t}</div>`;
                 });
-                m.scrollTop = m.scrollHeight;
+                box.scrollTop = box.scrollHeight;
             });
         }
 
         function sendPM() {
-            const t = document.getElementById('pm-in').value; if(!t || !selUID) return;
+            const t = document.getElementById('pm-in').value; if(!t.trim() || !selUID) return;
             const id = [auth.currentUser.uid, selUID].sort().join('_');
             db.ref('chats/' + id).push({ from: auth.currentUser.uid, t: t });
             document.getElementById('pm-in').value = "";
+            document.getElementById('pm-in').style.height = '40px';
         }
 
-        // АДМИНКА
-        function loadAdmChats() {
-            db.ref('chats').on('value', s => {
-                const container = document.getElementById('adm-chats-list');
-                container.innerHTML = s.exists() ? "" : "Нет активных чатов";
-                s.forEach(chat => {
-                    const chatId = chat.key;
-                    const div = document.createElement('div');
-                    div.style = "display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--g-border); font-size:12px;";
-                    div.innerHTML = `<span>ID: ${chatId}</span><button class="btn-blue" style="background:#ea4335; padding:5px 10px;" onclick="deleteChat('${chatId}')">Удалить</button>`;
-                    container.appendChild(div);
-                });
-            });
+        // COMMUNITY LOGIC
+        function setComm(type, el) {
+            curComm = type;
+            document.querySelectorAll('.c-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            loadPosts();
         }
 
-        function deleteChat(id) {
-            if(confirm(`Удалить переписку ${id}?`)) db.ref('chats/' + id).remove();
-        }
-
-        // НОВОСТИ
         function sendPost() {
             const t = document.getElementById('post-in').value; if(!t.trim()) return;
-            db.ref('posts').push({ author: myNick, txt: t, isAdm: true, time: Date.now() });
+            db.ref('community/' + curComm).push({ author: myNick, txt: t, time: Date.now() });
             document.getElementById('post-in').value = "";
         }
+
         function loadPosts() {
-            db.ref('posts').on('value', s => {
-                const f = document.getElementById('feed'); f.innerHTML = "";
-                let a = []; s.forEach(x => a.push(x.val()));
-                a.reverse().forEach(p => {
-                    f.innerHTML += `<div class="card-box"><b class="${p.isAdm?'nick-orange':''}">${p.author}</b><div style="margin-top:10px; white-space:pre-wrap;">${p.txt}</div></div>`;
+            db.ref('community/' + curComm).on('value', s => {
+                const feed = document.getElementById('feed'); feed.innerHTML = "";
+                let posts = []; s.forEach(p => posts.push(p.val()));
+                posts.reverse().forEach(p => {
+                    feed.innerHTML += `<div class="card-box"><b>${p.author}</b><p style="margin-top:10px">${p.txt}</p></div>`;
                 });
             });
         }
 
-        // СИСТЕМНОЕ
-        function setMode(m) { document.body.className = m; localStorage.setItem('os-mode', m); }
-        function setTheme(t) { document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t); }
-        function changeNick() { const n = document.getElementById('new-nick').value; if(n) db.ref('users/' + auth.currentUser.uid + '/nick').set(n); }
-        function play(p, n) { document.getElementById('overlay').style.display = 'flex'; document.getElementById('game-title').innerText = n; document.getElementById('game-frame').src = p; }
-        function closeGame() { document.getElementById('overlay').style.display = 'none'; document.getElementById('game-frame').src = ""; }
-        
+        // SYSTEM
+        function setMode(m) { document.body.className = m; }
         function tab(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById('v-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
-            if(id === 'adm') loadAdmChats();
         }
-
-        // Загрузка пресетов
-        setTheme(localStorage.getItem('theme') || 'light');
-        setMode(localStorage.getItem('os-mode') || 'mode-pc');
+        function play(p, n) {
+            document.getElementById('overlay').style.display = 'flex';
+            document.getElementById('game-title').innerText = n;
+            document.getElementById('game-frame').src = p;
+        }
+        function closeGame() { document.getElementById('overlay').style.display = 'none'; document.getElementById('game-frame').src = ""; }
     </script>
 </body>
 </html>
