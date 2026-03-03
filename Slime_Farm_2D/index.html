@@ -13,25 +13,34 @@
         body { margin: 0; background: var(--bg-color); color: white; overflow: hidden; height: 100vh; }
         #bg { position: fixed; inset: 0; background: url('assets/background.jpg') center/cover; filter: brightness(0.2); z-index: 1; }
         #app { position: relative; z-index: 10; display: flex; height: 100vh; width: 100vw; }
+        
         #main { flex: 1; display: flex; flex-direction: column; padding: 15px; }
         #grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 10px; flex: 1; }
-        .paddock { background: rgba(255,255,255,0.03); border: 2px solid var(--border); border-radius: 20px; position: relative; cursor: pointer; overflow: hidden; transition: 0.2s; }
+        .paddock { background: rgba(255,255,255,0.03); border: 2px solid var(--border); border-radius: 20px; position: relative; cursor: pointer; overflow: hidden; }
         .paddock:hover { border-color: var(--accent); }
-        .slime-img { position: absolute; width: 42px; height: 42px; will-change: transform; transition: transform 2.5s ease-in-out; pointer-events: none; }
+        .slime-img { position: absolute; width: 42px; height: 42px; will-change: transform; transition: transform 2.5s ease-in-out; pointer-events: none; z-index: 5; }
+        
         #hud { display: flex; gap: 15px; background: rgba(0,0,0,0.6); padding: 12px; border-radius: 15px; border: 1px solid var(--border); align-items: center; margin-bottom: 10px; backdrop-filter: blur(10px); }
         .stat { font-size: 18px; font-weight: bold; display: flex; align-items: center; }
-        .res-icon { width: 18px; height: 18px; margin-right: 5px; }
+        .res-icon { width: 18px; height: 18px; margin-right: 5px; vertical-align: middle; }
+        .btn-icon { width: 14px; height: 14px; margin-left: 3px; vertical-align: middle; }
+
         #side { width: 380px; background: var(--panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; }
         .tabs { display: flex; background: rgba(0,0,0,0.3); }
-        .tab { flex: 1; padding: 15px 5px; text-align: center; cursor: pointer; font-size: 10px; font-weight: bold; color: #666; transition: 0.3s; }
+        .tab { flex: 1; padding: 15px 5px; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; color: #666; }
         .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+
         .list { flex: 1; overflow-y: auto; padding: 15px; }
-        .card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 15px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
-        .btn { background: var(--accent); color: #000; border: none; padding: 6px 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 15px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
+        .btn { background: var(--accent); color: #000; border: none; padding: 8px 12px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; }
         .btn-diam { background: var(--diam); }
-        .btn:disabled { opacity: 0.3; filter: grayscale(1); }
+        .btn:disabled { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
+
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .modal-box { background: #15151a; border: 1px solid var(--accent); padding: 25px; border-radius: 20px; width: 300px; }
+        .modal-box { background: #15151a; border: 1px solid var(--accent); padding: 25px; border-radius: 20px; width: 320px; }
+        .set-row { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; }
+        
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
     </style>
 </head>
 <body>
@@ -44,6 +53,11 @@
 <div id="m-sets" class="modal">
     <div class="modal-box">
         <h3 style="color:var(--accent); text-align: center; margin-top:0;">НАСТРОЙКИ</h3>
+        <div class="set-row"><span>Музыка</span><input type="checkbox" id="set-music" onchange="updSet()"></div>
+        <div class="set-row"><span>Звуки</span><input type="checkbox" id="set-sfx" onchange="updSet()"></div>
+        <div class="set-row"><span>HD Эффекты</span><input type="checkbox" id="set-hd" onchange="updSet()"></div>
+        <button class="btn" style="width:100%; margin-top:5px; background:#444; color:#fff;" onclick="toggleFS()">ПОЛНЫЙ ЭКРАН</button>
+        <hr style="border:0; border-top:1px solid var(--border); margin:15px 0;">
         <button class="btn" style="width:100%; background:#ff4444; color:#fff;" onclick="fullReset()">СБРОС ПРОГРЕССА</button>
         <button class="btn" style="width:100%; margin-top:10px;" onclick="toggleModal(false)">ЗАКРЫТЬ</button>
     </div>
@@ -54,14 +68,14 @@
         <div id="hud">
             <div class="stat"><img src="assets/coin.png" class="res-icon"><span id="c-val">0</span></div>
             <div class="stat"><img src="assets/diamond.png" class="res-icon"><span id="d-val">0</span></div>
-            <div style="margin-left:auto; font-size:12px; color:var(--accent);">Mult: x<span id="m-val">1.0</span></div>
-            <button class="btn" onclick="toggleModal(true)">⚙️</button>
+            <div style="margin-left:auto; font-size:12px; color:var(--accent); font-weight:bold;">x<span id="m-val">1.0</span></div>
+            <button class="btn" style="background:none; color:#fff; font-size:20px;" onclick="toggleModal(true)">⚙️</button>
         </div>
         
         <div id="grid"></div>
 
         <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
-            <button class="btn" id="mega-btn" style="display:none; background:var(--diam); animation: pulse 2s infinite;" onclick="megaClick()">⚡ КЛИК ПО ВСЕМ ⚡</button>
+            <button class="btn" id="mega-btn" style="display:none; background:var(--diam); animation: pulse 2s infinite;" onclick="megaClick()">⚡ МЕГА-КЛИК</button>
             <button class="btn" onclick="setPage(0)">1</button>
             <button class="btn" onclick="setPage(1)">2</button>
         </div>
@@ -69,8 +83,8 @@
 
     <aside id="side">
         <div class="tabs">
-            <div class="tab active" id="t-s" onclick="openTab('s')">СЛАЙМЫ</div>
-            <div class="tab" id="t-u" onclick="openTab('u')">UPGRADE</div>
+            <div class="tab active" id="t-s" onclick="openTab('s')">МАГАЗИН</div>
+            <div class="tab" id="t-u" onclick="openTab('u')">ПРОКАЧКА</div>
             <div class="tab" id="t-q" onclick="openTab('q')">КВЕСТЫ</div>
             <div class="tab" id="t-b" onclick="openTab('b')">VIP</div>
         </div>
@@ -90,11 +104,11 @@
     const PRICES = [0, 30, 150, 500, 1200, 3000, 8000, 20000, 50000, 120000, 300000, 800000, 2000000, 5000000, 15000000, 40000000, 100000000, 300000000];
 
     let game = {
-        coins: 100, diams: 10, page: 0, 
+        coins: 500, diams: 10, page: 0, 
         inv: new Array(25).fill(0), 
         rank: 0, upg: 0, clicks: 0,
         hasMega: false,
-        settings: { music: true, sfx: true },
+        settings: { music: true, sfx: true, hd: true },
         quests: [
             {t:"Сборщик", trg:100, cur:0, r:15, d:false, rk:0},
             {t:"Клик-Мастер", trg:500, cur:0, r:30, d:false, rk:0},
@@ -109,10 +123,7 @@
         return (n / Math.pow(1000, e)).toFixed(1) + s[e];
     }
 
-    function getMult() {
-        return (1 + (game.rank * 2) + (game.upg * RANKS[game.rank].m));
-    }
-
+    function getMult() { return (1 + (game.rank * 2) + (game.upg * RANKS[game.rank].m)); }
     function getLimit() { return game.upg >= 4 ? 12 : 8; }
 
     function render() {
@@ -130,8 +141,8 @@
         for(let i=0; i<8; i++){
             let id = start+i; if(id>24) break;
             let p = document.createElement('div'); p.className = 'paddock';
-            p.innerHTML = `<div style="position:absolute;top:5px;left:8px;font-size:9px;color:#777;">№${id} [${game.inv[id]}/${lim}]</div>`;
-            p.onclick = () => doClick(id);
+            p.innerHTML = `<div style="position:absolute;top:5px;left:8px;font-size:9px;color:#777;z-index:10;">№${id} [${game.inv[id]}/${lim}]</div>`;
+            p.onclick = () => { if(game.inv[id]>0){ game.coins += (id * game.inv[id] * getMult()); game.clicks++; checkQ(); play('click'); render(); } };
             for(let n=0; n<game.inv[id]; n++){
                 let s = document.createElement('img'); s.className = 'slime-img'; 
                 s.src = `assets/slime${id}.png`;
@@ -143,27 +154,16 @@
         }
     }
 
-    function doClick(id) {
-        if(game.inv[id]>0){ 
-            game.coins += (id * game.inv[id] * getMult()); 
-            game.clicks++; checkQ(); play('click'); render(); 
-        }
-    }
-
-    function megaClick() {
-        for(let i=1; i<game.inv.length; i++) if(game.inv[i]>0) doClick(i);
-    }
-
     function renderShop() {
         let h = "";
         for(let i=1; i<=18; i++){
             let isFull = game.inv[i] >= getLimit();
-            let dPrice = Math.ceil(PRICES[i] / 500) + 1;
+            let dP = Math.ceil(PRICES[i] / 400) + 1;
             h += `<div class="card"><img src="assets/slime${i}.png" style="width:35px" onerror="this.src='https://cdn-icons-png.flaticon.com/512/825/825561.png'">
             <div style="flex:1"><b>Слайм #${i}</b><br><small>${game.inv[i]}/${getLimit()}</small></div>
             <div style="display:flex; flex-direction:column; gap:4px;">
-                <button class="btn" onclick="buyS(${i},'c')" ${ (game.coins<PRICES[i] || isFull)?'disabled':''}>${f(PRICES[i])} 🪙</button>
-                <button class="btn btn-diam" onclick="buyS(${i},'d')" ${ (game.diams<dPrice || isFull)?'disabled':''}>${dPrice} 💎</button>
+                <button class="btn" onclick="buyS(${i},'c')" ${ (game.coins<PRICES[i] || isFull)?'disabled':''}>${f(PRICES[i])} <img src="assets/coin.png" class="btn-icon"></button>
+                <button class="btn btn-diam" onclick="buyS(${i},'d')" ${ (game.diams<dP || isFull)?'disabled':''}>${dP} <img src="assets/diamond.png" class="btn-icon"></button>
             </div></div>`;
         }
         document.getElementById('list-s').innerHTML = h;
@@ -172,19 +172,17 @@
     function renderUpg() {
         let r = RANKS[game.rank];
         let cost = (game.upg + 1) * 2000 * (game.rank + 1);
-        let dCost = (game.upg + 1) * 10;
-        let h = `<div style="text-align:center; padding:10px; color:${r.c}; background:rgba(255,255,255,0.05); border-radius:10px; margin-bottom:10px;">
-            <b>${r.n} Ранг</b> (Прокачка: ${game.upg}/4)</div>`;
-        
+        let dCost = (game.upg + 1) * 8;
+        let h = `<div style="text-align:center; padding:10px; color:${r.c}; background:rgba(255,255,255,0.05); border-radius:10px; margin-bottom:10px;"><b>${r.n} Ранг</b> (${game.upg}/4)</div>`;
         if(game.upg < 4) {
             h += `<div class="card"><div style="flex:1"><b>Сила клика</b><br><small>+${r.m} к множителю</small></div>
             <div style="display:flex; flex-direction:column; gap:4px;">
-                <button class="btn" onclick="buyU(${cost},'c')" ${game.coins<cost?'disabled':''}>${f(cost)} 🪙</button>
-                <button class="btn btn-diam" onclick="buyU(${dCost},'d')" ${game.diams<dCost?'disabled':''}>${dCost} 💎</button>
+                <button class="btn" onclick="buyU(${cost},'c')" ${game.coins<cost?'disabled':''}>${f(cost)} <img src="assets/coin.png" class="btn-icon"></button>
+                <button class="btn btn-diam" onclick="buyU(${dCost},'d')" ${game.diams<dCost?'disabled':''}>${dCost} <img src="assets/diamond.png" class="btn-icon"></button>
             </div></div>`;
         } else if(game.rank < 3) {
-            let nc = (game.rank + 1) * 50000;
-            h += `<button class="btn" style="width:100%; height:40px;" onclick="nextR(${nc})" ${game.coins<nc?'disabled':''}>НОВЫЙ РАНГ (${f(nc)} 🪙)</button>`;
+            let nc = (game.rank + 1) * 40000;
+            h += `<button class="btn" style="width:100%; height:40px;" onclick="nextR(${nc})" ${game.coins<nc?'disabled':''}>НОВЫЙ РАНГ (${f(nc)} <img src="assets/coin.png" class="btn-icon">)</button>`;
         }
         document.getElementById('list-u').innerHTML = h;
     }
@@ -195,48 +193,36 @@
             let p = Math.min(100, (q.cur/q.trg)*100);
             h += `<div class="card" style="opacity:${q.d?0.5:1}"><div style="flex:1"><b>${q.t}</b><br><small>${q.cur}/${q.trg}</small>
             <div style="width:100%;height:4px;background:#000;margin-top:5px;border-radius:2px;overflow:hidden"><div style="width:${p}%;height:100%;background:var(--accent)"></div></div></div>
-            <div style="color:var(--diam); font-weight:bold;">+${q.r} 💎</div></div>`;
+            <div style="color:var(--diam); font-weight:bold; display:flex; align-items:center;">+${q.r} <img src="assets/diamond.png" class="btn-icon"></div></div>`;
         });
         document.getElementById('list-q').innerHTML = h;
     }
 
     function renderVIP() {
-        let h = `<div class="card"><div style="flex:1"><b>MEGA CLICKER</b><br><small>Кликает на все загоны разом!</small></div>
-        <button class="btn btn-diam" onclick="buyMega()" ${game.hasMega?'disabled':''}>${game.hasMega ? 'КУПЛЕНО' : '150 💎'}</button></div>`;
+        h = `<div class="card"><div style="flex:1"><b>MEGA CLICKER</b><br><small>Кликает на всё сразу!</small></div>
+        <button class="btn btn-diam" onclick="buyMega()" ${game.hasMega?'disabled':''}>${game.hasMega ? 'КУПЛЕНО' : '150'} <img src="assets/diamond.png" class="btn-icon"></button></div>`;
         document.getElementById('list-b').innerHTML = h;
     }
 
-    function buyS(id, t){ 
-        let price = t=='c'?PRICES[id]:Math.ceil(PRICES[id]/500)+1;
-        if(t=='c' && game.coins>=price){ game.coins-=price; game.inv[id]++; }
-        else if(t=='d' && game.diams>=price){ game.diams-=price; game.inv[id]++; }
-        else return;
-        play('buy'); save(); render();
-    }
-
-    function buyU(c, t){
-        if(t=='c' && game.coins>=c){ game.coins-=c; game.upg++; }
-        else if(t=='d' && game.diams>=c){ game.diams-=c; game.upg++; }
-        else return;
-        play('buy'); save(); render();
-    }
-
+    // Логика
+    function buyS(id, t){ let price = t=='c'?PRICES[id]:Math.ceil(PRICES[id]/400)+1; if(t=='c' && game.coins>=price){ game.coins-=price; game.inv[id]++; } else if(t=='d' && game.diams>=price){ game.diams-=price; game.inv[id]++; } else return; play('buy'); save(); render(); }
+    function buyU(c, t){ if(t=='c' && game.coins>=c){ game.coins-=c; game.upg++; } else if(t=='d' && game.diams>=c){ game.diams-=c; game.upg++; } else return; play('buy'); save(); render(); }
     function buyMega() { if(game.diams>=150){ game.diams-=150; game.hasMega=true; play('buy'); save(); render(); } }
     function nextR(c){ if(game.coins>=c){ game.coins-=c; game.rank++; game.upg=0; play('buy'); save(); render(); } }
+    function megaClick() { for(let i=1; i<game.inv.length; i++){ if(game.inv[i]>0){ game.coins += (i * game.inv[i] * getMult()); game.clicks++; } } checkQ(); play('click'); render(); }
     function checkQ(){ game.quests.forEach(q=>{ if(q.rk <= game.rank){ q.cur = game.clicks; if(!q.d && q.cur>=q.trg){ q.d=true; game.diams+=q.r; } } }); }
     function setPage(p){ game.page=p; renderGrid(); }
     function play(id){ if(!game.settings.sfx) return; let a=document.getElementById('s-'+id); if(a){ a.currentTime=0; a.play().catch(()=>{}); } }
-    function toggleModal(s){ document.getElementById('m-sets').style.display=s?'flex':'none'; }
+    function toggleModal(s){ document.getElementById('m-sets').style.display=s?'flex':'none'; if(s) { document.getElementById('set-music').checked=game.settings.music; document.getElementById('set-sfx').checked=game.settings.sfx; document.getElementById('set-hd').checked=game.settings.hd; } }
+    function updSet() { game.settings.music=document.getElementById('set-music').checked; game.settings.sfx=document.getElementById('set-sfx').checked; game.settings.hd=document.getElementById('set-hd').checked; let m=document.getElementById('s-music'); if(game.settings.music) m.play().catch(()=>{}); else m.pause(); save(); }
+    function toggleFS() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
     function openTab(t){ ['s','u','q','b'].forEach(x=>{document.getElementById('list-'+x).style.display='none'; document.getElementById('t-'+x).classList.remove('active');}); document.getElementById('list-'+t).style.display='block'; document.getElementById('t-'+t).classList.add('active'); }
-    function save() { localStorage.setItem('slime_m42_v5', JSON.stringify(game)); }
-    function load() {
-        let s = localStorage.getItem('slime_m42_v5');
-        if(s) { let ld = JSON.parse(s); game = {...game, ...ld}; }
-        render(); if(game.settings.music) document.getElementById('s-music').play().catch(()=>{});
-    }
-    function fullReset(){ if(confirm("Сбросить всё? (Бонус: 500 🪙, 10 💎)")){ localStorage.clear(); location.reload(); } }
+    function save() { localStorage.setItem('slime_m42_v6', JSON.stringify(game)); }
+    function load() { let s=localStorage.getItem('slime_m42_v6'); if(s) { let ld=JSON.parse(s); game={...game, ...ld}; } render(); if(game.settings.music) document.getElementById('s-music').play().catch(()=>{}); }
+    function fullReset(){ if(confirm("Сбросить всё? (Бонус: 500 монет, 10 алмазов)")){ localStorage.clear(); location.reload(); } }
 
     setInterval(() => {
+        if(!game.settings.hd) return;
         document.querySelectorAll('.slime-img').forEach(s => {
             let x = (Math.random() * 30 - 15); let y = (Math.random() * 30 - 15);
             s.style.transform = `translate(${x}px, ${y}px) scaleX(${x > 0 ? 1 : -1})`;
