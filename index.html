@@ -12,28 +12,34 @@
 
     <style>
         :root {
+            --vk-blue: #0077ff;
+            --vk-bg: #ebedf0;
+            --vk-white: #ffffff;
             --g-blue: #1a73e8; --g-bg: #ffffff; --g-surface: #f8f9fa;
             --g-border: #dadce0; --g-text: #202124; --g-text-light: #5f6368;
             --orange: #ff8c00; --shadow: 0 4px 20px rgba(0,0,0,0.08);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         [data-theme="dark"] {
             --g-bg: #0b0e14; --g-surface: #1c2128; --g-border: #444c56;
             --g-text: #adbac7; --g-text-light: #768390; --g-blue: #539bf5;
+            --vk-bg: #15151a; --vk-white: #1c2128;
         }
+
+        /* Режимы ПК/Телефон */
+        .mode-phone .sidebar { width: 80px; }
+        .mode-phone .sidebar .nav-item span { display: none; }
+        .mode-phone #app { grid-template-columns: 80px 1fr; }
 
         * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
         body, html { height: 100%; background: var(--g-bg); color: var(--g-text); overflow: hidden; }
 
-        /* AUTH */
         #auth-screen { position: fixed; inset: 0; background: var(--g-bg); display: flex; align-items: center; justify-content: center; z-index: 5000; }
         .auth-card { width: 380px; padding: 35px; border: 1px solid var(--g-border); border-radius: 20px; text-align: center; box-shadow: var(--shadow); background: var(--g-bg); }
         input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--g-border); border-radius: 8px; background: var(--g-surface); color: var(--g-text); outline: none; }
         
-        /* APP */
-        #app { display: none; height: 100vh; grid-template-columns: 280px 1fr; }
+        #app { display: none; height: 100vh; grid-template-columns: 280px 1fr; transition: 0.3s; }
         .sidebar { background: var(--g-surface); border-right: 1px solid var(--g-border); padding: 25px 0; display: flex; flex-direction: column; }
-        .nav-item { padding: 14px 25px; cursor: pointer; color: var(--g-text-light); border-radius: 0 30px 30px 0; margin-right: 15px; margin-bottom: 5px; font-weight: 500; }
+        .nav-item { padding: 14px 25px; cursor: pointer; color: var(--g-text-light); border-radius: 0 30px 30px 0; margin-right: 15px; margin-bottom: 5px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
         .nav-item.active { background: #e8f0fe; color: var(--g-blue); border-left: 5px solid var(--g-blue); }
 
         .main { padding: 35px; overflow-y: auto; position: relative; }
@@ -41,22 +47,23 @@
         .view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .card-box { background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 12px; padding: 20px; margin-bottom: 20px; transition: 0.2s; }
+        .card-box { background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         .btn-blue { background: var(--g-blue); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        
-        /* CHAT */
-        .chat-layout { display: grid; grid-template-columns: 200px 1fr; gap: 0; height: 500px; border: 1px solid var(--g-border); border-radius: 12px; overflow: hidden; }
-        .u-list { background: var(--g-surface); border-right: 1px solid var(--g-border); overflow-y: auto; }
-        .u-card { padding: 12px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 14px; }
-        .u-card:hover { background: rgba(0,0,0,0.03); }
-        .u-card.active { background: var(--g-blue); color: white; }
-        #pm-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: var(--g-bg); }
-        .msg { padding: 10px 15px; border-radius: 15px; max-width: 70%; font-size: 14px; line-height: 1.4; }
-        .m-in { background: var(--g-surface); align-self: flex-start; border-bottom-left-radius: 2px; }
-        .m-out { background: var(--g-blue); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
 
-        /* GAME OVERLAY */
+        /* УЛУЧШЕННЫЙ МЕССЕНДЖЕР */
+        .chat-layout { display: grid; grid-template-columns: 240px 1fr; height: 600px; border: 1px solid var(--g-border); border-radius: 15px; overflow: hidden; background: var(--vk-bg); box-shadow: var(--shadow); }
+        .u-list { background: var(--vk-white); border-right: 1px solid var(--g-border); overflow-y: auto; }
+        .u-card { padding: 15px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05); transition: 0.2s; display: flex; align-items: center; gap: 10px; }
+        .u-card:hover { background: rgba(0,0,0,0.03); }
+        .u-card.active { background: #e7f2ff; border-right: 3px solid var(--vk-blue); }
+        .ava { width: 35px; height: 35px; border-radius: 50%; background: var(--g-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; }
+
+        #pm-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 8px; background: var(--vk-bg); }
+        .msg { padding: 10px 16px; border-radius: 18px; max-width: 75%; font-size: 14px; line-height: 1.5; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .m-in { background: var(--vk-white); align-self: flex-start; border-bottom-left-radius: 4px; color: #000; }
+        .m-out { background: #ceeafe; align-self: flex-end; border-bottom-right-radius: 4px; color: #000; }
+
         #overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: none; flex-direction: column; }
         .game-bar { height: 50px; background: #202124; display: flex; align-items: center; padding: 0 20px; color: white; justify-content: space-between; }
         iframe { flex: 1; border: none; }
@@ -65,7 +72,7 @@
         .hidden { display: none !important; }
     </style>
 </head>
-<body>
+<body class="mode-pc">
 
     <div id="auth-screen">
         <div class="auth-card">
@@ -73,19 +80,19 @@
             <input type="text" id="reg-n" placeholder="Никнейм (только для новых)" class="hidden">
             <input type="email" id="reg-e" placeholder="Email">
             <input type="password" id="reg-p" placeholder="Пароль">
-            <button class="btn-blue" style="width:100%; margin-top:10px;" onclick="handleAuth()">Войти / Зарегистрироваться</button>
-            <p style="margin-top:15px; font-size:12px; cursor:pointer; color:var(--g-text-light);" onclick="isLog=!isLog; document.getElementById('reg-n').classList.toggle('hidden')">Сменить режим (Вход/Регистрация)</p>
+            <button class="btn-blue" style="width:100%; margin-top:10px;" onclick="handleAuth()">Войти / Регистрация</button>
+            <p style="margin-top:15px; font-size:12px; cursor:pointer; color:var(--g-text-light);" onclick="isLog=!isLog; document.getElementById('reg-n').classList.toggle('hidden')">Сменить режим</p>
         </div>
     </div>
 
     <div id="app">
         <aside class="sidebar">
-            <div style="padding:0 25px 30px; color:var(--g-blue); font-weight:700; font-size:22px; font-family:'Montserrat';">Mark-42 Studio</div>
-            <div class="nav-item active" onclick="tab('lib', this)">🎮 Библиотека</div>
-            <div class="nav-item" onclick="tab('comm', this)">📢 Сообщество</div>
-            <div class="nav-item" onclick="tab('pms', this)">✉️ Личные сообщения</div>
-            <div class="nav-item" onclick="tab('set', this)">⚙️ Настройки</div>
-            <div id="adm-nav" class="nav-item hidden" onclick="tab('adm', this)" style="color:#d93025; border-top: 1px solid var(--g-border); margin-top: 10px;">🛡️ АДМИН-ПАНЕЛЬ</div>
+            <div id="logo-text" style="padding:0 25px 30px; color:var(--g-blue); font-weight:700; font-size:22px;">Mark-42</div>
+            <div class="nav-item active" onclick="tab('lib', this)">🎮 <span>Библиотека</span></div>
+            <div class="nav-item" onclick="tab('comm', this)">📢 <span>Сообщество</span></div>
+            <div class="nav-item" onclick="tab('pms', this)">✉️ <span>Мессенджер</span></div>
+            <div class="nav-item" onclick="tab('set', this)">⚙️ <span>Настройки</span></div>
+            <div id="adm-nav" class="nav-item hidden" onclick="tab('adm', this)" style="color:#d93025; border-top: 1px solid var(--g-border); margin-top: 10px;">🛡️ <span>АДМИН</span></div>
             <div id="cur-u" style="margin-top:auto; padding:25px; border-top:1px solid var(--g-border); font-size:13px; font-weight:bold;">...</div>
         </aside>
 
@@ -96,87 +103,70 @@
                     <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('Slime_Farm_2D/index.html', 'Slime Farm 2D')"><span style="font-size:30px;">🚜</span><br><b>Farm 2D</b></div>
                     <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('Slime_Clicker/index.html', 'Slime Clicker')"><span style="font-size:30px;">🦠</span><br><b>Clicker</b></div>
                 </div><br>
-                <h3>ELBERR_OS (Chapters)</h3><br>
-                <div class="grid">
-                    <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('ELBERR_OS/Chapter1/index.html','Глава 1')">01</div>
-                    <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('ELBERR_OS/Chapter2/index.html','Глава 2')">02</div>
-                    <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('ELBERR_OS/Chapter3/index.html','Глава 3')">03</div>
-                    <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('ELBERR_OS/Chapter4/index.html','Глава 4')">04</div>
-                    <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('ELBERR_OS/Chapter5/index.html','Глава 5')">05</div>
-                    <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('ELBERR_OS/Chapter6/index.html','Глава 6')">06</div>
-                </div>
-            </div>
-
-            <div id="v-comm" class="view">
-                <h1>📢 Новости Mark-42 Studio</h1><br>
-                <div class="card-box">
-                    <textarea id="post-in" style="width:100%; height:120px; border:none; background:transparent; resize:none; font-size:15px; outline:none; line-height:1.6;"></textarea>
-                    <button class="btn-blue" style="float:right;" onclick="sendPost()">Опубликовать Пост</button>
-                    <div style="clear:both"></div>
-                </div>
-                <div id="feed"></div>
+                <h3>ELBERR_OS</h3><br>
+                <div class="grid" id="chapters-grid"></div>
             </div>
 
             <div id="v-pms" class="view">
-                <h1>Мессенджер</h1><br>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h1>Мессенджер</h1>
+                    <button class="btn-blue" onclick="tab('pms', document.querySelectorAll('.nav-item')[2]); alert('Выберите пользователя из списка слева для начала чата!')">+ СОЗДАТЬ ЧАТ</button>
+                </div>
                 <div class="chat-layout">
                     <div class="u-list" id="u-box"></div>
-                    <div style="display:flex; flex-direction:column; background:var(--g-bg);">
-                        <div id="pm-target" style="padding:15px; border-bottom:1px solid var(--g-border); font-weight:bold;">Выберите чат</div>
+                    <div style="display:flex; flex-direction:column; background:var(--vk-white);">
+                        <div id="pm-target" style="padding:15px; border-bottom:1px solid var(--g-border); font-weight:bold; background:var(--vk-white);">Выберите чат</div>
                         <div id="pm-messages"></div>
-                        <div style="padding:15px; display:flex; gap:10px; border-top:1px solid var(--g-border);">
-                            <input type="text" id="pm-in" placeholder="Напишите..." style="margin:0;">
-                            <button class="btn-blue" onclick="sendPM()">></button>
+                        <div style="padding:15px; display:flex; gap:10px; border-top:1px solid var(--g-border); background:var(--vk-white);">
+                            <input type="text" id="pm-in" placeholder="Напишите сообщение..." style="margin:0; border-radius: 20px; padding-left: 15px;" onkeypress="if(event.key==='Enter') sendPM()">
+                            <button class="btn-blue" style="border-radius: 50%; width: 40px; padding:0;" onclick="sendPM()">></button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div id="v-set" class="view">
-                <h1>Настройки</h1><br>
+                <h1>Настройки системы</h1><br>
                 <div class="card-box">
-                    <p><b>Изменить никнейм</b></p>
-                    <input type="text" id="new-nick" placeholder="Новое имя профиля">
-                    <button class="btn-blue" onclick="changeNick()">Применить</button>
+                    <p><b>Режим интерфейса</b></p><br>
+                    <button class="btn-blue" onclick="setMode('mode-pc')">💻 ПК</button>
+                    <button class="btn-blue" style="background:#34a853;" onclick="setMode('mode-phone')">📱 Телефон</button>
                 </div>
                 <div class="card-box">
-                    <p><b>Тема системы</b></p><br>
-                    <button class="btn-blue" onclick="setTheme('light')">Светлая</button>
+                    <p><b>Тема</b></p><br>
+                    <button class="btn-blue" style="background:#f1f3f4; color:#000;" onclick="setTheme('light')">Светлая</button>
                     <button class="btn-blue" style="background:#222;" onclick="setTheme('dark')">Темная</button>
                 </div>
-                <button class="btn-blue" style="background:#ea4335;" onclick="auth.signOut()">Выйти из профиля</button>
+                <div class="card-box">
+                    <p><b>Профиль</b></p><br>
+                    <input type="text" id="new-nick" placeholder="Новый ник">
+                    <button class="btn-blue" onclick="changeNick()">Сохранить имя</button>
+                </div>
+                <button class="btn-blue" style="background:#ea4335;" onclick="auth.signOut()">Выйти</button>
             </div>
 
-            <div id="v-adm" class="view">
-                <h1 style="color:#d93025;">ROOT CONTROL</h1><br>
-                <div class="card-box">
-                    <p><b>Управление базой данных:</b></p><br>
-                    <button class="btn-blue" style="background:#d93025; margin-right:10px;" onclick="if(confirm('Удалить всю ленту?')) db.ref('posts').remove()">Очистить Стену</button>
-                    <button class="btn-blue" style="background:#d93025;" onclick="if(confirm('Стереть все ЛС?')) db.ref('chats').remove()">Удалить все переписки</button>
-                </div>
-            </div>
+            <div id="v-comm" class="view"><h1>Сообщество</h1><div id="feed"></div></div>
+            <div id="v-adm" class="view"><h1>Админ-панель</h1></div>
         </main>
     </div>
 
     <div id="overlay">
         <div class="game-bar">
-            <span id="game-title">Загрузка...</span>
-            <button onclick="closeGame()" style="background:#ea4335; color:white; border:none; padding:6px 15px; border-radius:6px; cursor:pointer; font-weight:bold;">ЗАКРЫТЬ ✖</button>
+            <span id="game-title">...</span>
+            <button onclick="closeGame()" style="background:#ea4335; color:white; border:none; padding:6px 15px; border-radius:6px; cursor:pointer;">✖</button>
         </div>
-        <iframe id="game-frame" src=""></iframe>
+        <iframe id="game-frame"></iframe>
     </div>
 
     <script>
-        const cfg = {
-            apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI",
-            authDomain: "gamesfan-17986.firebaseapp.com",
-            projectId: "gamesfan-17986",
-            databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/",
-            appId: "1:311654524584:web:9283eea0aea6f7b946849d"
-        };
+        const cfg = { apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI", authDomain: "gamesfan-17986.firebaseapp.com", databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/", projectId: "gamesfan-17986" };
         firebase.initializeApp(cfg);
         const auth = firebase.auth(), db = firebase.database();
         let isLog = true, myNick = "", selUID = null;
+
+        // Инициализация глав
+        const chaptersHTML = [1,2,3,4,5,6].map(i => `<div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('ELBERR_OS/Chapter${i}/index.html','Глава ${i}')">${i < 10 ? '0'+i : i}</div>`).join('');
+        document.getElementById('chapters-grid').innerHTML = chaptersHTML;
 
         async function handleAuth() {
             const e = document.getElementById('reg-e').value, p = document.getElementById('reg-p').value, n = document.getElementById('reg-n').value;
@@ -194,48 +184,26 @@
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'grid';
                 const isAdmin = (u.email === "vetrovlev1@gmail.com");
-                if(isAdmin) {
-                    document.getElementById('adm-nav').classList.remove('hidden');
-                    // Авто-заполнение текста поста для админа
-                    document.getElementById('post-in').value = "🚀 ОБНОВЛЕНИЕ GamesFan OS v14.0!\n\nЧто нового:\n1. Добавлены ВСЕ 6 глав ELBERR_OS.\n2. Исправлено отображение картинок в Slime Clicker и Slime Farm!\n3. Запущен полноценный мессенджер с личными сообщениями.\n4. Настройки теперь работают и сохраняют тему.\n\nИграйте и общайтесь! Mark-42 Studio.";
-                }
+                if(isAdmin) document.getElementById('adm-nav').classList.remove('hidden');
 
                 db.ref('users/' + u.uid).on('value', s => {
-                    myNick = isAdmin ? "Creater ktehepknh | Mark-42 Studio" : (s.val()?.nick || "Пользователь");
+                    myNick = isAdmin ? "Creater ktehepknh | Mark-42" : (s.val()?.nick || "User");
                     document.getElementById('cur-u').innerText = myNick;
-                    if(isAdmin) document.getElementById('cur-u').classList.add('nick-orange');
                 });
-                loadPosts(); loadUsers();
-            } else { 
+                loadUsers();
+            } else {
                 document.getElementById('auth-screen').style.display = 'flex';
                 document.getElementById('app').style.display = 'none';
             }
         });
 
-        // СООБЩЕСТВО
-        function sendPost() {
-            const t = document.getElementById('post-in').value;
-            if(!t.trim()) return;
-            db.ref('posts').push({ author: myNick, txt: t, isAdm: (auth.currentUser.email === "vetrovlev1@gmail.com"), time: Date.now() });
-            document.getElementById('post-in').value = "";
-        }
-        function loadPosts() {
-            db.ref('posts').on('value', s => {
-                const f = document.getElementById('feed'); f.innerHTML = "";
-                let a = []; s.forEach(x => a.push(x.val()));
-                a.reverse().forEach(p => {
-                    f.innerHTML += `<div class="card-box"><b class="${p.isAdm?'nick-orange':''}">${p.author}</b><div style="margin-top:10px; white-space:pre-wrap;">${p.txt}</div></div>`;
-                });
-            });
-        }
-
-        // ЛС
         function loadUsers() {
             db.ref('users').on('value', s => {
                 const b = document.getElementById('u-box'); b.innerHTML = "";
                 s.forEach(u => {
                     if(u.key === auth.currentUser.uid) return;
-                    let d = document.createElement('div'); d.className = 'u-card'; d.innerText = u.val().nick;
+                    let d = document.createElement('div'); d.className = 'u-card';
+                    d.innerHTML = `<div class="ava">${u.val().nick[0].toUpperCase()}</div> <span>${u.val().nick}</span>`;
                     d.onclick = () => { 
                         selUID = u.key; 
                         document.querySelectorAll('.u-card').forEach(c => c.classList.remove('active'));
@@ -247,6 +215,7 @@
                 });
             });
         }
+
         function openChat() {
             const id = [auth.currentUser.uid, selUID].sort().join('_');
             db.ref('chats/' + id).on('value', s => {
@@ -257,6 +226,7 @@
                 m.scrollTop = m.scrollHeight;
             });
         }
+
         function sendPM() {
             const t = document.getElementById('pm-in').value; if(!t || !selUID) return;
             const id = [auth.currentUser.uid, selUID].sort().join('_');
@@ -264,23 +234,22 @@
             document.getElementById('pm-in').value = "";
         }
 
-        // НАСТРОЙКИ
-        function changeNick() {
-            const n = document.getElementById('new-nick').value;
-            if(n) { db.ref('users/' + auth.currentUser.uid + '/nick').set(n); alert("Никнейм успешно изменен!"); }
+        function setMode(m) {
+            document.body.className = m;
+            localStorage.setItem('os-mode', m);
         }
+
         function setTheme(t) {
             document.documentElement.setAttribute('data-theme', t);
             localStorage.setItem('theme', t);
         }
-        setTheme(localStorage.getItem('theme') || 'light');
 
-        // ИГРЫ
         function play(p, n) {
             document.getElementById('overlay').style.display = 'flex';
             document.getElementById('game-title').innerText = n;
             document.getElementById('game-frame').src = p;
         }
+
         function closeGame() { document.getElementById('overlay').style.display = 'none'; document.getElementById('game-frame').src = ""; }
 
         function tab(id, el) {
@@ -289,6 +258,10 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
         }
+
+        // Загрузка настроек
+        setTheme(localStorage.getItem('theme') || 'light');
+        setMode(localStorage.getItem('os-mode') || 'mode-pc');
     </script>
 </body>
 </html>
