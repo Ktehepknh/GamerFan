@@ -3,42 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Slime Farm 2D | Mark-42 Studio</title>
+    <title>Slime Clicker 2D Ultimate | Mark-42 Studio</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root { --accent: #ffcc00; --panel: #111; --border: #333; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; user-select: none; }
+        :root { --accent: #ffcc00; --panel: #111; --border: #333; --bg: #0b0b0f; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; user-select: none; outline: none; }
         body { margin: 0; background: #000; color: #fff; overflow: hidden; height: 100vh; }
+        
+        @keyframes slimeWalk {
+            0%, 100% { transform: scale(1, 1) translateY(0); }
+            50% { transform: scale(1.1, 0.9) translateY(-5px); }
+        }
+
         #app { display: flex; height: 100vh; }
-        #main { flex: 1; padding: 15px; display: flex; flex-direction: column; }
-        #hud { display: flex; gap: 10px; margin-bottom: 10px; }
-        .stat { background: var(--panel); padding: 10px; border: 1px solid var(--border); border-radius: 10px; font-weight: bold; color: var(--accent); }
+        #main { flex: 1; padding: 15px; display: flex; flex-direction: column; position: relative; }
+        #hud { display: flex; gap: 10px; margin-bottom: 10px; z-index: 10; flex-wrap: wrap; }
+        .stat { background: rgba(0,0,0,0.8); padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; font-weight: bold; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+        
         #grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 10px; flex: 1; }
-        .paddock { background: #0a0a0a; border: 2px solid var(--border); border-radius: 15px; position: relative; cursor: pointer; overflow: hidden; }
-        .paddock:active { border-color: var(--accent); transform: scale(0.98); }
-        .paddock-label { position: absolute; top: 5px; left: 8px; font-size: 10px; color: #555; }
-        .slime-img { position: absolute; width: 40px; pointer-events: none; }
-        #side { width: 320px; background: var(--panel); border-left: 2px solid var(--accent); display: flex; flex-direction: column; }
-        .tabs { display: flex; }
-        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; color: #555; }
+        .paddock { background: rgba(255,255,255,0.03); border: 2px solid var(--border); border-radius: 15px; position: relative; cursor: pointer; overflow: hidden; }
+        .paddock:hover { border-color: var(--accent); }
+        .slime-img { position: absolute; width: 45px; height: 45px; animation: slimeWalk 2s infinite ease-in-out; pointer-events: none; transition: all 3s; }
+
+        #side { width: 380px; background: var(--panel); border-left: 2px solid var(--accent); display: flex; flex-direction: column; }
+        .tabs { display: flex; background: #000; overflow-x: auto; }
+        .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; color: #555; font-size: 12px; font-weight: bold; min-width: 80px; }
         .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+        
         .list { flex: 1; overflow-y: auto; padding: 10px; }
-        .card { background: #1a1a1a; border: 1px solid #333; padding: 10px; margin-bottom: 8px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .btn { background: var(--accent); color: #000; border: none; padding: 8px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .card { background: #1a1a1a; border: 1px solid #333; padding: 10px; margin-bottom: 8px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; }
+        .card img { width: 35px; height: 35px; border-radius: 5px; }
+        .info { flex: 1; margin-left: 10px; font-size: 13px; }
+        
+        .btn { background: var(--accent); color: #000; border: none; padding: 6px 10px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 12px; }
         .btn:disabled { opacity: 0.3; }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: none; align-items: center; justify-content: center; }
-        .modal-box { background: #111; padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 280px; text-align: center; }
+
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; display: none; align-items: center; justify-content: center; }
+        .modal-box { background: #111; padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 320px; }
+        
+        .boost-timer { color: #00f2ff; font-size: 12px; margin-top: 5px; font-weight: bold; }
+        .quest-progress { width: 100%; height: 6px; background: #000; border-radius: 3px; margin-top: 5px; overflow: hidden; }
+        .quest-bar { height: 100%; background: var(--accent); width: 0%; transition: 0.3s; }
     </style>
 </head>
 <body>
 
+<audio id="snd-click" src="assets/click.mp3"></audio>
+<audio id="snd-buy" src="assets/buy.mp3"></audio>
+<audio id="snd-music" loop src="assets/music.mp3"></audio>
+
 <div id="m-sets" class="modal">
     <div class="modal-box">
-        <h3 style="color:var(--accent)">MARK-42 STUDIO</h3>
-        <button class="btn" style="width:100%; margin-bottom:10px;" onclick="resetGame()">СБРОС ПРОГРЕССА</button>
-        <button class="btn" style="width:100%; background:#444; color:#fff;" onclick="toggleModal(false)">ЗАКРЫТЬ</button>
+        <h3 style="color:var(--accent); text-align:center;">МЕНЮ MARK-42</h3>
+        <label style="font-size:10px">МУЗЫКА</label>
+        <input type="range" id="vol-m" min="0" max="1" step="0.1" value="0.5" style="width:100%" oninput="updateVol()">
+        <label style="font-size:10px">ЗВУКИ</label>
+        <input type="range" id="vol-s" min="0" max="1" step="0.1" value="0.7" style="width:100%">
+        <button class="btn" style="width:100%; margin-top:20px; background:#ff4444;" onclick="resetGame()">СБРОС ПРОГРЕССА</button>
+        <button class="btn" style="width:100%; margin-top:10px; background:#444; color:#fff;" onclick="toggleModal(false)">ЗАКРЫТЬ</button>
     </div>
 </div>
 
@@ -47,102 +71,146 @@
         <div id="hud">
             <div class="stat">🟡 <span id="c-val">0</span></div>
             <div class="stat">💎 <span id="d-val">0</span></div>
+            <div class="stat" title="Множитель за новые виды">📈 x<span id="m-val">1.0</span></div>
+            <div id="boost-active" class="stat" style="display:none; color:#00f2ff;">⚡ БУСТ АКТИВЕН!</div>
             <button class="btn" style="margin-left:auto" onclick="toggleModal(true)">⚙️</button>
         </div>
         <div id="grid"></div>
-        <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
+        <div style="display:flex; justify:center; gap:8px; margin-top:10px;">
             <button class="btn" onclick="setPage(0)">1</button>
             <button class="btn" onclick="setPage(1)">2</button>
             <button class="btn" onclick="setPage(2)">3</button>
         </div>
     </div>
+    
     <aside id="side">
         <div class="tabs">
-            <div class="tab active">МАГАЗИН (24)</div>
+            <div id="t-s" class="tab active" onclick="tab('s')">МАГАЗИН</div>
+            <div id="t-u" class="tab" onclick="tab('u')">РАНГИ</div>
+            <div id="t-q" class="tab" onclick="tab('q')">КВЕСТЫ</div>
+            <div id="t-b" class="tab" onclick="tab('b')">БУСТЫ</div>
         </div>
         <div id="list-s" class="list"></div>
+        <div id="list-u" class="list" style="display:none"></div>
+        <div id="list-q" class="list" style="display:none"></div>
+        <div id="list-b" class="list" style="display:none"></div>
     </aside>
 </div>
 
 <script>
-    // Настройки Firebase
-    const fCfg = {
-        apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI",
-        authDomain: "gamesfan-17986.firebaseapp.com",
-        projectId: "gamesfan-17986",
-        databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/",
-        appId: "1:311654524584:web:9283eea0aea6f7b946849d"
-    };
+    const fCfg = { apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI", authDomain: "gamesfan-17986.firebaseapp.com", databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/", projectId: "gamesfan-17986" };
     firebase.initializeApp(fCfg);
     const db = firebase.database();
     let uID = null;
 
-    // Цены (Фикс)
-    const PRICES = [0, 50, 200, 600, 1500, 4000, 10000, 25000, 60000, 140000, 300000, 700000, 1500000, 3500000, 8000000, 20000000, 50000000, 120000000, 300000000, 750000000, 1500000000, 4000000000, 10000000000, 25000000000, 60000000000];
+    let game = {
+        coins: 100, diams: 10, page: 0,
+        inv: new Array(25).fill(0),
+        rank: 0, upgrades: [0,0,0,0],
+        volM: 0.5, volS: 0.7,
+        totalClicks: 0,
+        boostEnd: 0, boostMult: 1,
+        quests: [
+            { id: 0, n: "Первые шаги", t: "Кликни 100 раз", target: 100, cur: 0, rew: 5, done: false },
+            { id: 1, n: "Слаймовод", t: "Собери 1000 монет", target: 1000, cur: 0, rew: 10, done: false },
+            { id: 2, n: "Фермер", t: "Купи 10 слаймов", target: 10, cur: 0, rew: 20, done: false },
+            { id: 3, n: "Магнат", t: "Кликни 5000 раз", target: 5000, cur: 0, rew: 50, done: false },
+            { id: 4, n: "Легенда Mark-42", t: "Собери 1 млн монет", target: 1000000, cur: 0, rew: 100, done: false }
+        ]
+    };
 
-    let game = { coins: 100, diams: 0, page: 0, inv: new Array(25).fill(0) };
+    const PRICES = [0, 50, 200, 500, 1200, 3000, 8000, 20000, 50000, 120000, 300000, 750000, 2000000, 5000000, 12000000, 30000000, 80000000, 200000000, 500000000, 1200000000, 3000000000, 8000000000, 20000000000, 50000000000, 120000000000];
+    const RANKS = [
+        { n: "Медный", color: "#cd7f32", p: [500, 1500, 3000, 7000] },
+        { n: "Железный", color: "#aaa", p: [20000, 45000, 80000, 150000] },
+        { n: "Золотой", color: "#ffcc00", p: [1000000, 2500000, 6000000, 15000000] },
+        { n: "Алмазный", color: "#00f2ff", p: [100000000, 300000000, 800000000, 2000000000] }
+    ];
 
-    // 1. Быстрое сохранение (Локалка + Облако)
-    function save() {
-        localStorage.setItem('sf2d_save', JSON.stringify(game));
-        if (uID) db.ref('users/' + uID + '/farm').set(game);
+    function play(id) {
+        const a = document.getElementById('snd-'+id);
+        a.volume = game.volS; a.currentTime = 0; a.play().catch(()=>{});
     }
 
-    // 2. Мгновенная загрузка
+    function updateVol() {
+        game.volM = document.getElementById('vol-m').value;
+        game.volS = document.getElementById('vol-s').value;
+        const m = document.getElementById('snd-music');
+        m.volume = game.volM; if(m.paused) m.play().catch(()=>{});
+        save();
+    }
+
+    function save() {
+        localStorage.setItem('sf2d_ult', JSON.stringify(game));
+        if(uID) db.ref('users/'+uID+'/farm').set(game);
+    }
+
     function load() {
-        const local = localStorage.getItem('sf2d_save');
-        if (local) {
-            game = JSON.parse(local);
-            renderAll();
-        }
-        
-        firebase.auth().onAuthStateChanged(user => {
-            if (user) {
-                uID = user.uid;
-                db.ref('users/' + uID + '/farm').once('value', s => {
-                    if (s.exists()) {
-                        game = s.val();
-                        renderAll();
-                    }
-                });
-            }
+        const l = localStorage.getItem('sf2d_ult');
+        if(l) { game = JSON.parse(l); render(); }
+        firebase.auth().onAuthStateChanged(u => {
+            if(u){ uID=u.uid; db.ref('users/'+uID+'/farm').once('value', s => { if(s.exists()){ game=s.val(); render(); } }); }
         });
     }
 
-    // 3. Сброс прогресса
-    function resetGame() {
-        if (confirm("Удалить всё?")) {
-            game = { coins: 100, diams: 0, page: 0, inv: new Array(25).fill(0) };
-            save();
-            location.reload();
-        }
+    // МНОЖИТЕЛЬ ЗА ВИДЫ (+0.50 за каждый открытый)
+    function getSpeciesMult() {
+        let species = 0;
+        game.inv.forEach(count => { if(count > 0) species++; });
+        return 1 + (species * 0.50);
     }
 
-    function renderAll() {
+    function render() {
+        let sMult = getSpeciesMult();
         document.getElementById('c-val').innerText = Math.floor(game.coins).toLocaleString();
         document.getElementById('d-val').innerText = game.diams;
+        document.getElementById('m-val').innerText = sMult.toFixed(2);
+        
+        // Буст визуализация
+        let now = Date.now();
+        if(game.boostEnd > now) {
+            document.getElementById('boost-active').style.display = 'flex';
+        } else {
+            document.getElementById('boost-active').style.display = 'none';
+            game.boostMult = 1;
+        }
+
         renderGrid();
         renderShop();
+        renderUpg();
+        renderQuests();
+        renderBoosts();
     }
 
     function renderGrid() {
         const g = document.getElementById('grid'); g.innerHTML = "";
         let start = game.page * 8 + 1;
-        for (let i = 0; i < 8; i++) {
-            let id = start + i; if (id > 24) break;
+        for(let i=0; i<8; i++) {
+            let id = start + i; if(id > 24) break;
             let p = document.createElement('div');
             p.className = 'paddock';
-            p.innerHTML = `<div class="paddock-label">ЗАГОН ${id} [${game.inv[id]}]</div>`;
+            p.innerHTML = `<div style="position:absolute;top:5px;left:8px;font-size:10px;color:#555;">${id} [${game.inv[id]}]</div>`;
             p.onclick = () => {
-                if (game.inv[id] > 0) {
-                    game.coins += (id * game.inv[id]);
-                    document.getElementById('c-val').innerText = Math.floor(game.coins).toLocaleString();
+                if(game.inv[id] > 0) {
+                    let totalMult = getSpeciesMult() * (1 + (game.rank * 2) + (game.upgrades[game.rank] * 0.5)) * game.boostMult;
+                    let gain = (id * game.inv[id] * totalMult);
+                    game.coins += gain;
+                    game.totalClicks++;
+                    // Квесты
+                    game.quests.forEach(q => {
+                        if(!q.done) {
+                            if(q.id === 0 || q.id === 3) q.cur = game.totalClicks;
+                            if(q.id === 1 || q.id === 4) q.cur = Math.floor(game.coins);
+                            if(q.cur >= q.target) { q.done = true; game.diams += q.rew; play('buy'); }
+                        }
+                    });
+                    play('click'); render();
                 }
             };
-            for (let n = 0; n < Math.min(game.inv[id], 5); n++) {
+            for(let n=0; n<Math.min(game.inv[id], 6); n++) {
                 let s = document.createElement('img');
                 s.className = 'slime-img'; s.src = `assets/slime${id}.png`;
-                s.style.left = Math.random() * 70 + "%"; s.style.top = Math.random() * 60 + "%";
+                s.style.left = Math.random()*70+"%"; s.style.top = Math.random()*60+"%";
                 s.onerror = () => s.src = "https://cdn-icons-png.flaticon.com/512/825/825561.png";
                 p.appendChild(s);
             }
@@ -152,29 +220,86 @@
 
     function renderShop() {
         let h = "";
-        for (let i = 1; i <= 24; i++) {
+        for(let i=1; i<=24; i++) {
             h += `<div class="card">
-                <span><b>Слайм ${i}</b><br><small>${PRICES[i].toLocaleString()} 🟡</small></span>
+                <img src="assets/slime${i}.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/825/825561.png'">
+                <div class="info"><b>Слайм #${i}</b><br><small>${PRICES[i].toLocaleString()} 🟡</small></div>
                 <button class="btn" onclick="buy(${i})" ${game.coins < PRICES[i] ? 'disabled' : ''}>КУПИТЬ</button>
             </div>`;
         }
         document.getElementById('list-s').innerHTML = h;
     }
 
-    function buy(id) {
-        if (game.coins >= PRICES[id] && game.inv[id] < 16) {
-            game.coins -= PRICES[id];
-            game.inv[id]++;
-            save(); renderAll();
+    function renderQuests() {
+        let h = "";
+        game.quests.forEach(q => {
+            let per = Math.min(100, (q.cur / q.target) * 100);
+            h += `<div class="card" style="opacity:${q.done?0.5:1}">
+                <div class="info"><b>${q.n}</b><br><small>${q.t}</small>
+                    <div class="quest-progress"><div class="quest-bar" style="width:${per}%"></div></div>
+                </div>
+                <div style="font-size:10px; color:var(--accent)">+${q.rew} 💎</div>
+            </div>`;
+        });
+        document.getElementById('list-q').innerHTML = h;
+    }
+
+    function renderBoosts() {
+        let h = `
+            <div class="card"><div class="info"><b>Буст x2 (2 мин)</b></div><button class="btn" onclick="buyB(2, 120, 5)">5 💎</button></div>
+            <div class="card"><div class="info"><b>Буст x5 (5 мин)</b></div><button class="btn" onclick="buyB(5, 300, 15)">15 💎</button></div>
+            <div class="card"><div class="info"><b>Буст x10 (10 мин)</b></div><button class="btn" onclick="buyB(10, 600, 50)">50 💎</button></div>
+        `;
+        document.getElementById('list-b').innerHTML = h;
+    }
+
+    function renderUpg() {
+        let rData = RANKS[game.rank];
+        let h = `<h3 style="color:${rData.color}; text-align:center; font-size:14px;">${rData.n} Ранг</h3>`;
+        for(let i=0; i<4; i++) {
+            let cost = rData.p[i];
+            let isDone = game.upgrades[game.rank] > i;
+            h += `<div class="card">
+                <div class="info"><b>Апгрейд ${i+1}</b><br><small>Множитель +0.5</small></div>
+                <button class="btn" onclick="upg(${i})" ${game.coins < cost || isDone ? 'disabled' : ''}>${isDone?'MAX':cost.toLocaleString()}</button>
+            </div>`;
+        }
+        if(game.upgrades[game.rank] >= 4 && game.rank < 3) h += `<button class="btn" style="width:100%; margin-top:10px;" onclick="game.rank++; save(); render();">НОВЫЙ РАНГ</button>`;
+        document.getElementById('list-u').innerHTML = h;
+    }
+
+    function buy(id) { 
+        if(game.coins >= PRICES[id] && game.inv[id] < 16) { 
+            game.coins -= PRICES[id]; game.inv[id]++; 
+            if(game.inv[id]===1) { /* новый вид */ }
+            game.quests[2].cur = game.inv.reduce((a,b)=>a+b, 0);
+            play('buy'); save(); render(); 
+        } 
+    }
+    
+    function upg(i) { if(game.coins >= RANKS[game.rank].p[i]) { game.coins -= RANKS[game.rank].p[i]; game.upgrades[game.rank]++; play('buy'); save(); render(); } }
+    
+    function buyB(m, time, cost) {
+        if(game.diams >= cost) {
+            game.diams -= cost; game.boostMult = m; game.boostEnd = Date.now() + (time * 1000);
+            play('buy'); save(); render();
         }
     }
 
-    function setPage(p) { game.page = p; renderGrid(); }
-    function toggleModal(s) { document.getElementById('m-sets').style.display = s ? 'flex' : 'none'; }
+    function tab(t) {
+        ['s','u','q','b'].forEach(x => {
+            document.getElementById('list-'+x).style.display = (x===t?'block':'none');
+            document.getElementById('t-'+x).classList.remove('active');
+        });
+        document.getElementById('t-'+t).classList.add('active');
+    }
 
-    // Авто-сохранение раз в минуту
-    setInterval(save, 60000);
-    
+    function setPage(p) { game.page = p; renderGrid(); }
+    function toggleModal(s) { document.getElementById('m-sets').style.display = s?'flex':'none'; if(s) updateVol(); }
+    function resetGame() { if(confirm("СБРОСИТЬ ВСЁ?")) { localStorage.clear(); location.reload(); } }
+
+    setInterval(render, 1000); // Таймеры бустов
+    setInterval(save, 30000); // Авто-сейв
     window.onload = load;
 </script>
 </body>
