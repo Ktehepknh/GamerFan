@@ -25,45 +25,48 @@
             --vk-bg: #15151a; --vk-white: #1c2128;
         }
 
-        /* Режимы ПК/Телефон */
-        .mode-phone .sidebar { width: 80px; }
-        .mode-phone .sidebar .nav-item span { display: none; }
-        .mode-phone #app { grid-template-columns: 80px 1fr; }
+        /* Адаптивные режимы */
+        body.mode-phone #app { grid-template-columns: 80px 1fr; }
+        body.mode-phone .sidebar span, body.mode-phone #logo-text { display: none; }
+        body.mode-phone .nav-item { justify-content: center; padding: 15px 0; margin-right: 0; border-radius: 0; }
 
         * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
-        body, html { height: 100%; background: var(--g-bg); color: var(--g-text); overflow: hidden; }
+        body, html { height: 100%; background: var(--g-bg); color: var(--g-text); overflow: hidden; transition: background 0.3s; }
 
+        /* AUTH */
         #auth-screen { position: fixed; inset: 0; background: var(--g-bg); display: flex; align-items: center; justify-content: center; z-index: 5000; }
         .auth-card { width: 380px; padding: 35px; border: 1px solid var(--g-border); border-radius: 20px; text-align: center; box-shadow: var(--shadow); background: var(--g-bg); }
         input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--g-border); border-radius: 8px; background: var(--g-surface); color: var(--g-text); outline: none; }
         
-        #app { display: none; height: 100vh; grid-template-columns: 280px 1fr; transition: 0.3s; }
+        /* LAYOUT */
+        #app { display: none; height: 100vh; grid-template-columns: 260px 1fr; transition: 0.3s; }
         .sidebar { background: var(--g-surface); border-right: 1px solid var(--g-border); padding: 25px 0; display: flex; flex-direction: column; }
-        .nav-item { padding: 14px 25px; cursor: pointer; color: var(--g-text-light); border-radius: 0 30px 30px 0; margin-right: 15px; margin-bottom: 5px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+        .nav-item { padding: 14px 25px; cursor: pointer; color: var(--g-text-light); border-radius: 0 30px 30px 0; margin-right: 15px; margin-bottom: 5px; font-weight: 500; display: flex; align-items: center; gap: 12px; }
         .nav-item.active { background: #e8f0fe; color: var(--g-blue); border-left: 5px solid var(--g-blue); }
 
-        .main { padding: 35px; overflow-y: auto; position: relative; }
+        .main { padding: 30px; overflow-y: auto; }
         .view { display: none; animation: fadeIn 0.3s ease; }
         .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         .card-box { background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .btn-blue { background: var(--g-blue); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .btn-blue { background: var(--g-blue); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-blue:hover { opacity: 0.9; }
 
-        /* УЛУЧШЕННЫЙ МЕССЕНДЖЕР */
-        .chat-layout { display: grid; grid-template-columns: 240px 1fr; height: 600px; border: 1px solid var(--g-border); border-radius: 15px; overflow: hidden; background: var(--vk-bg); box-shadow: var(--shadow); }
+        /* VK MESSENGER STYLE */
+        .chat-layout { display: grid; grid-template-columns: 240px 1fr; height: 550px; border: 1px solid var(--g-border); border-radius: 15px; overflow: hidden; background: var(--vk-bg); }
         .u-list { background: var(--vk-white); border-right: 1px solid var(--g-border); overflow-y: auto; }
-        .u-card { padding: 15px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05); transition: 0.2s; display: flex; align-items: center; gap: 10px; }
-        .u-card:hover { background: rgba(0,0,0,0.03); }
+        .u-card { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); display: flex; align-items: center; gap: 10px; }
         .u-card.active { background: #e7f2ff; border-right: 3px solid var(--vk-blue); }
-        .ava { width: 35px; height: 35px; border-radius: 50%; background: var(--g-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; }
+        .ava { width: 35px; height: 35px; border-radius: 50%; background: var(--vk-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
 
         #pm-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 8px; background: var(--vk-bg); }
-        .msg { padding: 10px 16px; border-radius: 18px; max-width: 75%; font-size: 14px; line-height: 1.5; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .m-in { background: var(--vk-white); align-self: flex-start; border-bottom-left-radius: 4px; color: #000; }
-        .m-out { background: #ceeafe; align-self: flex-end; border-bottom-right-radius: 4px; color: #000; }
+        .msg { padding: 10px 15px; border-radius: 18px; max-width: 75%; font-size: 14px; line-height: 1.4; position: relative; }
+        .m-in { background: var(--vk-white); align-self: flex-start; border-bottom-left-radius: 4px; color: #000; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+        .m-out { background: #ceeafe; align-self: flex-end; border-bottom-right-radius: 4px; color: #000; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
 
+        /* GAME OVERLAY */
         #overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: none; flex-direction: column; }
         .game-bar { height: 50px; background: #202124; display: flex; align-items: center; padding: 0 20px; color: white; justify-content: space-between; }
         iframe { flex: 1; border: none; }
@@ -76,85 +79,102 @@
 
     <div id="auth-screen">
         <div class="auth-card">
-            <h2 id="auth-t" style="margin-bottom:15px; color:var(--g-blue);">Mark-42 Studio</h2>
-            <input type="text" id="reg-n" placeholder="Никнейм (только для новых)" class="hidden">
+            <h2 style="margin-bottom:15px; color:var(--g-blue);">Mark-42 Studio</h2>
+            <input type="text" id="reg-n" placeholder="Никнейм" class="hidden">
             <input type="email" id="reg-e" placeholder="Email">
             <input type="password" id="reg-p" placeholder="Пароль">
             <button class="btn-blue" style="width:100%; margin-top:10px;" onclick="handleAuth()">Войти / Регистрация</button>
-            <p style="margin-top:15px; font-size:12px; cursor:pointer; color:var(--g-text-light);" onclick="isLog=!isLog; document.getElementById('reg-n').classList.toggle('hidden')">Сменить режим</p>
+            <p style="margin-top:15px; font-size:12px; cursor:pointer; color:var(--g-text-light);" onclick="isLog=!isLog; document.getElementById('reg-n').classList.toggle('hidden')">Сменить режим входа</p>
         </div>
     </div>
 
     <div id="app">
         <aside class="sidebar">
-            <div id="logo-text" style="padding:0 25px 30px; color:var(--g-blue); font-weight:700; font-size:22px;">Mark-42</div>
-            <div class="nav-item active" onclick="tab('lib', this)">🎮 <span>Библиотека</span></div>
-            <div class="nav-item" onclick="tab('comm', this)">📢 <span>Сообщество</span></div>
+            <div id="logo-text" style="padding:0 25px 30px; color:var(--g-blue); font-weight:700; font-size:20px;">GamesFan OS</div>
+            <div class="nav-item active" onclick="tab('lib', this)">🎮 <span>Проекты</span></div>
+            <div class="nav-item" onclick="tab('comm', this)">📢 <span>Новости</span></div>
             <div class="nav-item" onclick="tab('pms', this)">✉️ <span>Мессенджер</span></div>
             <div class="nav-item" onclick="tab('set', this)">⚙️ <span>Настройки</span></div>
-            <div id="adm-nav" class="nav-item hidden" onclick="tab('adm', this)" style="color:#d93025; border-top: 1px solid var(--g-border); margin-top: 10px;">🛡️ <span>АДМИН</span></div>
+            <div id="adm-nav" class="nav-item hidden" onclick="tab('adm', this)" style="color:#d93025; border-top: 1px solid var(--g-border); margin-top: 10px;">🛡️ <span>АДМИН-ПАНЕЛЬ</span></div>
             <div id="cur-u" style="margin-top:auto; padding:25px; border-top:1px solid var(--g-border); font-size:13px; font-weight:bold;">...</div>
         </aside>
 
         <main class="main">
             <div id="v-lib" class="view active">
-                <h1>Мои Проекты</h1><br>
+                <h1>Библиотека Mark-42</h1><br>
                 <div class="grid">
                     <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('Slime_Farm_2D/index.html', 'Slime Farm 2D')"><span style="font-size:30px;">🚜</span><br><b>Farm 2D</b></div>
                     <div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('Slime_Clicker/index.html', 'Slime Clicker')"><span style="font-size:30px;">🦠</span><br><b>Clicker</b></div>
-                </div><br>
-                <h3>ELBERR_OS</h3><br>
+                </div>
+                <br><h3>Серия ELBERR_OS</h3><br>
                 <div class="grid" id="chapters-grid"></div>
             </div>
 
             <div id="v-pms" class="view">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px; align-items:center;">
                     <h1>Мессенджер</h1>
-                    <button class="btn-blue" onclick="tab('pms', document.querySelectorAll('.nav-item')[2]); alert('Выберите пользователя из списка слева для начала чата!')">+ СОЗДАТЬ ЧАТ</button>
+                    <button class="btn-blue" style="font-size:12px;" onclick="alert('Выберите человека слева, чтобы начать чат!')">+ СОЗДАТЬ ЧАТ</button>
                 </div>
                 <div class="chat-layout">
                     <div class="u-list" id="u-box"></div>
                     <div style="display:flex; flex-direction:column; background:var(--vk-white);">
-                        <div id="pm-target" style="padding:15px; border-bottom:1px solid var(--g-border); font-weight:bold; background:var(--vk-white);">Выберите чат</div>
+                        <div id="pm-target" style="padding:15px; border-bottom:1px solid var(--g-border); font-weight:bold;">Выберите диалог</div>
                         <div id="pm-messages"></div>
-                        <div style="padding:15px; display:flex; gap:10px; border-top:1px solid var(--g-border); background:var(--vk-white);">
-                            <input type="text" id="pm-in" placeholder="Напишите сообщение..." style="margin:0; border-radius: 20px; padding-left: 15px;" onkeypress="if(event.key==='Enter') sendPM()">
-                            <button class="btn-blue" style="border-radius: 50%; width: 40px; padding:0;" onclick="sendPM()">></button>
+                        <div style="padding:15px; display:flex; gap:10px; border-top:1px solid var(--g-border);">
+                            <input type="text" id="pm-in" placeholder="Ваше сообщение..." style="margin:0; border-radius:20px; padding-left:15px;" onkeypress="if(event.key==='Enter') sendPM()">
+                            <button class="btn-blue" style="border-radius:50%; width:42px; padding:0;" onclick="sendPM()">></button>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <div id="v-comm" class="view">
+                <h1>Новости Студии</h1><br>
+                <div class="card-box" id="post-box" style="display:none;">
+                    <textarea id="post-in" style="width:100%; height:80px; border:1px solid var(--g-border); border-radius:8px; padding:10px; resize:none; outline:none;"></textarea>
+                    <button class="btn-blue" style="margin-top:10px; float:right;" onclick="sendPost()">Опубликовать</button>
+                    <div style="clear:both"></div>
+                </div>
+                <div id="feed"></div>
+            </div>
+
             <div id="v-set" class="view">
                 <h1>Настройки системы</h1><br>
                 <div class="card-box">
-                    <p><b>Режим интерфейса</b></p><br>
-                    <button class="btn-blue" onclick="setMode('mode-pc')">💻 ПК</button>
-                    <button class="btn-blue" style="background:#34a853;" onclick="setMode('mode-phone')">📱 Телефон</button>
+                    <p><b>Вид интерфейса</b></p><br>
+                    <button class="btn-blue" onclick="setMode('mode-pc')">💻 Режим ПК</button>
+                    <button class="btn-blue" style="background:#34a853;" onclick="setMode('mode-phone')">📱 Режим Телефона</button>
                 </div>
                 <div class="card-box">
-                    <p><b>Тема</b></p><br>
+                    <p><b>Оформление</b></p><br>
                     <button class="btn-blue" style="background:#f1f3f4; color:#000;" onclick="setTheme('light')">Светлая</button>
                     <button class="btn-blue" style="background:#222;" onclick="setTheme('dark')">Темная</button>
                 </div>
                 <div class="card-box">
                     <p><b>Профиль</b></p><br>
-                    <input type="text" id="new-nick" placeholder="Новый ник">
-                    <button class="btn-blue" onclick="changeNick()">Сохранить имя</button>
+                    <input type="text" id="new-nick" placeholder="Новый никнейм">
+                    <button class="btn-blue" onclick="changeNick()">Обновить имя</button>
                 </div>
-                <button class="btn-blue" style="background:#ea4335;" onclick="auth.signOut()">Выйти</button>
+                <button class="btn-blue" style="background:#ea4335;" onclick="auth.signOut()">Выйти из системы</button>
             </div>
 
-            <div id="v-comm" class="view"><h1>Сообщество</h1><div id="feed"></div></div>
-            <div id="v-adm" class="view"><h1>Админ-панель</h1></div>
+            <div id="v-adm" class="view">
+                <h1 style="color:#d93025;">ROOT CONTROL</h1><br>
+                <div class="card-box" style="border-color:#d93025;">
+                    <p><b>Активные переписки:</b></p><br>
+                    <div id="adm-chats-list" style="max-height:250px; overflow-y:auto; background:rgba(0,0,0,0.05); padding:10px; border-radius:8px;"></div>
+                </div>
+                <div class="card-box">
+                    <p><b>Глобальные действия:</b></p><br>
+                    <button class="btn-blue" style="background:#d93025;" onclick="if(confirm('Очистить ленту новостей?')) db.ref('posts').remove()">Удалить все посты</button>
+                    <button class="btn-blue" style="background:#000; margin-left:10px;" onclick="if(confirm('Удалить ВСЕ переписки из базы?')) db.ref('chats').remove()">Сбросить базу ЛС</button>
+                </div>
+            </div>
         </main>
     </div>
 
     <div id="overlay">
-        <div class="game-bar">
-            <span id="game-title">...</span>
-            <button onclick="closeGame()" style="background:#ea4335; color:white; border:none; padding:6px 15px; border-radius:6px; cursor:pointer;">✖</button>
-        </div>
+        <div class="game-bar"><span id="game-title">...</span><button onclick="closeGame()" style="background:#ea4335; color:white; border:none; padding:6px 15px; border-radius:6px; cursor:pointer;">ЗАКРЫТЬ ✖</button></div>
         <iframe id="game-frame"></iframe>
     </div>
 
@@ -164,9 +184,8 @@
         const auth = firebase.auth(), db = firebase.database();
         let isLog = true, myNick = "", selUID = null;
 
-        // Инициализация глав
-        const chaptersHTML = [1,2,3,4,5,6].map(i => `<div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('ELBERR_OS/Chapter${i}/index.html','Глава ${i}')">${i < 10 ? '0'+i : i}</div>`).join('');
-        document.getElementById('chapters-grid').innerHTML = chaptersHTML;
+        // Генерация глав
+        document.getElementById('chapters-grid').innerHTML = [1,2,3,4,5,6].map(i => `<div class="card-box" style="text-align:center; cursor:pointer;" onclick="play('ELBERR_OS/Chapter${i}/index.html','Глава ${i}')">${i<10?'0'+i:i}</div>`).join('');
 
         async function handleAuth() {
             const e = document.getElementById('reg-e').value, p = document.getElementById('reg-p').value, n = document.getElementById('reg-n').value;
@@ -184,26 +203,30 @@
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'grid';
                 const isAdmin = (u.email === "vetrovlev1@gmail.com");
-                if(isAdmin) document.getElementById('adm-nav').classList.remove('hidden');
-
+                if(isAdmin) {
+                    document.getElementById('adm-nav').classList.remove('hidden');
+                    document.getElementById('post-box').style.display = 'block';
+                }
                 db.ref('users/' + u.uid).on('value', s => {
-                    myNick = isAdmin ? "Creater ktehepknh | Mark-42" : (s.val()?.nick || "User");
+                    myNick = isAdmin ? "Creater ktehepknh | Mark-42 Studio" : (s.val()?.nick || "Пользователь");
                     document.getElementById('cur-u').innerText = myNick;
+                    if(isAdmin) document.getElementById('cur-u').classList.add('nick-orange');
                 });
-                loadUsers();
+                loadUsers(); loadPosts();
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
                 document.getElementById('app').style.display = 'none';
             }
         });
 
+        // МЕССЕНДЖЕР
         function loadUsers() {
             db.ref('users').on('value', s => {
                 const b = document.getElementById('u-box'); b.innerHTML = "";
                 s.forEach(u => {
                     if(u.key === auth.currentUser.uid) return;
                     let d = document.createElement('div'); d.className = 'u-card';
-                    d.innerHTML = `<div class="ava">${u.val().nick[0].toUpperCase()}</div> <span>${u.val().nick}</span>`;
+                    d.innerHTML = `<div class="ava">${u.val().nick[0].toUpperCase()}</div><span>${u.val().nick}</span>`;
                     d.onclick = () => { 
                         selUID = u.key; 
                         document.querySelectorAll('.u-card').forEach(c => c.classList.remove('active'));
@@ -234,32 +257,57 @@
             document.getElementById('pm-in').value = "";
         }
 
-        function setMode(m) {
-            document.body.className = m;
-            localStorage.setItem('os-mode', m);
+        // АДМИНКА
+        function loadAdmChats() {
+            db.ref('chats').on('value', s => {
+                const container = document.getElementById('adm-chats-list');
+                container.innerHTML = s.exists() ? "" : "Нет активных чатов";
+                s.forEach(chat => {
+                    const chatId = chat.key;
+                    const div = document.createElement('div');
+                    div.style = "display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--g-border); font-size:12px;";
+                    div.innerHTML = `<span>ID: ${chatId}</span><button class="btn-blue" style="background:#ea4335; padding:5px 10px;" onclick="deleteChat('${chatId}')">Удалить</button>`;
+                    container.appendChild(div);
+                });
+            });
         }
 
-        function setTheme(t) {
-            document.documentElement.setAttribute('data-theme', t);
-            localStorage.setItem('theme', t);
+        function deleteChat(id) {
+            if(confirm(`Удалить переписку ${id}?`)) db.ref('chats/' + id).remove();
         }
 
-        function play(p, n) {
-            document.getElementById('overlay').style.display = 'flex';
-            document.getElementById('game-title').innerText = n;
-            document.getElementById('game-frame').src = p;
+        // НОВОСТИ
+        function sendPost() {
+            const t = document.getElementById('post-in').value; if(!t.trim()) return;
+            db.ref('posts').push({ author: myNick, txt: t, isAdm: true, time: Date.now() });
+            document.getElementById('post-in').value = "";
+        }
+        function loadPosts() {
+            db.ref('posts').on('value', s => {
+                const f = document.getElementById('feed'); f.innerHTML = "";
+                let a = []; s.forEach(x => a.push(x.val()));
+                a.reverse().forEach(p => {
+                    f.innerHTML += `<div class="card-box"><b class="${p.isAdm?'nick-orange':''}">${p.author}</b><div style="margin-top:10px; white-space:pre-wrap;">${p.txt}</div></div>`;
+                });
+            });
         }
 
+        // СИСТЕМНОЕ
+        function setMode(m) { document.body.className = m; localStorage.setItem('os-mode', m); }
+        function setTheme(t) { document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t); }
+        function changeNick() { const n = document.getElementById('new-nick').value; if(n) db.ref('users/' + auth.currentUser.uid + '/nick').set(n); }
+        function play(p, n) { document.getElementById('overlay').style.display = 'flex'; document.getElementById('game-title').innerText = n; document.getElementById('game-frame').src = p; }
         function closeGame() { document.getElementById('overlay').style.display = 'none'; document.getElementById('game-frame').src = ""; }
-
+        
         function tab(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById('v-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
+            if(id === 'adm') loadAdmChats();
         }
 
-        // Загрузка настроек
+        // Загрузка пресетов
         setTheme(localStorage.getItem('theme') || 'light');
         setMode(localStorage.getItem('os-mode') || 'mode-pc');
     </script>
