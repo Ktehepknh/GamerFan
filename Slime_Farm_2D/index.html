@@ -4,61 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Slime Farm 2D | Mark-42 Studio</title>
-    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
     <style>
-        :root {
-            --accent: #ffcc00; --bg: #0b0b0f;
-            --panel: rgba(20, 20, 25, 0.98); --border: rgba(255, 255, 255, 0.1);
-        }
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; }
-        body, html { margin: 0; padding: 0; height: 100vh; background: #000; color: white; overflow: hidden; }
-        #bg-img { position: fixed; inset: 0; background: url('assets/background.jpg') center/cover; filter: brightness(0.2); z-index: 1; }
-        #app { position: relative; z-index: 10; display: flex; height: 100vh; width: 100vw; }
-        #app.mobile-mode { flex-direction: column; }
-        
-        #main { flex: 1; display: flex; flex-direction: column; padding: 15px; }
-        #hud { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 15px; }
-        .stat { background: #111; padding: 8px 15px; border-radius: 10px; border: 1px solid var(--border); font-weight: bold; font-size: 18px; color: var(--accent); }
-        
+        :root { --accent: #ffcc00; --panel: #111; --border: #333; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; user-select: none; }
+        body { margin: 0; background: #000; color: #fff; overflow: hidden; height: 100vh; }
+        #app { display: flex; height: 100vh; }
+        #main { flex: 1; padding: 15px; display: flex; flex-direction: column; }
+        #hud { display: flex; gap: 10px; margin-bottom: 10px; }
+        .stat { background: var(--panel); padding: 10px; border: 1px solid var(--border); border-radius: 10px; font-weight: bold; color: var(--accent); }
         #grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 10px; flex: 1; }
-        .paddock { background: rgba(255,255,255,0.05); border: 2px solid #222; border-radius: 15px; position: relative; cursor: pointer; overflow: hidden; }
-        .paddock:hover { border-color: var(--accent); }
-        .paddock-label { position: absolute; top: 5px; left: 8px; font-size: 10px; color: #777; font-weight: bold; }
-        .slime-img { position: absolute; width: 40px; height: 40px; pointer-events: none; transition: 0.3s; }
-
-        #side { width: 350px; background: var(--panel); border-left: 2px solid var(--accent); display: flex; flex-direction: column; }
-        #app.mobile-mode #side { width: 100%; height: 40%; border-left: none; border-top: 2px solid var(--accent); }
-        
-        .tabs { display: flex; border-bottom: 1px solid #333; }
-        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-weight: bold; color: #555; }
+        .paddock { background: #0a0a0a; border: 2px solid var(--border); border-radius: 15px; position: relative; cursor: pointer; overflow: hidden; }
+        .paddock:active { border-color: var(--accent); transform: scale(0.98); }
+        .paddock-label { position: absolute; top: 5px; left: 8px; font-size: 10px; color: #555; }
+        .slime-img { position: absolute; width: 40px; pointer-events: none; }
+        #side { width: 320px; background: var(--panel); border-left: 2px solid var(--accent); display: flex; flex-direction: column; }
+        .tabs { display: flex; }
+        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; color: #555; }
         .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
-        
         .list { flex: 1; overflow-y: auto; padding: 10px; }
-        .card { background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 10px; padding: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-buy { background: var(--accent); color: black; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .btn-buy:disabled { opacity: 0.3; cursor: not-allowed; }
-
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; }
-        .modal-box { background: #1a1a1a; padding: 30px; border-radius: 20px; border: 2px solid var(--accent); text-align: center; width: 300px; }
-        
-        #save-status { position: fixed; bottom: 5px; left: 5px; font-size: 10px; color: #444; }
+        .card { background: #1a1a1a; border: 1px solid #333; padding: 10px; margin-bottom: 8px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .btn { background: var(--accent); color: #000; border: none; padding: 8px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .btn:disabled { opacity: 0.3; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: none; align-items: center; justify-content: center; }
+        .modal-box { background: #111; padding: 25px; border-radius: 20px; border: 2px solid var(--accent); width: 280px; text-align: center; }
     </style>
 </head>
 <body>
 
-<div id="bg-img"></div>
-<div id="save-status">MARK-42 ENGINE ONLINE</div>
-
-<div id="m-settings" class="modal">
+<div id="m-sets" class="modal">
     <div class="modal-box">
-        <h3 style="color:var(--accent)">НАСТРОЙКИ</h3>
-        <button class="btn-buy" style="width:100%; margin-bottom:10px;" onclick="toggleMode()">СМЕНИТЬ ВИД (PC/Моб)</button>
-        <button class="btn-buy" style="width:100%; background:#ff4444;" onclick="resetProgress()">СБРОС ПРОГРЕССА</button>
-        <button class="btn-buy" style="width:100%; margin-top:20px; background:#555;" onclick="closeSettings()">ЗАКРЫТЬ</button>
+        <h3 style="color:var(--accent)">MARK-42 STUDIO</h3>
+        <button class="btn" style="width:100%; margin-bottom:10px;" onclick="resetGame()">СБРОС ПРОГРЕССА</button>
+        <button class="btn" style="width:100%; background:#444; color:#fff;" onclick="toggleModal(false)">ЗАКРЫТЬ</button>
     </div>
 </div>
 
@@ -67,167 +47,135 @@
         <div id="hud">
             <div class="stat">🟡 <span id="c-val">0</span></div>
             <div class="stat">💎 <span id="d-val">0</span></div>
-            <div style="margin-left:auto; cursor:pointer;" onclick="openSettings()">⚙️</div>
+            <button class="btn" style="margin-left:auto" onclick="toggleModal(true)">⚙️</button>
         </div>
-        
         <div id="grid"></div>
-        
-        <div style="display:flex; justify:center; gap:10px; margin-top:10px;">
-            <button class="btn-buy" onclick="setPage(0)">1</button>
-            <button class="btn-buy" onclick="setPage(1)">2</button>
-            <button class="btn-buy" onclick="setPage(2)">3</button>
+        <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
+            <button class="btn" onclick="setPage(0)">1</button>
+            <button class="btn" onclick="setPage(1)">2</button>
+            <button class="btn" onclick="setPage(2)">3</button>
         </div>
     </div>
-
     <aside id="side">
         <div class="tabs">
-            <div class="tab active" onclick="showTab('s', this)">МАГАЗИН</div>
-            <div class="tab" onclick="showTab('u', this)">ПРОКАЧКА</div>
+            <div class="tab active">МАГАЗИН (24)</div>
         </div>
         <div id="list-s" class="list"></div>
-        <div id="list-u" class="list" style="display:none"></div>
     </aside>
 </div>
 
 <script>
-    // КОНФИГУРАЦИЯ
-    const PRICES = [0, 50, 250, 750, 2000, 5000, 12000, 30000, 70000, 150000, 350000, 800000, 2000000, 5000000, 12000000, 30000000, 75000000, 200000000, 500000000, 1000000000, 3000000000, 10000000000, 25000000000, 60000000000, 150000000000];
-    
-    let game = {
-        coins: 100, diams: 0, page: 0,
-        inv: new Array(25).fill(0),
-        pwr: 1, auto: false
-    };
-
-    // FIREBASE SETUP
-    const firebaseConfig = {
+    // Настройки Firebase
+    const fCfg = {
         apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI",
         authDomain: "gamesfan-17986.firebaseapp.com",
         projectId: "gamesfan-17986",
         databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/",
         appId: "1:311654524584:web:9283eea0aea6f7b946849d"
     };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth(), db = firebase.database();
+    firebase.initializeApp(fCfg);
+    const db = firebase.database();
     let uID = null;
 
-    // 1. ФУНКЦИЯ СОХРАНЕНИЯ
-    function saveGame() {
-        localStorage.setItem('slime_farm_local', JSON.stringify(game));
-        if(uID) {
-            db.ref('users/' + uID + '/farm_data').set(game);
-            document.getElementById('save-status').innerText = "ОБЛАКО: СОХРАНЕНО";
-        }
+    // Цены (Фикс)
+    const PRICES = [0, 50, 200, 600, 1500, 4000, 10000, 25000, 60000, 140000, 300000, 700000, 1500000, 3500000, 8000000, 20000000, 50000000, 120000000, 300000000, 750000000, 1500000000, 4000000000, 10000000000, 25000000000, 60000000000];
+
+    let game = { coins: 100, diams: 0, page: 0, inv: new Array(25).fill(0) };
+
+    // 1. Быстрое сохранение (Локалка + Облако)
+    function save() {
+        localStorage.setItem('sf2d_save', JSON.stringify(game));
+        if (uID) db.ref('users/' + uID + '/farm').set(game);
     }
 
-    // ЗАГРУЗКА
-    function loadGame() {
-        const local = localStorage.getItem('slime_farm_local');
-        if(local) game = JSON.parse(local);
-
-        auth.onAuthStateChanged(user => {
-            if(user) {
+    // 2. Мгновенная загрузка
+    function load() {
+        const local = localStorage.getItem('sf2d_save');
+        if (local) {
+            game = JSON.parse(local);
+            renderAll();
+        }
+        
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
                 uID = user.uid;
-                db.ref('users/' + uID + '/farm_data').once('value', s => {
-                    if(s.exists()) {
+                db.ref('users/' + uID + '/farm').once('value', s => {
+                    if (s.exists()) {
                         game = s.val();
-                        updateUI(); initGrid();
+                        renderAll();
                     }
                 });
             }
         });
-        updateUI(); initGrid();
     }
 
-    // 2. ФУНКЦИЯ СБРОСА
-    function resetProgress() {
-        if(confirm("ТЫ УВЕРЕН? Вся ферма будет удалена!")) {
-            game = { coins: 100, diams: 0, page: 0, inv: new Array(25).fill(0), pwr: 1, auto: false };
-            saveGame();
+    // 3. Сброс прогресса
+    function resetGame() {
+        if (confirm("Удалить всё?")) {
+            game = { coins: 100, diams: 0, page: 0, inv: new Array(25).fill(0) };
+            save();
             location.reload();
         }
     }
 
-    // ЛОГИКА ИГРЫ
-    function initGrid() {
+    function renderAll() {
+        document.getElementById('c-val').innerText = Math.floor(game.coins).toLocaleString();
+        document.getElementById('d-val').innerText = game.diams;
+        renderGrid();
+        renderShop();
+    }
+
+    function renderGrid() {
         const g = document.getElementById('grid'); g.innerHTML = "";
         let start = game.page * 8 + 1;
-        for(let i=0; i<8; i++){
-            let id = start + i; if(id > 24) break;
+        for (let i = 0; i < 8; i++) {
+            let id = start + i; if (id > 24) break;
             let p = document.createElement('div');
             p.className = 'paddock';
-            p.innerHTML = `<div class="paddock-label">ЗАГОН ${id} (${game.inv[id]})</div>`;
+            p.innerHTML = `<div class="paddock-label">ЗАГОН ${id} [${game.inv[id]}]</div>`;
             p.onclick = () => {
-                if(game.inv[id] > 0) {
-                    game.coins += (id * game.inv[id] * game.pwr);
-                    updateUI();
+                if (game.inv[id] > 0) {
+                    game.coins += (id * game.inv[id]);
+                    document.getElementById('c-val').innerText = Math.floor(game.coins).toLocaleString();
                 }
             };
-            for(let n=0; n<Math.min(game.inv[id], 5); n++){
-                let img = document.createElement('img');
-                img.className = 'slime-img'; img.src = `assets/slime${id}.png`;
-                img.style.left = Math.random()*60+10+"%"; img.style.top = Math.random()*50+20+"%";
-                img.onerror = () => img.src = "https://cdn-icons-png.flaticon.com/512/825/825561.png";
-                p.appendChild(img);
+            for (let n = 0; n < Math.min(game.inv[id], 5); n++) {
+                let s = document.createElement('img');
+                s.className = 'slime-img'; s.src = `assets/slime${id}.png`;
+                s.style.left = Math.random() * 70 + "%"; s.style.top = Math.random() * 60 + "%";
+                s.onerror = () => s.src = "https://cdn-icons-png.flaticon.com/512/825/825561.png";
+                p.appendChild(s);
             }
             g.appendChild(p);
         }
     }
 
-    function buyS(id) {
-        if(game.coins >= PRICES[id] && game.inv[id] < 16) {
-            game.coins -= PRICES[id];
-            game.inv[id]++;
-            updateUI(); initGrid(); saveGame();
-        }
-    }
-
-    function updateUI() {
-        document.getElementById('c-val').innerText = Math.floor(game.coins).toLocaleString();
-        document.getElementById('d-val').innerText = game.diams;
-
+    function renderShop() {
         let h = "";
-        for(let i=1; i<=24; i++) {
+        for (let i = 1; i <= 24; i++) {
             h += `<div class="card">
-                    <span><b>Слайм ${i}</b><br><small>${PRICES[i]} 🟡</small></span>
-                    <button class="btn-buy" onclick="buyS(${i})" ${game.coins<PRICES[i]?'disabled':''}>КУПИТЬ</button>
-                  </div>`;
+                <span><b>Слайм ${i}</b><br><small>${PRICES[i].toLocaleString()} 🟡</small></span>
+                <button class="btn" onclick="buy(${i})" ${game.coins < PRICES[i] ? 'disabled' : ''}>КУПИТЬ</button>
+            </div>`;
         }
         document.getElementById('list-s').innerHTML = h;
-        
-        document.getElementById('list-u').innerHTML = `
-            <div class="card"><span><b>Сила клика (x${game.pwr})</b></span><button class="btn-buy" onclick="upgP()">1,000 🟡</button></div>
-            <div class="card"><span><b>Авто-сбор</b></span><button class="btn-buy" onclick="upgA()" ${game.auto?'disabled':''}>5,000 🟡</button></div>
-        `;
     }
 
-    function upgP() { if(game.coins>=1000){ game.coins-=1000; game.pwr++; updateUI(); saveGame(); } }
-    function upgA() { if(game.coins>=5000){ game.coins-=5000; game.auto=true; updateUI(); saveGame(); } }
-
-    function setPage(p) { game.page = p; initGrid(); }
-    function showTab(t, el) {
-        document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-        el.classList.add('active');
-        document.getElementById('list-s').style.display = t==='s'?'block':'none';
-        document.getElementById('list-u').style.display = t==='u'?'block':'none';
-    }
-
-    function openSettings() { document.getElementById('m-settings').style.display='flex'; }
-    function closeSettings() { document.getElementById('m-settings').style.display='none'; }
-    function toggleMode() { document.getElementById('app').classList.toggle('mobile-mode'); }
-
-    // АВТО-СБОР
-    setInterval(() => {
-        if(game.auto) {
-            let inc = 0;
-            game.inv.forEach((n, id) => inc += (n * id * 0.1));
-            game.coins += inc;
-            updateUI();
+    function buy(id) {
+        if (game.coins >= PRICES[id] && game.inv[id] < 16) {
+            game.coins -= PRICES[id];
+            game.inv[id]++;
+            save(); renderAll();
         }
-    }, 1000);
+    }
 
-    // СТАРТ
-    window.onload = loadGame;
+    function setPage(p) { game.page = p; renderGrid(); }
+    function toggleModal(s) { document.getElementById('m-sets').style.display = s ? 'flex' : 'none'; }
+
+    // Авто-сохранение раз в минуту
+    setInterval(save, 60000);
+    
+    window.onload = load;
 </script>
 </body>
 </html>
