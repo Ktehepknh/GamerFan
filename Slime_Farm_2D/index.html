@@ -18,222 +18,221 @@
         body, html { margin: 0; padding: 0; height: 100vh; background: #000; color: white; overflow: hidden; }
         #bg-img { position: fixed; inset: 0; background: url('assets/background.jpg') center/cover; filter: brightness(0.2); z-index: 1; }
         #app { position: relative; z-index: 10; display: flex; height: 100vh; width: 100vw; }
-        
-        /* ГЛАВНЫЙ ЭКРАН */
+        #app.mobile-mode { flex-direction: column; }
+        #app.mobile-mode #side { width: 100%; height: 45%; border-left: none; border-top: 3px solid var(--accent); }
         #main { flex: 1; display: flex; flex-direction: column; padding: 15px; position: relative; }
         #hud { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
         .stat { background: rgba(0,0,0,0.85); padding: 10px 18px; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: bold; }
-        
+        .stat img { width: 22px; height: 22px; }
         #grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 12px; flex: 1; }
         .paddock { background: rgba(255,255,255,0.03); border: 2px solid var(--border); border-radius: 18px; position: relative; overflow: hidden; cursor: pointer; transition: 0.2s; }
         .paddock:hover { border-color: var(--accent); background: rgba(255,255,255,0.06); }
         .paddock-label { position: absolute; top: 8px; left: 10px; font-size: 10px; color: var(--accent); font-weight: bold; z-index: 5; }
-        .slime-img { position: absolute; width: 45px; height: 45px; pointer-events: none; z-index: 2; transition: 0.5s ease-in-out; }
-
-        /* БОКОВАЯ ПАНЕЛЬ */
+        .slime-img { position: absolute; width: 40px; height: 40px; pointer-events: none; z-index: 2; }
         #side { width: 380px; background: var(--panel); border-left: 3px solid var(--accent); display: flex; flex-direction: column; }
         .tabs { display: flex; background: #000; }
-        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; color: #555; border-bottom: 2px solid transparent; }
+        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; color: #555; }
         .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
-        
         .list { flex: 1; overflow-y: auto; padding: 12px; }
         .card { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
         .btn-buy { background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 8px; }
-        .btn-buy:disabled { opacity: 0.2; cursor: not-allowed; }
-
-        .page-btn { padding: 8px 15px; background: #111; border: 1px solid var(--accent); color: white; cursor: pointer; border-radius: 5px; }
-        .page-btn.active { background: var(--accent); color: black; }
-
-        #save-status { position: fixed; bottom: 10px; left: 10px; font-size: 10px; color: #444; z-index: 100; }
+        .btn-buy:disabled { opacity: 0.2; }
+        #victor-ui { position: absolute; bottom: 85px; left: 20px; width: 350px; background: var(--panel); border: 2px solid var(--accent); border-radius: 15px; padding: 12px; display: flex; align-items: center; gap: 12px; z-index: 100; cursor: pointer; }
+        .vic-face { width: 60px; height: 60px; background: url('assets/viktor.png') center/cover; border: 1px solid var(--accent); border-radius: 10px; flex-shrink: 0; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal-box { background: #15151f; border: 2px solid var(--accent); padding: 25px; border-radius: 20px; width: 320px; text-align: center; }
     </style>
 </head>
 <body>
 
 <div id="bg-img"></div>
-<div id="save-status">Синхронизация с Mark-42...</div>
+
+<div id="m-settings" class="modal">
+    <div class="modal-box">
+        <h3 style="color:var(--accent); margin:0 0 20px 0;">УПРАВЛЕНИЕ</h3>
+        <button class="btn-buy" onclick="toggleMode()" id="mode-btn">РЕЖИМ: PC</button>
+        <button class="btn-buy" onclick="toggleVic()" id="vic-btn">ВИКТОР: ВКЛ</button>
+        <input type="password" id="adm-in" placeholder="Код взлома" style="width:100%; padding:10px; margin-top:10px; background:#000; color:white; border:1px solid #333;">
+        <button class="btn-buy" onclick="runAdmin()">ВЗЛОМАТЬ</button>
+        <button class="btn-buy" style="background:#ff4444; margin-top:20px;" onclick="closeSettings()">ЗАКРЫТЬ</button>
+    </div>
+</div>
 
 <div id="app">
     <div id="main">
         <div id="hud">
-            <div class="stat">🟡 <span id="c-val">0</span></div>
-            <div class="stat">💎 <span id="d-val">0</span></div>
-            <div style="margin-left:auto; color:var(--accent); font-weight:bold; font-size:14px;" id="p-name">ЗАГРУЗКА...</div>
+            <div class="stat"><img src="assets/coin.png"> <span id="c-val">0</span></div>
+            <div class="stat"><img src="assets/diamond.png"> <span id="d-val">0</span></div>
+            <div style="margin-left:auto; display:flex; gap:10px; align-items:center;">
+                <span id="player-nick" style="color:var(--accent); font-weight:bold;">MARK-42 PLAYER</span>
+                <span onclick="openSettings()" style="cursor:pointer; font-size:24px;">⚙️</span>
+            </div>
+        </div>
+        
+        <div id="grid"></div>
+        
+        <div style="display:flex; justify:center; gap:20px; margin-top:15px;">
+            <div id="pbtn0" class="tab active" style="flex:none; width:40px;" onclick="setPage(0)">1</div>
+            <div id="pbtn1" class="tab" style="flex:none; width:40px;" onclick="setPage(1)">2</div>
+            <div id="pbtn2" class="tab" style="flex:none; width:40px;" onclick="setPage(2)">3</div>
         </div>
 
-        <div id="grid"></div>
-
-        <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
-            <button class="page-btn active" id="pbtn0" onclick="setPage(0)">1</button>
-            <button class="page-btn" id="pbtn1" onclick="setPage(1)">2</button>
-            <button class="page-btn" id="pbtn2" onclick="setPage(2)">3</button>
+        <div id="victor-ui" onclick="vicTalk()">
+            <div class="vic-face"></div>
+            <div><b style="color:var(--accent)">Виктор:</b><div id="vic-msg" style="font-size:13px;">Данные синхронизированы с базой Mark-42!</div></div>
         </div>
     </div>
 
     <aside id="side">
         <div class="tabs">
-            <div class="tab active" onclick="showTab('s', this)">МАГАЗИН</div>
-            <div class="tab" onclick="showTab('u', this)">ПРОКАЧКА</div>
-            <div class="tab" onclick="showTab('w', this)">НАЙМ</div>
+            <div class="tab active" onclick="setTab('s', this)">МАГАЗИН</div>
+            <div class="tab" onclick="setTab('u', this)">ПРОКАЧКА</div>
+            <div class="tab" onclick="setTab('q', this)">КВЕСТЫ</div>
         </div>
         <div id="list-s" class="list"></div>
         <div id="list-u" class="list" style="display:none"></div>
-        <div id="list-w" class="list" style="display:none"></div>
+        <div id="list-q" class="list" style="display:none"></div>
     </aside>
 </div>
 
 <script>
-    // Конфигурация Firebase
-    const conf = {
+    // FIREBASE
+    const cfg = {
         apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI",
         authDomain: "gamesfan-17986.firebaseapp.com",
         projectId: "gamesfan-17986",
         databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/",
         appId: "1:311654524584:web:9283eea0aea6f7b946849d"
     };
-    firebase.initializeApp(conf);
+    firebase.initializeApp(cfg);
     const auth = firebase.auth(), db = firebase.database();
 
-    // Данные игры (22 слайма)
+    // GAME DATA (24 SLIMES)
     let game = {
-        coins: 100, diams: 0, page: 0,
-        inv: new Array(23).fill(0), // от 0 до 22
-        clickPwr: 1, autoEnabled: false, workers: 0
+        coins: 100, diams: 10, page: 0,
+        inv: new Array(25).fill(0), // Теперь до 24
+        upg: { pwr: 1, auto: false },
+        mode: 'PC', vic: true,
+        quests: [
+            {t: "Начинающий", target: 100, cur: 0, rew: 5, done: false},
+            {t: "Магнат", target: 10000, cur: 0, rew: 50, done: false}
+        ]
     };
 
-    // Цены (ФИКСИРОВАННЫЕ, как ты просил)
-    const PRICES = [0, 50, 150, 400, 1000, 2500, 6000, 15000, 35000, 80000, 150000, 300000, 700000, 1500000, 3000000, 7000000, 15000000, 40000000, 100000000, 250000000, 600000000, 1500000000, 5000000000];
+    // ФИКСИРОВАННЫЕ ЦЕНЫ (Массив для всех 24)
+    const PRICES = [0, 50, 200, 500, 1200, 3000, 7500, 18000, 45000, 100000, 250000, 600000, 1500000, 4000000, 10000000, 25000000, 60000000, 150000000, 400000000, 1000000000, 2500000000, 6000000000, 15000000000, 40000000000, 100000000000];
 
-    let uID = null;
+    let userUID = null;
 
     auth.onAuthStateChanged(user => {
         if(user) {
-            uID = user.uid;
-            db.ref('users/' + uID).once('value', s => {
-                if(s.exists()){
-                    document.getElementById('p-name').innerText = (s.val().nick || "ИГРОК").toUpperCase();
-                    if(s.val().farm_save) game = s.val().farm_save;
-                }
-                updateUI(); initGrid();
+            userUID = user.uid;
+            db.ref('users/' + userUID).on('value', s => {
+                if(s.val()?.farm_save) game = s.val().farm_save;
+                document.getElementById('player-nick').innerText = s.val()?.nick?.toUpperCase() || "PLAYER";
+                update(); initGrid();
             });
         }
     });
 
     function save() {
-        if(!uID) return;
-        document.getElementById('save-status').innerText = "Сохранение...";
-        db.ref('users/' + uID + '/farm_save').set(game).then(() => {
-            document.getElementById('save-status').innerText = "Облако Mark-42: Синхронизировано";
-        });
+        if(userUID) db.ref('users/' + userUID + '/farm_save').set(game);
     }
 
     function initGrid() {
-        const grid = document.getElementById('grid');
-        grid.innerHTML = "";
+        const g = document.getElementById('grid'); g.innerHTML = "";
         let start = game.page * 8 + 1;
-        
         for(let i=0; i<8; i++) {
-            let id = start + i;
-            if(id > 22) break; // Ограничение в 22 слайма
-
+            let id = start + i; if(id > 24) break;
             let p = document.createElement('div');
             p.className = 'paddock';
-            p.innerHTML = `<div class="paddock-label">ЗАГОН ${id} | x${game.inv[id]}</div>`;
-            
-            p.onclick = () => {
-                if(game.inv[id] > 0) {
-                    let gain = id * game.inv[id] * game.clickPwr;
-                    game.coins += gain;
-                    updateUI();
-                }
+            p.innerHTML = `<div class="paddock-label">ЗАГОН ${id} [${game.inv[id]}/16]</div>`;
+            p.onclick = () => { 
+                if(game.inv[id] > 0) { 
+                    game.coins += (id * game.inv[id] * game.upg.pwr); 
+                    game.quests.forEach(q => { if(!q.done) q.cur += 1; if(q.cur>=q.target) { q.done=true; game.diams+=q.rew; } });
+                    update(); 
+                } 
             };
-
-            // Спавн визуальных слаймов
-            for(let n=0; n<Math.min(game.inv[id], 8); n++) {
-                let img = document.createElement('img');
-                img.className = 'slime-img';
-                img.src = `assets/slime${id}.png`;
-                img.style.left = Math.random()*70 + 5 + "%";
-                img.style.top = Math.random()*60 + 10 + "%";
-                img.onerror = () => img.src = 'https://cdn-icons-png.flaticon.com/512/825/825561.png';
-                p.appendChild(img);
+            g.appendChild(p);
+            for(let n=0; n<Math.min(game.inv[id], 6); n++) {
+                let s = document.createElement('img');
+                s.className = 'slime-img'; s.src = `assets/slime${id}.png`;
+                s.style.left = Math.random()*70+"%"; s.style.top = Math.random()*60+"%";
+                s.onerror = () => s.src = 'https://cdn-icons-png.flaticon.com/512/825/825561.png';
+                p.appendChild(s);
             }
-            grid.appendChild(p);
         }
     }
 
-    function buySlime(id) {
-        let price = PRICES[id];
-        if(game.coins >= price && game.inv[id] < 16) {
-            game.coins -= price;
-            game.inv[id]++;
-            save(); updateUI(); initGrid();
+    function buyS(id) {
+        if(game.coins >= PRICES[id] && game.inv[id] < 16) {
+            game.coins -= PRICES[id]; game.inv[id]++;
+            save(); update(); initGrid();
         }
     }
 
-    function updateUI() {
+    function update() {
         document.getElementById('c-val').innerText = Math.floor(game.coins).toLocaleString();
         document.getElementById('d-val').innerText = game.diams;
-
-        // Рендер магазина
-        let shopHtml = "";
-        for(let i=1; i<=22; i++) {
-            shopHtml += `
-            <div class="card">
-                <b>Слайм #${i}</b> (В загоне: ${game.inv[i]}/16)<br>
-                <small>Доход: ${i * game.clickPwr} за шт.</small>
-                <button class="btn-buy" onclick="buySlime(${i})" ${game.coins < PRICES[i] || game.inv[i] >= 16 ? 'disabled' : ''}>
-                    Купить: ${PRICES[i].toLocaleString()} 🟡
-                </button>
-            </div>`;
+        
+        let sH = "";
+        for(let i=1; i<=24; i++) {
+            sH += `<div class="card"><b>Слайм #${i}</b><br><small>Цена: ${PRICES[i].toLocaleString()} 🟡</small>
+            <button class="btn-buy" onclick="buyS(${i})" ${game.coins<PRICES[i]?'disabled':''}>КУПИТЬ</button></div>`;
         }
-        document.getElementById('list-s').innerHTML = shopHtml;
+        document.getElementById('list-s').innerHTML = sH;
 
-        // Прокачка
         document.getElementById('list-u').innerHTML = `
-            <div class="card"><b>Сила клика (x${game.clickPwr})</b><button class="btn-buy" onclick="upg('p')">${(game.clickPwr*1000).toLocaleString()} 🟡</button></div>
-            <div class="card"><b>Авто-сбор</b><button class="btn-buy" onclick="upg('a')" ${game.autoEnabled?'disabled':''}>10,000 🟡</button></div>
+            <div class="card"><b>Сила клика (x${game.upg.pwr})</b><button class="btn-buy" onclick="game.coins>=1000?(game.coins-=1000,game.upg.pwr++,save(),update()):null">УЛУЧШИТЬ (1,000)</button></div>
+            <div class="card"><b>Авто-сбор</b><button class="btn-buy" onclick="game.coins>=5000?(game.coins-=5000,game.upg.auto=true,save(),update()):null" ${game.upg.auto?'disabled':''}>КУПИТЬ (5,000)</button></div>
         `;
 
-        // Найм
-        document.getElementById('list-w').innerHTML = `
-            <div class="card"><b>Рабочие (Ур. ${game.workers})</b><br><small>Ускоряют пассивный доход</small>
-            <button class="btn-buy" onclick="upg('w')">${((game.workers+1)*5000).toLocaleString()} 🟡</button></div>
-        `;
+        let qH = "";
+        game.quests.forEach(q => qH += `<div class="card" style="opacity:${q.done?0.5:1}"><b>${q.t}</b><br>${q.cur}/${q.target}</div>`);
+        document.getElementById('list-q').innerHTML = qH;
     }
 
-    function upg(type) {
-        if(type==='p' && game.coins >= game.clickPwr*1000) { game.coins -= game.clickPwr*1000; game.clickPwr++; }
-        if(type==='a' && game.coins >= 10000) { game.coins -= 10000; game.autoEnabled = true; }
-        if(type==='w' && game.coins >= (game.workers+1)*5000) { game.coins -= (game.workers+1)*5000; game.workers++; }
-        save(); updateUI();
+    // ТВОИ ФУНКЦИИ ИЗ ФАЙЛА
+    function openSettings() { document.getElementById('m-settings').style.display='flex'; }
+    function closeSettings() { document.getElementById('m-settings').style.display='none'; }
+    function toggleMode() { 
+        game.mode = game.mode==='PC'?'MOBILE':'PC'; 
+        document.getElementById('app').className = game.mode==='MOBILE'?'mobile-mode':''; 
+        document.getElementById('mode-btn').innerText = 'РЕЖИМ: '+game.mode; 
     }
-
+    function toggleVic() { 
+        game.vic = !game.vic; 
+        document.getElementById('victor-ui').style.display = game.vic?'flex':'none'; 
+        document.getElementById('vic-btn').innerText='ВИКТОР: '+(game.vic?'ВКЛ':'ВЫКЛ'); 
+    }
+    function runAdmin() { 
+        if(document.getElementById('adm-in').value==='2014') { 
+            game.coins+=1000000; game.diams+=1000; update(); alert('MARK-42: Система взломана!'); 
+        } 
+    }
     function setPage(p) {
         game.page = p;
-        document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+        for(let i=0; i<3; i++) document.getElementById('pbtn'+i).classList.remove('active');
         document.getElementById('pbtn'+p).classList.add('active');
         initGrid();
     }
-
-    function showTab(t, el) {
-        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    function setTab(t, el) {
+        document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
         el.classList.add('active');
-        ['s','u','w'].forEach(n => document.getElementById('list-'+n).style.display = (t===n?'block':'none'));
+        ['s','u','q'].forEach(n => document.getElementById('list-'+n).style.display = t===n?'block':'none');
     }
 
-    // Пассивный доход
+    // ПАССИВ (Авто-сбор)
     setInterval(() => {
-        if(game.autoEnabled && game.workers > 0) {
-            let income = 0;
-            game.inv.forEach((count, id) => income += (id * count));
-            game.coins += (income * game.workers * 0.1);
-            updateUI();
+        if(game.upg.auto) {
+            let inc = 0; game.inv.forEach((n, id) => inc += (n * id * 0.1));
+            game.coins += inc; update();
         }
     }, 1000);
 
-    // Авто-сейв каждые 30 сек
+    // Авто-сейв
     setInterval(save, 30000);
-
 </script>
 </body>
 </html>
