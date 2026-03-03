@@ -8,44 +8,30 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root { 
-            --accent: #ffcc00; 
-            --diam: #00f2ff; 
-            --panel: rgba(20, 20, 25, 0.98); 
-            --border: rgba(255, 255, 255, 0.1); 
-            --bg-color: #000; 
-        }
+        :root { --accent: #ffcc00; --diam: #00f2ff; --panel: rgba(20, 20, 25, 0.98); --border: rgba(255, 255, 255, 0.1); --bg-color: #000; }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; user-select: none; outline: none; }
         body { margin: 0; background: var(--bg-color); color: white; overflow: hidden; height: 100vh; }
         #bg { position: fixed; inset: 0; background: url('assets/background.jpg') center/cover; filter: brightness(0.2); z-index: 1; }
         #app { position: relative; z-index: 10; display: flex; height: 100vh; width: 100vw; }
-        
         #main { flex: 1; display: flex; flex-direction: column; padding: 15px; }
         #grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 10px; flex: 1; }
         .paddock { background: rgba(255,255,255,0.03); border: 2px solid var(--border); border-radius: 20px; position: relative; cursor: pointer; overflow: hidden; transition: 0.2s; }
         .paddock:hover { border-color: var(--accent); }
-        .paddock:active { transform: scale(0.98); }
-        
-        .slime-img { position: absolute; width: 42px; height: 42px; will-change: transform; transition: transform 2.5s ease-in-out; pointer-events: none; z-index: 3; }
-        
-        #hud { display: flex; gap: 15px; background: rgba(0,0,0,0.6); padding: 12px; border-radius: 15px; border: 1px solid var(--border); align-items: center; margin-bottom: 15px; backdrop-filter: blur(10px); }
+        .slime-img { position: absolute; width: 42px; height: 42px; will-change: transform; transition: transform 2.5s ease-in-out; pointer-events: none; }
+        #hud { display: flex; gap: 15px; background: rgba(0,0,0,0.6); padding: 12px; border-radius: 15px; border: 1px solid var(--border); align-items: center; margin-bottom: 10px; backdrop-filter: blur(10px); }
         .stat { font-size: 18px; font-weight: bold; display: flex; align-items: center; }
-        .res-icon { width: 18px; height: 18px; margin-right: 5px; vertical-align: middle; }
-        .price-icon { width: 14px; height: 14px; vertical-align: sub; margin-right: 3px; }
-
+        .res-icon { width: 18px; height: 18px; margin-right: 5px; }
         #side { width: 380px; background: var(--panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; }
         .tabs { display: flex; background: rgba(0,0,0,0.3); }
-        .tab { flex: 1; padding: 15px 5px; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; color: #666; transition: 0.3s; }
-        .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); background: rgba(255,204,0,0.05); }
-
-        .list { flex: 1; overflow-y: auto; padding: 15px; scroll-behavior: smooth; }
-        .card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 15px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
-        .btn { background: var(--accent); color: #000; border: none; padding: 8px 12px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 12px; transition: 0.2s; }
-        .btn:disabled { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
-
+        .tab { flex: 1; padding: 15px 5px; text-align: center; cursor: pointer; font-size: 10px; font-weight: bold; color: #666; transition: 0.3s; }
+        .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+        .list { flex: 1; overflow-y: auto; padding: 15px; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 15px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+        .btn { background: var(--accent); color: #000; border: none; padding: 6px 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; }
+        .btn-diam { background: var(--diam); }
+        .btn:disabled { opacity: 0.3; filter: grayscale(1); }
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .modal-box { background: #15151a; border: 1px solid var(--accent); padding: 25px; border-radius: 20px; width: 300px; box-shadow: 0 0 30px rgba(255,204,0,0.15); }
-        .set-row { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; font-size: 14px; }
+        .modal-box { background: #15151a; border: 1px solid var(--accent); padding: 25px; border-radius: 20px; width: 300px; }
     </style>
 </head>
 <body>
@@ -57,13 +43,9 @@
 
 <div id="m-sets" class="modal">
     <div class="modal-box">
-        <h3 style="color:var(--accent); margin: 0 0 20px 0; text-align: center;">MARK-42 STUDIO</h3>
-        <div class="set-row"><span>Музыка</span><input type="checkbox" id="set-music" onchange="updSet()"></div>
-        <div class="set-row"><span>Звуки</span><input type="checkbox" id="set-sfx" onchange="updSet()"></div>
-        <div class="set-row"><span>HD Эффекты</span><input type="checkbox" id="set-hd" onchange="updSet()"></div>
-        <hr style="border: 0; border-top: 1px solid var(--border); margin: 15px 0;">
-        <button class="btn" style="width:100%; margin-top:5px; background:#ff4444; color:#fff;" onclick="fullReset()">СБРОС ПРОГРЕССА</button>
-        <button class="btn" style="width:100%; margin-top:10px; background:#333; color:#fff;" onclick="toggleModal(false)">ЗАКРЫТЬ</button>
+        <h3 style="color:var(--accent); text-align: center; margin-top:0;">НАСТРОЙКИ</h3>
+        <button class="btn" style="width:100%; background:#ff4444; color:#fff;" onclick="fullReset()">СБРОС ПРОГРЕССА</button>
+        <button class="btn" style="width:100%; margin-top:10px;" onclick="toggleModal(false)">ЗАКРЫТЬ</button>
     </div>
 </div>
 
@@ -72,25 +54,25 @@
         <div id="hud">
             <div class="stat"><img src="assets/coin.png" class="res-icon"><span id="c-val">0</span></div>
             <div class="stat"><img src="assets/diamond.png" class="res-icon"><span id="d-val">0</span></div>
-            <div style="margin-left:auto; font-size:12px; color:var(--accent); font-weight: bold;">x<span id="m-val">1.0</span></div>
-            <button class="btn" style="background:none; color:#fff; font-size:22px; padding:0 5px;" onclick="toggleModal(true)">⚙️</button>
+            <div style="margin-left:auto; font-size:12px; color:var(--accent);">Mult: x<span id="m-val">1.0</span></div>
+            <button class="btn" onclick="toggleModal(true)">⚙️</button>
         </div>
         
         <div id="grid"></div>
-        
-        <div style="display:flex; justify-content:center; gap:12px; margin-top:15px;">
+
+        <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
+            <button class="btn" id="mega-btn" style="display:none; background:var(--diam); animation: pulse 2s infinite;" onclick="megaClick()">⚡ КЛИК ПО ВСЕМ ⚡</button>
             <button class="btn" onclick="setPage(0)">1</button>
             <button class="btn" onclick="setPage(1)">2</button>
-            <button class="btn" onclick="setPage(2)">3</button>
         </div>
     </div>
 
     <aside id="side">
         <div class="tabs">
-            <div class="tab active" id="t-s" onclick="openTab('s')">МАГАЗИН</div>
-            <div class="tab" id="t-u" onclick="openTab('u')">УЛУЧШЕНИЯ</div>
+            <div class="tab active" id="t-s" onclick="openTab('s')">СЛАЙМЫ</div>
+            <div class="tab" id="t-u" onclick="openTab('u')">UPGRADE</div>
             <div class="tab" id="t-q" onclick="openTab('q')">КВЕСТЫ</div>
-            <div class="tab" id="t-b" onclick="openTab('b')">БУСТЫ</div>
+            <div class="tab" id="t-b" onclick="openTab('b')">VIP</div>
         </div>
         <div id="list-s" class="list"></div>
         <div id="list-u" class="list" style="display:none"></div>
@@ -103,19 +85,21 @@
     const config = { apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI", authDomain: "gamesfan-17986.firebaseapp.com", databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/", projectId: "gamesfan-17986" };
     firebase.initializeApp(config);
     const db = firebase.database();
-    let uID = null;
 
-    const SLIME_LIMIT = 8; // Ограничение на загон
-    const PRICES = [0, 50, 250, 700, 2000, 5000, 15000, 40000, 100000, 250000, 600000, 1500000, 4000000, 10000000, 25000000, 60000000, 150000000, 400000000, 1000000000, 2500000000, 6000000000, 15000000000, 40000000000, 100000000000, 250000000000];
-    const RANKS = [{n:"Медный", c:"#cd7f32"}, {n:"Железный", c:"#aaa"}, {n:"Золотой", c:"#ffcc00"}, {n:"Алмазный", c:"#00f2ff"}];
+    const RANKS = [{n:"Медный", c:"#cd7f32", m:1}, {n:"Железный", c:"#aaa", m:2}, {n:"Золотой", c:"#ffcc00", m:5}, {n:"Алмазный", c:"#00f2ff", m:10}];
+    const PRICES = [0, 30, 150, 500, 1200, 3000, 8000, 20000, 50000, 120000, 300000, 800000, 2000000, 5000000, 15000000, 40000000, 100000000, 300000000];
 
     let game = {
-        coins: 100, diams: 0, page: 0, 
+        coins: 100, diams: 10, page: 0, 
         inv: new Array(25).fill(0), 
-        rank: 0, upg: 0, 
-        clicks: 0, boost: 1, boostEnd: 0,
-        settings: { music: true, sfx: true, hd: true },
-        quests: [{t:"Первые шаги", trg:100, cur:0, r:10, d:false}]
+        rank: 0, upg: 0, clicks: 0,
+        hasMega: false,
+        settings: { music: true, sfx: true },
+        quests: [
+            {t:"Сборщик", trg:100, cur:0, r:15, d:false, rk:0},
+            {t:"Клик-Мастер", trg:500, cur:0, r:30, d:false, rk:0},
+            {t:"Магнат", trg:5000, cur:0, r:100, d:false, rk:1}
+        ]
     };
 
     function f(n) {
@@ -126,33 +110,28 @@
     }
 
     function getMult() {
-        let sp = game.inv.filter(x => x > 0).length;
-        return (1 + (sp * 0.5)) * (1 + (game.rank * 2) + (game.upg * 0.2)) * game.boost;
+        return (1 + (game.rank * 2) + (game.upg * RANKS[game.rank].m));
     }
+
+    function getLimit() { return game.upg >= 4 ? 12 : 8; }
 
     function render() {
         document.getElementById('c-val').innerText = f(game.coins);
         document.getElementById('d-val').innerText = game.diams;
         document.getElementById('m-val').innerText = getMult().toFixed(1);
-        renderGrid(); renderShop(); renderUpg(); renderQuests(); renderBoosts();
+        document.getElementById('mega-btn').style.display = game.hasMega ? 'block' : 'none';
+        renderGrid(); renderShop(); renderUpg(); renderQuests(); renderVIP();
     }
 
     function renderGrid() {
         const g = document.getElementById('grid'); g.innerHTML = "";
+        let lim = getLimit();
         let start = game.page * 8 + 1;
         for(let i=0; i<8; i++){
             let id = start+i; if(id>24) break;
             let p = document.createElement('div'); p.className = 'paddock';
-            p.innerHTML = `<div style="position:absolute;top:5px;left:8px;font-size:9px;color:#777;z-index:2;font-weight:bold;">№${id} [${game.inv[id]}/${SLIME_LIMIT}]</div>`;
-            p.onclick = () => { 
-                if(game.inv[id]>0){ 
-                    game.coins += (id * game.inv[id] * getMult()); 
-                    game.clicks++; 
-                    checkQ(); play('click'); 
-                    render(); 
-                } 
-            };
-            
+            p.innerHTML = `<div style="position:absolute;top:5px;left:8px;font-size:9px;color:#777;">№${id} [${game.inv[id]}/${lim}]</div>`;
+            p.onclick = () => doClick(id);
             for(let n=0; n<game.inv[id]; n++){
                 let s = document.createElement('img'); s.className = 'slime-img'; 
                 s.src = `assets/slime${id}.png`;
@@ -164,71 +143,106 @@
         }
     }
 
-    setInterval(() => {
-        if(!game.settings.hd) return;
-        document.querySelectorAll('.slime-img').forEach(s => {
-            let x = (Math.random() * 40 - 20); let y = (Math.random() * 40 - 20);
-            s.style.transform = `translate(${x}px, ${y}px) scaleX(${x > 0 ? 1 : -1})`;
-        });
-    }, 2500);
+    function doClick(id) {
+        if(game.inv[id]>0){ 
+            game.coins += (id * game.inv[id] * getMult()); 
+            game.clicks++; checkQ(); play('click'); render(); 
+        }
+    }
+
+    function megaClick() {
+        for(let i=1; i<game.inv.length; i++) if(game.inv[i]>0) doClick(i);
+    }
 
     function renderShop() {
         let h = "";
-        for(let i=1; i<=24; i++){
-            let isFull = game.inv[i] >= SLIME_LIMIT;
-            h += `<div class="card"><img src="assets/slime${i}.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/825/825561.png'" style="width:38px">
-            <div style="flex:1"><b>Слайм #${i}</b><br><small><img src="assets/coin.png" class="price-icon">${f(PRICES[i])} (${game.inv[i]}/${SLIME_LIMIT})</small></div>
-            <button class="btn" onclick="buyS(${i})" ${(game.coins<PRICES[i] || isFull)?'disabled':''}>${isFull ? 'МАКС' : 'КУПИТЬ'}</button></div>`;
+        for(let i=1; i<=18; i++){
+            let isFull = game.inv[i] >= getLimit();
+            let dPrice = Math.ceil(PRICES[i] / 500) + 1;
+            h += `<div class="card"><img src="assets/slime${i}.png" style="width:35px" onerror="this.src='https://cdn-icons-png.flaticon.com/512/825/825561.png'">
+            <div style="flex:1"><b>Слайм #${i}</b><br><small>${game.inv[i]}/${getLimit()}</small></div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+                <button class="btn" onclick="buyS(${i},'c')" ${ (game.coins<PRICES[i] || isFull)?'disabled':''}>${f(PRICES[i])} 🪙</button>
+                <button class="btn btn-diam" onclick="buyS(${i},'d')" ${ (game.diams<dPrice || isFull)?'disabled':''}>${dPrice} 💎</button>
+            </div></div>`;
         }
         document.getElementById('list-s').innerHTML = h;
     }
 
-    function buyS(id){ 
-        if(game.coins >= PRICES[id] && game.inv[id] < SLIME_LIMIT){ 
-            game.coins -= PRICES[id]; 
-            game.inv[id]++; 
-            play('buy'); save(); render(); 
-        } 
-    }
-
-    // Остальные функции без изменений
-    function buyU(c){ if(game.coins>=c){ game.coins-=c; game.upg++; play('buy'); save(); render(); } }
-    function nextR(c){ if(game.coins>=c){ game.coins-=c; game.rank++; game.upg=0; play('buy'); save(); render(); } }
-    function buyB(m,t,c){ if(game.diams>=c){ game.diams-=c; game.boost=m; game.boostEnd=Date.now()+(t*1000); play('buy'); save(); render(); } }
-    function checkQ(){ game.quests[0].cur = game.clicks; game.quests.forEach(q=>{if(!q.d && q.cur>=q.trg){q.d=true; game.diams+=q.r;}}); }
-    function play(id){ if(!game.settings.sfx) return; let a=document.getElementById('s-'+id); if(a){ a.currentTime=0; a.play().catch(()=>{}); } }
-    function setPage(p){ game.page=p; renderGrid(); }
-    function toggleModal(s){ document.getElementById('m-sets').style.display = s ? 'flex' : 'none'; if(s) { document.getElementById('set-music').checked = game.settings.music; document.getElementById('set-sfx').checked = game.settings.sfx; document.getElementById('set-hd').checked = game.settings.hd; } }
-    function updSet() { game.settings.music = document.getElementById('set-music').checked; game.settings.sfx = document.getElementById('set-sfx').checked; game.settings.hd = document.getElementById('set-hd').checked; let m = document.getElementById('s-music'); if(game.settings.music) m.play().catch(()=>{}); else m.pause(); save(); }
-    function openTab(t){ ['s','u','q','b'].forEach(x=>{document.getElementById('list-'+x).style.display='none'; document.getElementById('t-'+x).classList.remove('active');}); document.getElementById('list-'+t).style.display='block'; document.getElementById('t-'+t).classList.add('active'); }
     function renderUpg() {
-        let r = RANKS[game.rank]; let cost = (game.upg + 1) * 5000 * (game.rank + 1);
-        let h = `<div style="text-align:center; padding:12px; color:${r.c}; background:rgba(255,255,255,0.03); border-radius:15px; margin-bottom:10px;"><b>${r.n} Ранг</b><br><small>Уровень: ${game.upg}/8</small></div>`;
-        if(game.upg < 8) h += `<div class="card"><div style="flex:1"><b>Улучшение ${game.upg+1}</b><br><small><img src="assets/coin.png" class="price-icon">${f(cost)}</small></div><button class="btn" onclick="buyU(${cost})" ${game.coins<cost?'disabled':''}>КУПИТЬ</button></div>`;
-        else if(game.rank < 3) { let nc = (game.rank + 1) * 100000; h += `<button class="btn" style="width:100%; padding:12px;" onclick="nextR(${nc})" ${game.coins<nc?'disabled':''}>НОВЫЙ РАНГ (<img src="assets/coin.png" class="price-icon">${f(nc)})</button>`; }
+        let r = RANKS[game.rank];
+        let cost = (game.upg + 1) * 2000 * (game.rank + 1);
+        let dCost = (game.upg + 1) * 10;
+        let h = `<div style="text-align:center; padding:10px; color:${r.c}; background:rgba(255,255,255,0.05); border-radius:10px; margin-bottom:10px;">
+            <b>${r.n} Ранг</b> (Прокачка: ${game.upg}/4)</div>`;
+        
+        if(game.upg < 4) {
+            h += `<div class="card"><div style="flex:1"><b>Сила клика</b><br><small>+${r.m} к множителю</small></div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+                <button class="btn" onclick="buyU(${cost},'c')" ${game.coins<cost?'disabled':''}>${f(cost)} 🪙</button>
+                <button class="btn btn-diam" onclick="buyU(${dCost},'d')" ${game.diams<dCost?'disabled':''}>${dCost} 💎</button>
+            </div></div>`;
+        } else if(game.rank < 3) {
+            let nc = (game.rank + 1) * 50000;
+            h += `<button class="btn" style="width:100%; height:40px;" onclick="nextR(${nc})" ${game.coins<nc?'disabled':''}>НОВЫЙ РАНГ (${f(nc)} 🪙)</button>`;
+        }
         document.getElementById('list-u').innerHTML = h;
     }
+
     function renderQuests() {
-        let h = ""; game.quests.forEach(q => { let p = Math.min(100, (q.cur/q.trg)*100); h += `<div class="card" style="opacity:${q.d?0.5:1}"><div style="flex:1"><b>${q.t}</b><br><small>${q.cur}/${q.trg}</small><div style="width:100%;height:5px;background:#000;margin-top:6px;border-radius:3px;overflow:hidden;"><div style="width:${p}%;height:100%;background:var(--accent)"></div></div></div><div style="color:var(--diam); font-weight:bold;">+${q.r} <img src="assets/diamond.png" class="price-icon"></div></div>`; });
+        let h = "";
+        game.quests.filter(q => q.rk <= game.rank).forEach(q => {
+            let p = Math.min(100, (q.cur/q.trg)*100);
+            h += `<div class="card" style="opacity:${q.d?0.5:1}"><div style="flex:1"><b>${q.t}</b><br><small>${q.cur}/${q.trg}</small>
+            <div style="width:100%;height:4px;background:#000;margin-top:5px;border-radius:2px;overflow:hidden"><div style="width:${p}%;height:100%;background:var(--accent)"></div></div></div>
+            <div style="color:var(--diam); font-weight:bold;">+${q.r} 💎</div></div>`;
+        });
         document.getElementById('list-q').innerHTML = h;
     }
-    function renderBoosts() {
-        document.getElementById('list-b').innerHTML = `<div class="card"><div style="flex:1"><b>Буст x2</b><br><small>2 мин.</small></div><button class="btn" onclick="buyB(2,120,5)" ${game.diams<5?'disabled':''}>5 <img src="assets/diamond.png" class="price-icon"></button></div><div class="card"><div style="flex:1"><b>Буст x5</b><br><small>5 мин.</small></div><button class="btn" onclick="buyB(5,300,15)" ${game.diams<15?'disabled':''}>15 <img src="assets/diamond.png" class="price-icon"></button></div>`;
+
+    function renderVIP() {
+        let h = `<div class="card"><div style="flex:1"><b>MEGA CLICKER</b><br><small>Кликает на все загоны разом!</small></div>
+        <button class="btn btn-diam" onclick="buyMega()" ${game.hasMega?'disabled':''}>${game.hasMega ? 'КУПЛЕНО' : '150 💎'}</button></div>`;
+        document.getElementById('list-b').innerHTML = h;
     }
-    function save() { localStorage.setItem('slime_m42_v4', JSON.stringify(game)); if(uID) db.ref('users/'+uID+'/farm').set(game); }
+
+    function buyS(id, t){ 
+        let price = t=='c'?PRICES[id]:Math.ceil(PRICES[id]/500)+1;
+        if(t=='c' && game.coins>=price){ game.coins-=price; game.inv[id]++; }
+        else if(t=='d' && game.diams>=price){ game.diams-=price; game.inv[id]++; }
+        else return;
+        play('buy'); save(); render();
+    }
+
+    function buyU(c, t){
+        if(t=='c' && game.coins>=c){ game.coins-=c; game.upg++; }
+        else if(t=='d' && game.diams>=c){ game.diams-=c; game.upg++; }
+        else return;
+        play('buy'); save(); render();
+    }
+
+    function buyMega() { if(game.diams>=150){ game.diams-=150; game.hasMega=true; play('buy'); save(); render(); } }
+    function nextR(c){ if(game.coins>=c){ game.coins-=c; game.rank++; game.upg=0; play('buy'); save(); render(); } }
+    function checkQ(){ game.quests.forEach(q=>{ if(q.rk <= game.rank){ q.cur = game.clicks; if(!q.d && q.cur>=q.trg){ q.d=true; game.diams+=q.r; } } }); }
+    function setPage(p){ game.page=p; renderGrid(); }
+    function play(id){ if(!game.settings.sfx) return; let a=document.getElementById('s-'+id); if(a){ a.currentTime=0; a.play().catch(()=>{}); } }
+    function toggleModal(s){ document.getElementById('m-sets').style.display=s?'flex':'none'; }
+    function openTab(t){ ['s','u','q','b'].forEach(x=>{document.getElementById('list-'+x).style.display='none'; document.getElementById('t-'+x).classList.remove('active');}); document.getElementById('list-'+t).style.display='block'; document.getElementById('t-'+t).classList.add('active'); }
+    function save() { localStorage.setItem('slime_m42_v5', JSON.stringify(game)); }
     function load() {
-        let s = localStorage.getItem('slime_m42_v4'); if(s) { let ld = JSON.parse(s); game = {...game, ...ld}; }
-        firebase.auth().onAuthStateChanged(u => { if(u){ uID=u.uid; db.ref('users/'+uID+'/farm').once('value', s=>{ if(s.exists()){game=s.val(); render();} }); } });
+        let s = localStorage.getItem('slime_m42_v5');
+        if(s) { let ld = JSON.parse(s); game = {...game, ...ld}; }
         render(); if(game.settings.music) document.getElementById('s-music').play().catch(()=>{});
     }
-    function fullReset(){ 
-        if(confirm("Сбросить всё? Получите 500 монет и 10 алмазов!")){ 
-            localStorage.clear(); 
-            game = { coins: 500, diams: 10, page: 0, inv: new Array(25).fill(0), rank: 0, upg: 0, clicks: 0, boost: 1, boostEnd: 0, settings: { music: true, sfx: true, hd: true }, quests: [{t:"Первые шаги", trg:100, cur:0, r:10, d:false}] };
-            save(); location.reload(); 
-        } 
-    }
-    setInterval(()=>{ if(game.boostEnd>0 && Date.now()>game.boostEnd){ game.boost=1; game.boostEnd=0; render(); } },1000);
+    function fullReset(){ if(confirm("Сбросить всё? (Бонус: 500 🪙, 10 💎)")){ localStorage.clear(); location.reload(); } }
+
+    setInterval(() => {
+        document.querySelectorAll('.slime-img').forEach(s => {
+            let x = (Math.random() * 30 - 15); let y = (Math.random() * 30 - 15);
+            s.style.transform = `translate(${x}px, ${y}px) scaleX(${x > 0 ? 1 : -1})`;
+        });
+    }, 2500);
+
     window.onload = load;
 </script>
 </body>
