@@ -16,19 +16,19 @@
             --g-blue: #1a73e8; --g-bg: #ffffff; --g-surface: #f8f9fa;
             --g-border: #dadce0; --g-text: #202124; --g-text-light: #5f6368;
             --orange: #ff8c00; --shadow: 0 4px 20px rgba(0,0,0,0.08);
-            --danger: #d93025;
+            --danger: #d93025; --online: #4caf50;
         }
-        [data-theme="dark"] {
+        body[data-theme="dark"] {
             --g-bg: #0b0e14; --g-surface: #1c2128; --g-border: #444c56;
             --g-text: #adbac7; --g-text-light: #768390; --vk-bg: #15151a; --vk-white: #1c2128;
         }
 
         * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
-        body, html { height: 100%; background: var(--g-bg); color: var(--g-text); overflow: hidden; }
+        body, html { height: 100%; background: var(--g-bg); color: var(--g-text); overflow: hidden; transition: 0.3s; }
 
         #auth-screen { position: fixed; inset: 0; background: var(--g-bg); display: flex; align-items: center; justify-content: center; z-index: 5000; }
         .auth-card { width: 380px; padding: 35px; border: 1px solid var(--g-border); border-radius: 20px; text-align: center; box-shadow: var(--shadow); background: var(--g-bg); }
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--g-border); border-radius: 8px; background: var(--g-surface); color: var(--g-text); outline: none; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--g-border); border-radius: 8px; background: var(--g-surface); color: var(--g-text); outline: none; }
 
         #app { display: none; height: 100vh; grid-template-columns: 260px 1fr; }
         .sidebar { background: var(--g-surface); border-right: 1px solid var(--g-border); padding: 25px 0; display: flex; flex-direction: column; }
@@ -42,9 +42,9 @@
         
         .card-box { background: var(--g-surface); border: 1px solid var(--g-border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
         .btn-blue { background: var(--g-blue); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .btn-danger { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 11px; }
+        .btn-danger { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; }
 
-        /* GAMES GRID */
+        /* GAMES */
         .search-bar { margin-bottom: 20px; width: 100%; max-width: 400px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         .game-card { text-align: center; cursor: pointer; padding: 15px; transition: 0.2s; border: 1px solid var(--g-border); border-radius: 12px; background: var(--g-surface); }
@@ -56,36 +56,29 @@
         .ms-header { height: 60px; background: var(--vk-blue); color: white; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
         .ms-body { flex: 1; display: grid; grid-template-columns: 320px 1fr; overflow: hidden; }
         .u-list { background: var(--vk-white); border-right: 1px solid rgba(0,0,0,0.1); overflow-y: auto; }
-        .u-card { padding: 15px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); display: flex; align-items: center; gap: 12px; }
+        .u-card { padding: 15px; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; }
         .chat-area { display: flex; flex-direction: column; background: var(--vk-bg); height: 100%; position: relative; }
         #pm-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 80px; }
-        .msg { padding: 10px 15px; border-radius: 16px; max-width: 70%; font-size: 14px; }
-        .m-in { background: var(--vk-white); align-self: flex-start; }
-        .m-out { background: #ceeafe; align-self: flex-end; }
-
-        /* GAME OVERLAY */
-        #game-overlay { position: fixed; inset: 0; background: #000; z-index: 20000; display: none; flex-direction: column; }
-        .game-header { height: 50px; background: #1c1c1c; color: white; display: flex; align-items: center; padding: 0 20px; gap: 15px; }
-        #game-frame { flex: 1; border: none; }
-        #game-frame.fullscreen { position: fixed; inset: 0; z-index: 20001; }
+        .msg { padding: 10px 15px; border-radius: 16px; max-width: 70%; font-size: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .m-in { background: var(--vk-white); align-self: flex-start; color: #000; }
+        .m-out { background: #ceeafe; align-self: flex-end; color: #000; }
 
         /* ADMIN */
-        .adm-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--g-border); font-size: 14px; }
-        .adm-section { margin-bottom: 30px; }
+        .adm-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--g-border); }
 
         .hidden { display: none !important; }
         .nick-orange { color: var(--orange) !important; font-weight: bold; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
-<body>
+<body data-theme="light">
 
     <div id="toast" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#333; color:white; padding:10px 20px; border-radius:20px; display:none; z-index:30000;"></div>
 
     <div id="auth-screen">
         <div class="auth-card">
             <h2 style="color:var(--g-blue); margin-bottom:10px;">Mark-42 Studio</h2>
-            <input type="text" id="reg-n" placeholder="Никнейм" class="hidden">
+            <input type="text" id="reg-n" placeholder="Придумайте никнейм" class="hidden">
             <input type="email" id="reg-e" placeholder="Email">
             <input type="password" id="reg-p" placeholder="Пароль">
             <button class="btn-blue" style="width:100%; margin-top:10px;" onclick="handleAuth()">ВОЙТИ</button>
@@ -99,14 +92,20 @@
             <div class="nav-item active" onclick="tab('lib', this)">🎮 <span>Игры</span></div>
             <div class="nav-item" onclick="tab('comm', this)">📢 <span>Сообщества</span></div>
             <div class="nav-item" onclick="openMessenger()" style="color:var(--vk-blue);">💬 <span>Messenger</span></div>
+            <div class="nav-item" onclick="tab('prof', this)">👤 <span>Профиль</span></div>
+            
             <div id="adm-nav" class="nav-item hidden" onclick="tryAdminAccess(this)" style="color:var(--danger); border-top:1px solid var(--g-border); margin-top:10px;">🛡️ <span>ROOT CONTROL</span></div>
-            <div id="cur-u" style="margin-top:auto; padding:25px; border-top:1px solid var(--g-border); font-size:13px;">...</div>
+            
+            <div id="cur-u-box" style="margin-top:auto; padding:25px; border-top:1px solid var(--g-border); font-size:13px; display:flex; align-items:center; gap:10px;">
+                <div style="width:8px; height:8px; border-radius:50%; background:var(--online);"></div>
+                <span id="cur-u">...</span>
+            </div>
         </aside>
 
         <main class="main">
             <div id="v-lib" class="view active">
                 <h1>Библиотека Игр</h1><br>
-                <input type="text" class="search-bar" id="game-search" placeholder="Поиск игры..." oninput="renderLibrary()">
+                <input type="text" class="search-bar" id="game-search" placeholder="Поиск по названию..." oninput="renderLibrary()">
                 <div class="grid" id="lib-grid"></div>
             </div>
 
@@ -115,40 +114,46 @@
                     <button class="btn-blue" id="tab-news" onclick="setComm('news', this)">Новости</button>
                     <button class="btn-blue" style="background:gray" onclick="setComm('suggest', this)">Предложения</button>
                 </div>
-                <div class="card-box" id="post-ui">
-                    <textarea id="post-in" placeholder="Напишите здесь..."></textarea>
+                <div class="card-box">
+                    <textarea id="post-in" placeholder="Что нового?"></textarea>
                     <button class="btn-blue" style="float:right" onclick="sendPost()">Опубликовать</button>
                     <div style="clear:both"></div>
                 </div>
                 <div id="feed"></div>
             </div>
 
+            <div id="v-prof" class="view">
+                <h1>Мой Профиль</h1><br>
+                <div class="card-box">
+                    <h3>Настройки аккаунта</h3><br>
+                    <label>Ваш никнейм:</label>
+                    <input type="text" id="prof-nick-in">
+                    <button class="btn-blue" onclick="updateProfile()">Сохранить изменения</button>
+                </div>
+                <div class="card-box">
+                    <h3>Внешний вид</h3><br>
+                    <label>Тема системы:</label>
+                    <select id="theme-select" onchange="setTheme(this.value)">
+                        <option value="light">Светлая</option>
+                        <option value="dark">Темная</option>
+                    </select>
+                </div>
+                <button class="btn-danger" style="width:100%" onclick="auth.signOut()">ВЫЙТИ ИЗ СИСТЕМЫ</button>
+            </div>
+
             <div id="v-adm" class="view">
                 <h1 style="color:var(--danger);">🛡️ ROOT CONTROL</h1><br>
-                
                 <div class="adm-section">
-                    <h3>👥 Управление пользователями</h3>
+                    <h3>👥 Список всех игроков</h3>
                     <div class="card-box" id="adm-users-list"></div>
                 </div>
-
                 <div class="adm-section">
-                    <h3>🕵️ Шпионский режим (Все чаты)</h3>
+                    <h3>🕵️ Просмотр всех переписок</h3>
                     <div class="card-box" id="adm-chats-list"></div>
                 </div>
-
                 <div class="adm-section">
-                    <h3>🤖 Создать фейк-аккаунт</h3>
-                    <div class="card-box">
-                        <input type="text" id="fake-n" placeholder="Ник">
-                        <input type="text" id="fake-e" placeholder="Email">
-                        <button class="btn-blue" onclick="createFakeUser()">СОЗДАТЬ</button>
-                    </div>
-                </div>
-
-                <div class="adm-section">
-                    <h3>☢️ Опасная зона</h3>
-                    <button class="btn-danger" onclick="wipeData('community')">ОЧИСТИТЬ ПОСТЫ</button>
-                    <button class="btn-danger" onclick="wipeData('chats')">ОЧИСТИТЬ ЧАТЫ</button>
+                    <h3>☢️ Управление данными</h3>
+                    <button class="btn-danger" onclick="wipeData('community')">ОЧИСТИТЬ ВСЕ ПОСТЫ</button>
                 </div>
             </div>
         </main>
@@ -156,16 +161,21 @@
 
     <div id="messenger-overlay">
         <div class="ms-header">
-            <span>Gamer's Messenger</span>
-            <button onclick="closeMessenger()" style="background:none; border:1px solid white; color:white; padding:5px; cursor:pointer;">ЗАКРЫТЬ ✖</button>
+            <span>Messenger</span>
+            <button onclick="closeMessenger()" style="background:none; border:none; color:white; cursor:pointer;">ЗАКРЫТЬ ✖</button>
         </div>
         <div class="ms-body">
-            <div class="u-list" id="ms-u-box"></div>
+            <div class="u-list">
+                <div style="padding:15px; border-bottom:1px solid rgba(0,0,0,0.1);">
+                    <button class="btn-blue" style="width:100%; font-size:12px;" onclick="showGlobalUsers()">+ НАЙТИ ИГРОКА</button>
+                </div>
+                <div id="ms-active-chats"></div>
+            </div>
             <div class="chat-area">
-                <div id="ms-target-name" style="padding:15px; background:var(--vk-white); font-weight:bold;">Выберите чат</div>
+                <div id="ms-target-name" style="padding:15px; background:var(--vk-white); font-weight:bold; border-bottom:1px solid rgba(0,0,0,0.05);">Выберите чат</div>
                 <div id="pm-messages"></div>
                 <div style="padding:15px; display:flex; gap:10px; background:var(--vk-white);">
-                    <textarea id="pm-in" placeholder="Сообщение..."></textarea>
+                    <textarea id="pm-in" placeholder="Ваше сообщение..." style="height:45px;"></textarea>
                     <button class="btn-blue" onclick="sendPM()">➤</button>
                 </div>
             </div>
@@ -174,11 +184,11 @@
 
     <div id="game-overlay">
         <div class="game-header">
-            <b id="game-title">Загрузка...</b>
-            <button class="btn-blue" onclick="toggleFullscreen()">РАЗВЕРНУТЬ</button>
-            <button onclick="closeGame()" style="background:red; color:white; border:none; padding:5px 15px; cursor:pointer;">ЗАКРЫТЬ ✖</button>
+            <b id="game-title">Game</b>
+            <button class="btn-blue" onclick="document.getElementById('game-frame').requestFullscreen()">НА ВЕСЬ ЭКРАН</button>
+            <button onclick="closeGame()" style="background:red; color:white; border:none; padding:5px 15px; cursor:pointer;">ВЫЙТИ</button>
         </div>
-        <iframe id="game-frame"></iframe>
+        <iframe id="game-frame" src=""></iframe>
     </div>
 
     <script>
@@ -186,7 +196,7 @@
         firebase.initializeApp(cfg);
         const auth = firebase.auth(), db = firebase.database();
 
-        let isLog = true, myNick = "", selUID = null, curComm = "news", adminUnlocked = false;
+        let myNick = "", myUID = "", adminUnlocked = false, selUID = null, curComm = "news";
 
         const GAMES = [
             { n: "Slime Clicker", p: "Slime_Clicker/index.html", i: "https://cdn-icons-png.flaticon.com/512/826/826908.png" },
@@ -202,35 +212,37 @@
         function toast(m) { const t=document.getElementById('toast'); t.innerText=m; t.style.display='block'; setTimeout(()=>t.style.display='none',3000); }
 
         function toggleAuth() {
-            isLog = !isLog;
-            document.getElementById('reg-n').classList.toggle('hidden');
-            document.querySelector('.auth-card button').innerText = isLog ? "ВОЙТИ" : "РЕГИСТРАЦИЯ";
-            document.getElementById('auth-toggle').innerText = isLog ? "Создать аккаунт" : "Уже есть аккаунт?";
+            const isReg = document.getElementById('reg-n').classList.toggle('hidden');
+            document.querySelector('.auth-card button').innerText = isReg ? "ВОЙТИ" : "РЕГИСТРАЦИЯ";
         }
 
         async function handleAuth() {
             const e=document.getElementById('reg-e').value, p=document.getElementById('reg-p').value, n=document.getElementById('reg-n').value;
             try {
-                if(isLog) await auth.signInWithEmailAndPassword(e, p);
+                if(document.getElementById('reg-n').classList.contains('hidden')) await auth.signInWithEmailAndPassword(e, p);
                 else {
                     const r = await auth.createUserWithEmailAndPassword(e, p);
-                    await db.ref('users/' + r.user.uid).set({ nick: n, email: e, isBanned: false, isMuted: false });
+                    await db.ref('users/' + r.user.uid).set({ nick: n, email: e, theme: 'light' });
                 }
             } catch(ex) { toast(ex.message); }
         }
 
         auth.onAuthStateChanged(u => {
             if(u) {
-                db.ref('users/' + u.uid).once('value', s => {
-                    if(s.val()?.isBanned) { auth.signOut(); alert("ВЫ ЗАБАНЕНЫ"); return; }
+                myUID = u.uid;
+                db.ref('users/' + u.uid).on('value', s => {
+                    const d = s.val(); if(!d) return;
+                    myNick = d.nick;
+                    document.getElementById('cur-u').innerText = myNick;
+                    document.getElementById('prof-nick-in').value = myNick;
+                    if(u.email === "vetrovlev1@gmail.com") {
+                        document.getElementById('adm-nav').classList.remove('hidden');
+                        document.getElementById('cur-u').classList.add('nick-orange');
+                    }
+                    setTheme(d.theme || 'light');
                     document.getElementById('auth-screen').style.display = 'none';
                     document.getElementById('app').style.display = 'grid';
-                    const isOwner = (u.email === "vetrovlev1@gmail.com");
-                    if(isOwner) document.getElementById('adm-nav').classList.remove('hidden');
-                    myNick = s.val()?.nick || "User";
-                    document.getElementById('cur-u').innerText = myNick;
-                    if(isOwner) document.getElementById('cur-u').classList.add('nick-orange');
-                    renderLibrary(); loadUsers(); loadPosts();
+                    renderLibrary(); loadPosts(); loadActiveChats();
                 });
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
@@ -238,102 +250,100 @@
             }
         });
 
+        // PROFILE
+        function updateProfile() {
+            const newNick = document.getElementById('prof-nick-in').value;
+            db.ref('users/' + myUID).update({ nick: newNick });
+            toast("Профиль обновлен!");
+        }
+        function setTheme(t) {
+            document.body.setAttribute('data-theme', t);
+            document.getElementById('theme-select').value = t;
+            if(myUID) db.ref('users/' + myUID + '/theme').set(t);
+        }
+
         // GAMES
         function renderLibrary() {
-            const query = document.getElementById('game-search').value.toLowerCase();
-            const grid = document.getElementById('lib-grid'); grid.innerHTML = "";
-            GAMES.filter(g => g.n.toLowerCase().includes(query)).forEach(g => {
-                grid.innerHTML += `<div class="game-card" onclick="play('${g.p}', '${g.n}')">
-                    <img src="${g.i}" class="game-icon"><div><b>${g.n}</b></div></div>`;
+            const q = document.getElementById('game-search').value.toLowerCase();
+            const g = document.getElementById('lib-grid'); g.innerHTML = "";
+            GAMES.filter(x => x.n.toLowerCase().includes(q)).forEach(x => {
+                g.innerHTML += `<div class="game-card" onclick="play('${x.p}', '${x.n}')"><img src="${x.i}" class="game-icon"><div><b>${x.n}</b></div></div>`;
             });
         }
-        function play(path, name) {
-            document.getElementById('game-overlay').style.display = 'flex';
-            document.getElementById('game-title').innerText = name;
-            document.getElementById('game-frame').src = path;
+        function play(p, n) { 
+            document.getElementById('game-overlay').style.display = 'flex'; 
+            document.getElementById('game-title').innerText = n;
+            document.getElementById('game-frame').src = p; 
         }
         function closeGame() { document.getElementById('game-overlay').style.display = 'none'; document.getElementById('game-frame').src = ""; }
-        function toggleFullscreen() { document.getElementById('game-frame').requestFullscreen(); }
 
         // MESSENGER
         function openMessenger() { document.getElementById('messenger-overlay').style.display = 'flex'; }
         function closeMessenger() { document.getElementById('messenger-overlay').style.display = 'none'; }
-        
-        function loadUsers() {
-            db.ref('users').on('value', s => {
-                const box = document.getElementById('ms-u-box'); box.innerHTML = "";
+
+        function showGlobalUsers() {
+            db.ref('users').once('value', s => {
+                const b = document.getElementById('ms-active-chats'); b.innerHTML = "<small style='padding:10px; display:block;'>Выберите, кому написать:</small>";
                 s.forEach(u => {
-                    if(u.key === auth.currentUser.uid) return;
-                    box.innerHTML += `<div class="u-card" onclick="selUID='${u.key}'; openChat('${u.val().nick}')">
-                        <div style="width:10px; height:10px; border-radius:50%; background:green;"></div><b>${u.val().nick}</b></div>`;
+                    if(u.key === myUID) return;
+                    b.innerHTML += `<div class="u-card" onclick="startChat('${u.key}', '${u.val().nick}')"><span>${u.val().nick}</span><small>💬</small></div>`;
                 });
             });
         }
-        function openChat(name) {
-            document.getElementById('ms-target-name').innerText = name;
-            const id = [auth.currentUser.uid, selUID].sort().join('_');
-            db.ref('chats/' + id).on('value', s => {
-                const b = document.getElementById('pm-messages'); b.innerHTML = "";
-                s.forEach(m => { b.innerHTML += `<div class="msg ${m.val().from===auth.currentUser.uid?'m-out':'m-in'}">${m.val().t}</div>`; });
-                b.scrollTop = b.scrollHeight;
+
+        function startChat(uid, nick) {
+            selUID = uid;
+            document.getElementById('ms-target-name').innerText = nick;
+            const chatId = [myUID, uid].sort().join('_');
+            loadMessages(chatId);
+        }
+
+        function loadActiveChats() {
+            db.ref('chats').on('value', s => {
+                const b = document.getElementById('ms-active-chats'); b.innerHTML = "";
+                s.forEach(c => {
+                    if(c.key.includes(myUID)) {
+                        const otherUID = c.key.replace(myUID, "").replace("_", "");
+                        db.ref('users/' + otherUID).once('value', u => {
+                            b.innerHTML += `<div class="u-card" onclick="startChat('${otherUID}', '${u.val().nick}')"><b>${u.val().nick}</b><span>➜</span></div>`;
+                        });
+                    }
+                });
             });
         }
+
+        function loadMessages(id) {
+            db.ref('chats/' + id).on('value', s => {
+                const m = document.getElementById('pm-messages'); m.innerHTML = "";
+                s.forEach(x => { m.innerHTML += `<div class="msg ${x.val().f === myUID ? 'm-out' : 'm-in'}">${x.val().t}</div>`; });
+                m.scrollTop = m.scrollHeight;
+            });
+        }
+
         function sendPM() {
             const t = document.getElementById('pm-in').value; if(!t.trim() || !selUID) return;
-            const id = [auth.currentUser.uid, selUID].sort().join('_');
-            db.ref('chats/' + id).push({ from: auth.currentUser.uid, t: t });
+            const id = [myUID, selUID].sort().join('_');
+            db.ref('chats/' + id).push({ f: myUID, t: t });
             document.getElementById('pm-in').value = "";
         }
 
-        // ADMIN CORE
+        // ADMIN ACCESS
         function tryAdminAccess(el) {
             if(adminUnlocked) return tab('adm', el);
-            if(prompt("ROOT PASSWORD:") === "12.02.2014") { 
-                adminUnlocked = true; tab('adm', el); loadAdminData(); 
-            }
+            if(prompt("ROOT PASSWORD:") === "12.02.2014") { adminUnlocked = true; tab('adm', el); loadAdminData(); }
         }
-
         function loadAdminData() {
-            // Управление юзерами
             db.ref('users').on('value', s => {
                 const b = document.getElementById('adm-users-list'); b.innerHTML = "";
                 s.forEach(u => {
-                    b.innerHTML += `<div class="adm-row">
-                        <span>${u.val().nick} (${u.val().email})</span>
-                        <div>
-                            <button class="btn-danger" onclick="db.ref('users/${u.key}/isBanned').set(true)">BAN</button>
-                            <button class="btn-blue" onclick="db.ref('users/${u.key}/isBanned').set(false)">UNBAN</button>
-                        </div>
-                    </div>`;
+                    b.innerHTML += `<div class="adm-row"><span>${u.val().nick}</span><button class="btn-danger" onclick="db.ref('users/${u.key}').remove()">УДАЛИТЬ</button></div>`;
                 });
             });
-            // Шпион за чатами
             db.ref('chats').on('value', s => {
                 const b = document.getElementById('adm-chats-list'); b.innerHTML = "";
-                s.forEach(chat => {
-                    b.innerHTML += `<div class="adm-row">
-                        <span>Чат: ${chat.key}</span>
-                        <button class="btn-blue" onclick="spyChat('${chat.key}')">ЧИТАТЬ</button>
-                    </div>`;
-                });
+                s.forEach(c => { b.innerHTML += `<div class="adm-row"><span>${c.key}</span><button class="btn-blue" onclick="startChat('${c.key.split('_')[0]}', 'SPY MODE')">ЧИТАТЬ</button></div>`; });
             });
         }
-
-        function spyChat(chatId) {
-            openMessenger();
-            db.ref('chats/' + chatId).on('value', s => {
-                const b = document.getElementById('pm-messages'); b.innerHTML = "<h4>SPY MODE: " + chatId + "</h4>";
-                s.forEach(m => { b.innerHTML += `<div class="msg m-in"><b>${m.val().from}:</b> ${m.val().t}</div>`; });
-            });
-        }
-
-        function createFakeUser() {
-            const n = document.getElementById('fake-n').value, e = document.getElementById('fake-e').value;
-            db.ref('users/fake_' + Date.now()).set({ nick: n, email: e, isBanned: false });
-            toast("Фейк создан!");
-        }
-
-        function wipeData(path) { if(confirm("УДАЛИТЬ ВСЁ В " + path + "?")) db.ref(path).remove(); }
 
         function tab(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -342,19 +352,12 @@
             if(el) el.classList.add('active');
         }
 
-        function setComm(t, el) {
-            curComm = t;
-            document.querySelectorAll('#v-comm .btn-blue').forEach(b => b.style.background = 'gray');
-            el.style.background = '#1a73e8';
-            loadPosts();
-        }
-
+        function setComm(t, el) { curComm = t; loadPosts(); }
         function sendPost() {
             const t = document.getElementById('post-in').value; if(!t.trim()) return;
-            db.ref('community/' + curComm).push({ author: myNick, txt: t, time: Date.now() });
+            db.ref('community/' + curComm).push({ author: myNick, txt: t });
             document.getElementById('post-in').value = "";
         }
-
         function loadPosts() {
             db.ref('community/' + curComm).on('value', s => {
                 const f = document.getElementById('feed'); f.innerHTML = "";
