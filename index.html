@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GamesFan OS Ultimate | Mark-42 Studio</title>
+    <title>GamesFan OS ULTIMATE | Mark-42 Studio</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -13,228 +13,237 @@
     <style>
         :root {
             --accent: #0077ff; --bg: #ebedf0; --card: #ffffff;
-            --text: #202124; --text-secondary: #5f6368;
-            --border: #dadce0; --shadow: 0 8px 30px rgba(0,0,0,0.1);
+            --text: #202124; --text-sec: #5f6368;
+            --border: #dadce0; --shadow: 0 8px 30px rgba(0,0,0,0.08);
             --danger: #ff3b30; --online: #4cd964; --vip: #ffcc00;
         }
         body[data-theme="dark"] {
-            --bg: #010409; --card: #0d1117; --text: #c9d1d9;
-            --text-secondary: #8b949e; --border: #30363d;
+            --bg: #0b0e14; --card: #1c2128; --text: #adbac7;
+            --text-sec: #768390; --border: #444c56;
         }
 
-        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; transition: background 0.3s, color 0.3s; }
+        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; transition: 0.2s; }
         body, html { height: 100%; margin: 0; background: var(--bg); color: var(--text); overflow: hidden; }
 
         /* Layout */
         #app { display: none; height: 100vh; grid-template-columns: 280px 1fr; }
-        .sidebar { background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; }
-        .main-content { overflow-y: auto; padding: 40px; position: relative; }
+        .sidebar { background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+        .main { overflow-y: auto; padding: 40px; position: relative; }
 
-        /* Sidebar Nav */
-        .nav-group { padding: 20px 0; border-bottom: 1px solid var(--border); }
-        .nav-label { padding: 0 25px 10px; font-size: 11px; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; }
-        .nav-item { padding: 12px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; font-weight: 500; color: var(--text-secondary); }
-        .nav-item:hover { background: rgba(0,0,0,0.05); color: var(--accent); }
-        .nav-item.active { color: var(--accent); background: rgba(0,119,255,0.1); border-right: 4px solid var(--accent); }
+        /* Nav */
+        .nav-group { padding: 15px 0; border-bottom: 1px solid var(--border); }
+        .nav-label { padding: 0 25px 10px; font-size: 11px; text-transform: uppercase; color: var(--text-sec); font-weight: 700; }
+        .nav-item { padding: 12px 25px; cursor: pointer; display: flex; align-items: center; gap: 12px; color: var(--text-sec); font-weight: 500; border-right: 4px solid transparent; }
+        .nav-item:hover { background: rgba(0,0,0,0.03); color: var(--accent); }
+        .nav-item.active { color: var(--accent); background: rgba(0,119,255,0.08); border-right-color: var(--accent); }
 
-        /* UI Components */
+        /* Components */
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); }
-        .btn { padding: 12px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+        .btn { padding: 12px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-primary { background: var(--accent); color: white; }
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-        input, textarea, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); margin: 10px 0; }
+        input, textarea, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; margin: 10px 0; }
 
-        /* View Specifics */
-        .view { display: none; animation: slideUp 0.4s ease; }
+        .view { display: none; animation: slideUp 0.3s ease; }
         .view.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Games Grid */
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-        .game-card { background: var(--card); border-radius: 20px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; text-align: center; padding-bottom: 15px; }
-        .game-card img { width: 100%; height: 120px; object-fit: cover; }
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; }
+        .game-card { background: var(--card); border-radius: 18px; border: 1px solid var(--border); cursor: pointer; text-align: center; padding: 15px; position: relative; overflow: hidden; }
+        .game-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .game-card img { width: 80px; height: 80px; border-radius: 15px; margin-bottom: 10px; object-fit: cover; }
 
         /* Messenger */
-        #messenger-view { height: calc(100vh - 80px); display: grid; grid-template-columns: 300px 1fr; background: var(--card); border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
-        .chat-list { border-right: 1px solid var(--border); overflow-y: auto; }
-        .chat-user { padding: 15px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 10px; }
-        .chat-user:hover { background: var(--bg); }
-        .chat-main { display: flex; flex-direction: column; }
-        #chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: var(--bg); }
-        .bubble { padding: 10px 15px; border-radius: 15px; max-width: 70%; font-size: 14px; }
+        .ms-container { height: calc(100vh - 150px); display: grid; grid-template-columns: 300px 1fr; background: var(--card); border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
+        .ms-list { border-right: 1px solid var(--border); overflow-y: auto; background: var(--card); }
+        .ms-user { padding: 15px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 12px; }
+        .ms-user:hover { background: var(--bg); }
+        .ms-chat { display: flex; flex-direction: column; background: var(--bg); }
+        #chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .bubble { padding: 10px 15px; border-radius: 15px; max-width: 75%; font-size: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .mine { align-self: flex-end; background: var(--accent); color: white; }
-        .theirs { align-self: flex-start; background: var(--card); border: 1px solid var(--border); }
-
-        /* Profile */
-        .profile-header { display: flex; align-items: center; gap: 25px; margin-bottom: 30px; }
-        .avatar-lg { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid var(--accent); }
+        .theirs { align-self: flex-start; background: var(--card); }
 
         /* Overlays */
-        #game-overlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; flex-direction: column; }
+        #game-overlay { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; flex-direction: column; }
         #game-frame { flex: 1; border: none; }
+
+        .xp-bar { width: 100%; height: 6px; background: var(--border); border-radius: 3px; margin-top: 5px; overflow: hidden; }
+        .xp-fill { height: 100%; background: var(--accent); width: 0%; transition: 1s; }
+        .badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; background: var(--accent); color: white; }
         
-        .badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        .badge-vip { background: var(--vip); color: #000; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body data-theme="light">
 
-    <div id="auth-screen" style="position:fixed; inset:0; z-index:2000; background:var(--bg); display:flex; align-items:center; justify-content:center;">
-        <div class="card" style="width:400px; text-align:center;">
+    <div id="auth-screen" style="position:fixed; inset:0; background:var(--bg); z-index:10000; display:flex; align-items:center; justify-content:center;">
+        <div class="card" style="width:380px; text-align:center;">
             <h1 style="color:var(--accent)">GamesFan OS</h1>
-            <p>Ультимативная игровая платформа</p>
-            <input type="text" id="auth-n" placeholder="Никнейм (только для регистрации)">
+            <p style="font-size:14px; color:var(--text-sec)">Ultimate Edition</p>
+            <input type="text" id="auth-n" placeholder="Никнейм (для регистрации)" class="hidden">
             <input type="email" id="auth-e" placeholder="Email">
             <input type="password" id="auth-p" placeholder="Пароль">
-            <button class="btn btn-primary" style="width:100%" onclick="authAction('login')">ВОЙТИ</button>
-            <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="authAction('reg')">СОЗДАТЬ АККАУНТ</button>
+            <button class="btn btn-primary" style="width:100%" onclick="authLogic('login')">ВОЙТИ</button>
+            <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="authLogic('reg')">РЕГИСТРАЦИЯ</button>
+            <p id="toggle-auth" style="margin-top:15px; cursor:pointer; font-size:12px;" onclick="document.getElementById('auth-n').classList.toggle('hidden')">Создать аккаунт</p>
         </div>
     </div>
 
     <div id="app">
         <aside class="sidebar">
             <div style="padding:30px 25px;">
-                <h2 style="color:var(--accent)">GF OS <small style="font-size:10px">v4.0</small></h2>
+                <h2 style="color:var(--accent); margin:0;">GF OS <small style="font-size:10px; vertical-align:middle;">4.0</small></h2>
             </div>
-            
+
             <nav class="nav-group">
-                <div class="nav-label">Меню</div>
+                <div class="nav-label">Главное</div>
                 <div class="nav-item active" onclick="tab('home', this)">🏠 Главная</div>
                 <div class="nav-item" onclick="tab('games', this)">🎮 Игры</div>
                 <div class="nav-item" onclick="tab('comm', this)">📢 Сообщества</div>
+            </nav>
+
+            <nav class="nav-group">
+                <div class="nav-label">Социальное</div>
                 <div class="nav-item" onclick="tab('friends', this)">👥 Друзья</div>
                 <div class="nav-item" onclick="tab('msg', this)">💬 Мессенджер</div>
             </nav>
 
             <nav class="nav-group">
                 <div class="nav-label">Личное</div>
-                <div class="nav-item" onclick="tab('profile', this)">👤 Мой Профиль</div>
-                <div class="nav-item" onclick="tab('settings', this)">⚙️ Настройки</div>
+                <div class="nav-item" onclick="tab('prof', this)">👤 Профиль</div>
+                <div class="nav-item" onclick="tab('set', this)">⚙️ Настройки</div>
             </nav>
 
             <div id="adm-nav" class="nav-group hidden">
-                <div class="nav-label" style="color:red">Администрирование</div>
-                <div class="nav-item" onclick="tab('admin', this)" style="color:red">🛡️ ROOT CONTROL</div>
+                <div class="nav-label" style="color:var(--danger)">Админ-панель</div>
+                <div class="nav-item" onclick="tab('adm', this)" style="color:var(--danger)">🛡️ ROOT CONTROL</div>
             </div>
 
             <div style="margin-top:auto; padding:20px; border-top:1px solid var(--border);">
-                <div id="user-mini-card" style="display:flex; align-items:center; gap:10px;">
-                    <img id="my-avatar-mini" src="https://ui-avatars.com/api/?name=User" style="width:32px; height:32px; border-radius:50%">
-                    <div>
-                        <div id="my-nick-mini" style="font-weight:700; font-size:13px;">...</div>
-                        <div style="font-size:10px; color:var(--online)">● Online</div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <img id="my-av-min" src="" style="width:35px; height:35px; border-radius:50%; background:#eee;">
+                    <div style="overflow:hidden">
+                        <div id="my-nick-min" style="font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">...</div>
+                        <div style="font-size:10px; color:var(--text-sec)">Уровень <span id="my-lvl-min">1</span></div>
+                        <div class="xp-bar"><div id="my-xp-fill" class="xp-fill"></div></div>
                     </div>
                 </div>
             </div>
         </aside>
 
-        <main class="main-content">
+        <main class="main">
             
             <div id="v-home" class="view active">
-                <h1>Добро пожаловать, <span id="welcome-name">...</span>!</h1>
+                <h1>Привет, <span id="user-welcome">...</span>!</h1>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-top:30px;">
-                    <div class="card">
-                        <h3>🔥 Новая игра: Elber OS Ch. 6</h3>
-                        <p>Финальная глава уже доступна в библиотеке.</p>
-                        <button class="btn btn-primary" onclick="tab('games')">ИГРАТЬ</button>
+                    <div class="card" style="background: linear-gradient(135deg, var(--accent), #00d2ff); color:white; border:none;">
+                        <h3>Новинка: Elber OS 6</h3>
+                        <p>Играй в финальную главу прямо сейчас!</p>
+                        <button class="btn btn-outline" style="background:white; color:var(--accent)" onclick="tab('games')">ЗАПУСТИТЬ</button>
                     </div>
                     <div class="card">
-                        <h3>📈 Статистика</h3>
-                        <p>Друзей: <span id="stat-f">0</span> | Постов: <span id="stat-p">0</span></p>
+                        <h3>Твоя активность</h3>
+                        <p>Опыт: <span id="stat-xp">0</span> XP</p>
+                        <p>Сообщений: <span id="stat-msg">0</span></p>
                     </div>
                 </div>
             </div>
 
             <div id="v-games" class="view">
-                <h1>Библиотека игр</h1>
-                <input type="text" id="game-search" placeholder="Поиск по названию..." oninput="drawGames()">
-                <div class="games-grid" id="games-container" style="margin-top:20px;"></div>
+                <h1>Библиотека Игр</h1>
+                <input type="text" placeholder="Поиск игры..." oninput="drawGames(this.value)">
+                <div class="games-grid" id="games-grid" style="margin-top:20px;"></div>
             </div>
 
             <div id="v-comm" class="view">
                 <h1>Сообщества</h1>
                 <div class="card">
-                    <textarea id="new-post-txt" placeholder="Расскажите что-нибудь интересное..."></textarea>
-                    <button class="btn btn-primary" onclick="createPost()">Опубликовать</button>
+                    <textarea id="post-text" placeholder="Поделитесь новостью..." style="height:80px;"></textarea>
+                    <button class="btn btn-primary" style="float:right" onclick="sendPost()">Опубликовать (+10 XP)</button>
+                    <div style="clear:both"></div>
                 </div>
-                <div id="posts-feed"></div>
+                <div id="posts-container"></div>
             </div>
 
             <div id="v-friends" class="view">
-                <h1>Ваши друзья</h1>
+                <h1>Друзья и Игроки</h1>
                 <div class="card">
-                    <h3>Найти игроков</h3>
-                    <div id="global-users-list" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"></div>
+                    <h3>Поиск игроков</h3>
+                    <div id="global-users" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"></div>
                 </div>
-                <h3>Список друзей</h3>
-                <div id="my-friends-list"></div>
             </div>
 
             <div id="v-msg" class="view">
-                <div id="messenger-view">
-                    <div class="chat-list" id="active-chats-list"></div>
-                    <div class="chat-main">
-                        <div id="chat-header" style="padding:15px; border-bottom:1px solid var(--border); font-weight:700;">Выберите чат</div>
+                <h1>Мессенджер</h1>
+                <div class="ms-container">
+                    <div class="ms-list" id="chats-list"></div>
+                    <div class="ms-chat">
+                        <div id="chat-header" style="padding:15px; background:var(--card); font-weight:700; border-bottom:1px solid var(--border);">Выберите чат</div>
                         <div id="chat-messages"></div>
                         <div style="padding:20px; background:var(--card); display:flex; gap:10px;">
-                            <input type="text" id="chat-input" placeholder="Напишите сообщение...">
+                            <input type="text" id="ms-input" placeholder="Напишите сообщение...">
                             <button class="btn btn-primary" onclick="sendMessage()">➤</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="v-profile" class="view">
-                <div class="profile-header">
-                    <img id="prof-avatar" src="" class="avatar-lg">
+            <div id="v-prof" class="view">
+                <h1>Мой Профиль</h1>
+                <div class="card" style="display:flex; gap:25px; align-items:center;">
+                    <img id="prof-av" src="" style="width:100px; height:100px; border-radius:50%; border:4px solid var(--accent);">
                     <div>
-                        <h1 id="prof-nick">...</h1>
-                        <p id="prof-status" style="color:var(--text-secondary)"></p>
+                        <h2 id="prof-nick">...</h2>
+                        <p id="prof-bio" style="color:var(--text-sec)"></p>
+                        <span class="badge" id="prof-lvl">LVL 1</span>
                     </div>
                 </div>
                 <div class="card">
-                    <h3>Редактировать профиль</h3>
-                    <label>Ссылка на аватар:</label>
-                    <input type="text" id="edit-avatar" placeholder="https://...">
+                    <h3>Редактировать</h3>
+                    <label>Ссылка на аватарку:</label>
+                    <input type="text" id="edit-av" placeholder="https://...">
                     <label>О себе:</label>
-                    <textarea id="edit-bio"></textarea>
+                    <textarea id="edit-bio" placeholder="Расскажите о себе..."></textarea>
                     <button class="btn btn-primary" onclick="saveProfile()">СОХРАНИТЬ</button>
                 </div>
             </div>
 
-            <div id="v-settings" class="view">
+            <div id="v-set" class="view">
                 <h1>Настройки</h1>
                 <div class="card">
                     <h3>Внешний вид</h3>
-                    <p>Выберите тему оформления</p>
-                    <select onchange="changeTheme(this.value)">
-                        <option value="light">Светлая (GF Classic)</option>
-                        <option value="dark">Темная (Night Mode)</option>
+                    <select onchange="setTheme(this.value)">
+                        <option value="light">Светлая тема</option>
+                        <option value="dark">Темная тема</option>
                     </select>
                 </div>
-                <button class="btn btn-outline" style="color:red; border-color:red" onclick="auth.signOut()">ВЫЙТИ ИЗ АККАУНТА</button>
+                <button class="btn-outline" style="color:red; border-color:red; width:100%" onclick="auth.signOut()">ВЫЙТИ ИЗ ОС</button>
             </div>
 
-            <div id="v-admin" class="view">
-                <h1 style="color:red">🛡️ ROOT ACCESS UNLOCKED</h1>
+            <div id="v-adm" class="view">
+                <h1 style="color:var(--danger)">🛡️ ROOT CONTROL</h1>
                 <div class="card">
-                    <h3>Управление пользователями</h3>
-                    <div id="adm-users-all"></div>
+                    <h3>Все пользователи</h3>
+                    <div id="adm-users"></div>
                 </div>
                 <div class="card">
-                    <h3>Глобальный шпионаж</h3>
-                    <div id="adm-chats-all"></div>
+                    <h3>Логи чатов (Spy Mode)</h3>
+                    <div id="adm-chats"></div>
                 </div>
-                <button class="btn btn-primary" onclick="broadcastMsg()">РАССЫЛКА ВСЕМ ЮЗЕРАМ</button>
             </div>
 
         </main>
     </div>
 
     <div id="game-overlay">
-        <div style="padding:10px; background:#111; display:flex; justify-content:space-between; color:white;">
-            <b id="active-game-name">Игра</b>
-            <button onclick="closeGame()" style="background:red; color:white; border:none; padding:5px 15px; cursor:pointer; border-radius:5px;">ЗАКРЫТЬ</button>
+        <div style="padding:10px 20px; background:#1a1a1a; display:flex; justify-content:space-between; color:white; align-items:center;">
+            <b id="active-game-title">Game Title</b>
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-primary" style="padding:5px 10px; font-size:12px;" onclick="document.getElementById('game-frame').requestFullscreen()">Full</button>
+                <button onclick="closeGame()" style="background:red; color:white; border:none; padding:5px 15px; border-radius:5px; cursor:pointer;">ВЫЙТИ</button>
+            </div>
         </div>
         <iframe id="game-frame"></iframe>
     </div>
@@ -245,14 +254,12 @@
         firebase.initializeApp(cfg);
         const auth = firebase.auth(), db = firebase.database();
 
-        let uData = {}, myUID = "", selChatID = null, adminUnlocked = false;
+        let myUID = "", uData = {}, selChatID = null, adminMode = false;
 
-// ПОЛНЫЙ СПИСОК ИГР (GF OS ULTIMATE EDITION)
-        const LIB = [
-            { n: "Slime Clicker", p: "Slime_Clicker/index.html", i: "https://pic.rutubelist.ru/user/3b/63/3b632906b38c4149959e4875053f0992.jpg" },
-            { n: "Slime Farm 2D", p: "Slime_Farm_2D/index.html", i: "https://static.tildacdn.com/tild6439-6565-4564-b530-383737396131/__.png" },
-            
-            // СЕРИЯ ELBER OS
+        // ПУТИ К ИГРАМ (Проверь названия папок!)
+        const GAMES = [
+            { n: "Slime Clicker", p: "Slime_Clicker/index.html", i: "https://cdn-icons-png.flaticon.com/512/826/826908.png" },
+            { n: "Slime Farm 2D", p: "Slime_Farm_2D/index.html", i: "https://cdn-icons-png.flaticon.com/512/2392/2392326.png" },
             { n: "Elber OS: Chapter 1", p: "elber_os/chapter1/index.html", i: "https://img.freepik.com/premium-photo/retro-os-interface-aesthetic_1240525-24158.jpg" },
             { n: "Elber OS: Chapter 2", p: "elber_os/chapter2/index.html", i: "https://img.freepik.com/premium-photo/retro-os-interface-aesthetic_1240525-24158.jpg" },
             { n: "Elber OS: Chapter 3", p: "elber_os/chapter3/index.html", i: "https://img.freepik.com/premium-photo/retro-os-interface-aesthetic_1240525-24158.jpg" },
@@ -261,27 +268,26 @@
             { n: "Elber OS: Chapter 6", p: "elber_os/chapter6/index.html", i: "https://img.freepik.com/premium-photo/retro-os-interface-aesthetic_1240525-24158.jpg" }
         ];
 
-        // AUTH LOGIC
-        async function authAction(type) {
+        // AUTH
+        async function authLogic(t) {
             const e = document.getElementById('auth-e').value, p = document.getElementById('auth-p').value, n = document.getElementById('auth-n').value;
             try {
-                if(type === 'login') await auth.signInWithEmailAndPassword(e, p);
+                if(t === 'login') await auth.signInWithEmailAndPassword(e, p);
                 else {
                     const r = await auth.createUserWithEmailAndPassword(e, p);
-                    await db.ref('users/' + r.user.uid).set({ nick: n, email: e, bio: "Новичок в GF OS", av: "https://ui-avatars.com/api/?name="+n, theme: "light" });
+                    await db.ref('users/' + r.user.uid).set({ nick: n, email: e, av: "https://ui-avatars.com/api/?name="+n, bio: "Игрок GamesFan OS", xp: 0, lvl: 1, theme: 'light' });
                 }
-            } catch(err) { alert(err.message); }
+            } catch(ex) { alert(ex.message); }
         }
 
         auth.onAuthStateChanged(u => {
             if(u) {
                 myUID = u.uid;
                 db.ref('users/' + u.uid).on('value', s => {
-                    uData = s.val();
-                    if(!uData) return;
+                    uData = s.val(); if(!uData) return;
                     document.getElementById('auth-screen').style.display = 'none';
                     document.getElementById('app').style.display = 'grid';
-                    syncUI();
+                    sync();
                 });
             } else {
                 document.getElementById('app').style.display = 'none';
@@ -289,16 +295,23 @@
             }
         });
 
-        function syncUI() {
-            document.getElementById('welcome-name').innerText = uData.nick;
-            document.getElementById('my-nick-mini').innerText = uData.nick;
-            document.getElementById('my-avatar-mini').src = uData.av;
-            document.getElementById('prof-nick').innerText = uData.nick;
-            document.getElementById('prof-avatar').src = uData.av;
-            document.getElementById('prof-status').innerText = uData.bio;
-            document.body.setAttribute('data-theme', uData.theme || 'light');
-            if(uData.email === "vetrovlev1@gmail.com") document.getElementById('adm-nav').classList.remove('hidden');
+        function sync() {
+            document.getElementById('user-welcome').innerText = uData.nick;
+            document.getElementById('my-nick-min').innerText = uData.nick;
+            document.getElementById('my-av-min').src = uData.av;
+            document.getElementById('my-lvl-min').innerText = uData.lvl;
+            document.getElementById('my-xp-fill').style.width = (uData.xp % 100) + "%";
             
+            document.getElementById('prof-nick').innerText = uData.nick;
+            document.getElementById('prof-av').src = uData.av;
+            document.getElementById('prof-bio').innerText = uData.bio;
+            document.getElementById('prof-lvl').innerText = "LVL " + uData.lvl;
+            
+            document.getElementById('stat-xp').innerText = uData.xp;
+            document.body.setAttribute('data-theme', uData.theme || 'light');
+
+            if(uData.email === "vetrovlev1@gmail.com") document.getElementById('adm-nav').classList.remove('hidden');
+
             drawGames(); drawPosts(); drawGlobalUsers(); loadActiveChats();
         }
 
@@ -313,133 +326,127 @@
         }
 
         // GAMES
-        function drawGames() {
-            const q = document.getElementById('game-search').value.toLowerCase();
-            const c = document.getElementById('games-container'); c.innerHTML = "";
-            LIB.filter(g => g.n.toLowerCase().includes(q)).forEach(g => {
-                c.innerHTML += `<div class="game-card" onclick="playGame('${g.p}', '${g.n}')">
+        function drawGames(q = "") {
+            const container = document.getElementById('games-grid'); container.innerHTML = "";
+            GAMES.filter(g => g.n.toLowerCase().includes(q.toLowerCase())).forEach(g => {
+                container.innerHTML += `<div class="game-card" onclick="play('${g.p}', '${g.n}')">
                     <img src="${g.i}"><h4>${g.n}</h4></div>`;
             });
         }
-        function playGame(p, n) {
+        function play(p, n) {
             document.getElementById('game-overlay').style.display = 'flex';
-            document.getElementById('active-game-name').innerText = n;
+            document.getElementById('active-game-title').innerText = n;
             document.getElementById('game-frame').src = p;
         }
         function closeGame() { document.getElementById('game-overlay').style.display = 'none'; document.getElementById('game-frame').src = ""; }
 
+        // XP SYSTEM
+        function addXP(amount) {
+            let newXP = (uData.xp || 0) + amount;
+            let newLvl = Math.floor(newXP / 100) + 1;
+            db.ref('users/' + myUID).update({ xp: newXP, lvl: newLvl });
+        }
+
         // POSTS
-        function createPost() {
-            const t = document.getElementById('new-post-txt').value; if(!t) return;
-            db.ref('community/global').push({ author: uData.nick, text: t, av: uData.av, time: Date.now() });
-            document.getElementById('new-post-txt').value = "";
+        function sendPost() {
+            const txt = document.getElementById('post-text').value; if(!txt.trim()) return;
+            db.ref('community/global').push({ author: uData.nick, av: uData.av, text: txt, time: Date.now() });
+            document.getElementById('post-text').value = "";
+            addXP(10);
         }
         function drawPosts() {
             db.ref('community/global').on('value', s => {
-                const f = document.getElementById('posts-feed'); f.innerHTML = "";
+                const c = document.getElementById('posts-container'); c.innerHTML = "";
                 let arr = []; s.forEach(p => arr.push(p.val()));
                 arr.reverse().forEach(p => {
-                    f.innerHTML += `<div class="card"><div style="display:flex; gap:10px; align-items:center;">
-                        <img src="${p.av}" style="width:30px; border-radius:50%"><b>${p.author}</b></div><p>${p.text}</p></div>`;
+                    c.innerHTML += `<div class="card"><b>${p.author}</b><p>${p.text}</p></div>`;
                 });
             });
         }
 
-        // FRIENDS & MESSENGER
+        // MESSENGER
         function drawGlobalUsers() {
             db.ref('users').once('value', s => {
-                const c = document.getElementById('global-users-list'); c.innerHTML = "";
+                const c = document.getElementById('global-users'); c.innerHTML = "";
                 s.forEach(u => {
                     if(u.key === myUID) return;
                     c.innerHTML += `<div class="card" style="margin:0; padding:10px; display:flex; justify-content:space-between; align-items:center;">
                         <span>${u.val().nick}</span>
-                        <button class="btn btn-primary" style="padding:5px 10px; font-size:10px;" onclick="openPrivate('${u.key}', '${u.val().nick}')">НАПИСАТЬ</button>
+                        <button class="btn btn-primary" style="padding:5px 10px; font-size:10px;" onclick="startChat('${u.key}', '${u.val().nick}')">ЧАТ</button>
                     </div>`;
                 });
             });
         }
-
-        function openPrivate(uid, nick) {
+        function startChat(uid, nick) {
             selChatID = [myUID, uid].sort().join('_');
             tab('msg');
-            document.getElementById('chat-header').innerText = "Диалог с " + nick;
+            document.getElementById('chat-header').innerText = "Чат с " + nick;
             loadMessages();
         }
-
         function loadActiveChats() {
             db.ref('chats').on('value', s => {
-                const l = document.getElementById('active-chats-list'); l.innerHTML = "";
-                s.forEach(c => {
-                    if(c.key.includes(myUID)) {
-                        const otherID = c.key.replace(myUID, "").replace("_", "");
-                        db.ref('users/' + otherID).once('value', u => {
-                            l.innerHTML += `<div class="chat-user" onclick="openPrivate('${otherID}', '${u.val().nick}')">
-                                <img src="${u.val().av}" style="width:40px; border-radius:50%">
-                                <div><b>${u.val().nick}</b></div></div>`;
+                const list = document.getElementById('chats-list'); list.innerHTML = "";
+                s.forEach(chat => {
+                    if(chat.key.includes(myUID)) {
+                        const otherUID = chat.key.replace(myUID, "").replace("_", "");
+                        db.ref('users/' + otherUID).once('value', user => {
+                            list.innerHTML += `<div class="ms-user" onclick="startChat('${otherUID}', '${user.val().nick}')">
+                                <img src="${user.val().av}" style="width:35px; height:35px; border-radius:50%">
+                                <b>${user.val().nick}</b></div>`;
                         });
                     }
                 });
             });
         }
-
         function loadMessages() {
             db.ref('chats/' + selChatID).on('value', s => {
-                const b = document.getElementById('chat-messages'); b.innerHTML = "";
-                s.forEach(m => {
-                    const cls = m.val().sender === myUID ? 'mine' : 'theirs';
-                    b.innerHTML += `<div class="bubble ${cls}">${m.val().text}</div>`;
+                const box = document.getElementById('chat-messages'); box.innerHTML = "";
+                s.forEach(msg => {
+                    const side = msg.val().sender === myUID ? 'mine' : 'theirs';
+                    box.innerHTML += `<div class="bubble ${side}">${msg.val().text}</div>`;
                 });
-                b.scrollTop = b.scrollHeight;
+                box.scrollTop = box.scrollHeight;
             });
         }
-
         function sendMessage() {
-            const t = document.getElementById('chat-input').value; if(!t || !selChatID) return;
-            db.ref('chats/' + selChatID).push({ sender: myUID, text: t, time: Date.now() });
-            document.getElementById('chat-input').value = "";
+            const txt = document.getElementById('ms-input').value; if(!txt.trim() || !selChatID) return;
+            db.ref('chats/' + selChatID).push({ sender: myUID, text: txt, time: Date.now() });
+            document.getElementById('ms-input').value = "";
+            addXP(1);
         }
 
-        // SETTINGS
-        function changeTheme(t) {
-            db.ref('users/' + myUID + '/theme').set(t);
-        }
+        // SETTINGS & PROFILE
+        function setTheme(t) { db.ref('users/' + myUID + '/theme').set(t); }
         function saveProfile() {
-            const av = document.getElementById('edit-avatar').value;
-            const bio = document.getElementById('edit-bio').value;
+            const av = document.getElementById('edit-av').value, bio = document.getElementById('edit-bio').value;
             db.ref('users/' + myUID).update({ av: av || uData.av, bio: bio || uData.bio });
-            alert("Сохранено!");
+            alert("Профиль обновлен!");
         }
 
-        // ADMIN ROOT
+        // ROOT CONTROL
         function tryAdminAccess(el) {
-            if(adminUnlocked) return tab('admin', el);
+            if(adminMode) return tab('adm', el);
             if(prompt("ROOT PASSWORD:") === "12.02.2014") { 
-                adminUnlocked = true; tab('admin', el); 
-                loadAdminAll();
+                adminMode = true; tab('adm', el); loadAdmin();
             }
         }
-        function loadAdminAll() {
+        function loadAdmin() {
             db.ref('users').on('value', s => {
-                const c = document.getElementById('adm-users-all'); c.innerHTML = "";
+                const b = document.getElementById('adm-users'); b.innerHTML = "";
                 s.forEach(u => {
-                    c.innerHTML += `<div class="adm-row" style="display:flex; justify-content:space-between; margin-bottom:5px; border-bottom:1px solid #333">
+                    b.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
                         <span>${u.val().nick} (${u.val().email})</span>
-                        <button onclick="db.ref('users/${u.key}').remove()">УДАЛИТЬ</button>
+                        <button onclick="db.ref('users/${u.key}').remove()">DEL</button>
                     </div>`;
                 });
             });
             db.ref('chats').on('value', s => {
-                const c = document.getElementById('adm-chats-all'); c.innerHTML = "";
-                s.forEach(chat => {
-                    c.innerHTML += `<div style="font-size:10px">Чат ${chat.key} <button onclick="selChatID='${chat.key}'; tab('msg'); loadMessages();">ШПИОНИТЬ</button></div>`;
+                const b = document.getElementById('adm-chats'); b.innerHTML = "";
+                s.forEach(c => {
+                    b.innerHTML += `<div>Чат ${c.key} <button onclick="selChatID='${c.key}'; tab('msg'); loadMessages()">SPY</button></div>`;
                 });
             });
-        }
-        function broadcastMsg() {
-            const t = prompt("Текст рассылки всем юзерам:");
-            if(t) db.ref('community/global').push({ author: "SYSTEM ADM", text: "📢 " + t, av: "https://cdn-icons-png.flaticon.com/512/179/179386.png", time: Date.now() });
         }
     </script>
 </body>
 </html>
-
