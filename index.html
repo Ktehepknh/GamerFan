@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ELBERR_OS | Professional Edition</title>
+    <title>ELBERR_OS | Ultimate Terminal</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -18,217 +17,218 @@
             --card: #0d1117;
             --text: #c9d1d9;
             --border: #30363d;
-            --glow: 0 0 15px rgba(0, 210, 255, 0.3);
+            --glow: 0 0 15px rgba(0, 210, 255, 0.4);
         }
 
         * { box-sizing: border-box; transition: 0.3s; }
-        body, html { 
-            height: 100%; margin: 0; 
-            background: var(--bg); color: var(--text); 
-            font-family: 'Roboto Mono', monospace; overflow: hidden; 
-        }
+        body, html { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: 'Roboto Mono', monospace; overflow: hidden; }
 
-        /* Экран авторизации - СТИЛЬНЫЙ */
+        /* ЭКРАН АВТОРИЗАЦИИ */
         #auth-screen {
-            position: fixed; inset: 0; background: var(--bg);
-            z-index: 10000; display: flex; align-items: center; justify-content: center;
-            background-image: radial-gradient(circle at center, #10141b 0%, #050608 100%);
+            position: fixed; inset: 0; background: var(--bg); z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
         }
-
         .auth-card {
-            background: var(--card); border: 1px solid var(--accent);
-            padding: 40px; border-radius: 2px; width: 400px;
-            box-shadow: var(--glow); text-align: center;
-            position: relative;
+            background: var(--card); border: 1px solid var(--accent); padding: 40px;
+            width: 400px; text-align: center; box-shadow: var(--glow);
         }
-
-        .auth-card::before {
-            content: ""; position: absolute; top: -2px; left: -2px; 
-            width: 20px; height: 20px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent);
-        }
-
-        h1 { font-family: 'Orbitron'; letter-spacing: 5px; color: var(--accent); text-shadow: var(--glow); }
+        .hidden { display: none !important; }
 
         input {
             width: 100%; background: #000; border: 1px solid var(--border);
-            padding: 12px; margin: 10px 0; color: var(--accent);
-            outline: none; border-radius: 0;
+            padding: 12px; margin: 10px 0; color: var(--accent); outline: none;
         }
-
         input:focus { border-color: var(--accent); box-shadow: var(--glow); }
 
         .btn {
-            width: 100%; padding: 12px; border: 1px solid var(--accent);
-            background: transparent; color: var(--accent);
-            font-family: 'Orbitron'; cursor: pointer; margin-top: 15px;
+            padding: 12px 25px; border: 1px solid var(--accent); background: transparent;
+            color: var(--accent); cursor: pointer; font-family: 'Orbitron'; width: 100%;
         }
-
         .btn:hover { background: var(--accent); color: #000; }
 
-        /* Основной интерфейс */
+        /* ИНТЕРФЕЙС ОС */
         #app { display: none; height: 100vh; grid-template-columns: 260px 1fr; }
-        
-        .sidebar { 
-            background: #090c10; border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; 
-        }
-
-        .nav-item {
-            padding: 15px 25px; cursor: pointer; color: #8b949e;
-            border-bottom: 1px solid #161b22; font-size: 14px;
-        }
-
-        .nav-item:hover, .nav-item.active { 
-            color: var(--accent); background: rgba(0, 210, 255, 0.05); 
-            border-right: 3px solid var(--accent);
-        }
-
+        .sidebar { background: #090c10; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .nav-item { padding: 15px 25px; cursor: pointer; border-bottom: 1px solid #161b22; font-size: 14px; }
+        .nav-item:hover, .nav-item.active { color: var(--accent); background: rgba(0, 210, 255, 0.05); }
         .main { padding: 40px; overflow-y: auto; }
 
+        /* ГРИД ИГР */
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        .game-card { 
+            background: #000; border: 1px solid var(--border); padding: 15px; 
+            text-align: center; cursor: pointer; position: relative; overflow: hidden;
+        }
+        .game-card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: var(--glow); }
+        .game-icon { 
+            font-size: 40px; margin-bottom: 10px; display: block; 
+            filter: drop-shadow(0 0 5px var(--accent));
+        }
+        
         .view { display: none; }
         .view.active { display: block; }
-
-        .hidden { display: none !important; }
         
-        /* Уведомления */
-        #toast {
-            position: fixed; bottom: 20px; right: 20px;
-            background: var(--accent); color: #000;
-            padding: 10px 20px; display: none; z-index: 10001;
-        }
+        #game-overlay { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; flex-direction: column; }
+        iframe { flex: 1; border: none; }
     </style>
 </head>
 <body>
 
-    <div id="toast">Система обновлена</div>
-
     <div id="auth-screen">
         <div class="auth-card">
-            <h1>ELBERR_OS</h1>
-            <p id="auth-status" style="font-size: 10px; color: var(--accent); opacity: 0.7;">CONNECTED_TO_DATABASE</p>
+            <h1 style="font-family: 'Orbitron'; color: var(--accent);">GAMESFAN OS</h1>
+            <p id="auth-status" style="font-size: 10px; text-transform: uppercase;">Авторизация в терминале</p>
             
-            <div id="auth-inputs">
-                <input type="text" id="auth-nick" placeholder="NICKNAME" class="hidden">
-                <input type="email" id="auth-email" placeholder="ACCESS_EMAIL">
-                <input type="password" id="auth-pass" placeholder="ACCESS_KEY">
-                
-                <button class="btn" id="auth-main-btn" onclick="handleAuth()">LOGIN</button>
-                <p id="auth-toggle" style="font-size:11px; margin-top:20px; cursor:pointer;" onclick="toggleMode()">NEW_USER? CREATE_PROFILE</p>
-            </div>
+            <input type="text" id="auth-n" placeholder="ИМЯ ПОЛЬЗОВАТЕЛЯ" class="hidden">
+            <input type="email" id="auth-e" placeholder="ТЕРМИНАЛ (EMAIL)">
+            <input type="password" id="auth-p" placeholder="КЛЮЧ ДОСТУПА (ПАРОЛЬ)">
+            
+            <button id="auth-btn" class="btn" onclick="handleAuth()">ВОЙТИ</button>
+            <p id="toggle-auth" style="margin-top:20px; cursor:pointer; font-size:11px; color:var(--accent)" onclick="toggleAuthMode()">Нет аккаунта? Создать новый профиль</p>
         </div>
     </div>
 
     <div id="app">
         <aside class="sidebar">
-            <div style="padding: 25px; font-family: 'Orbitron'; color: var(--accent); border-bottom: 1px solid var(--border);">
-                SYS_v4.2
-            </div>
-            <div class="nav-item active" onclick="tab('home', this)">TERMINAL</div>
-            <div class="nav-item" onclick="tab('games', this)">PROGRAMS</div>
-            <div class="nav-item" onclick="tab('prof', this)">PROFILE</div>
+            <div style="padding: 25px; font-family: 'Orbitron'; color: var(--accent); border-bottom: 1px solid var(--border);">CORE_v.5</div>
+            <div class="nav-item active" onclick="tab('home', this)">[主] ГЛАВНАЯ</div>
+            <div class="nav-item" onclick="tab('games', this)">[🎮] ИГРЫ</div>
+            <div class="nav-item" onclick="tab('prof', this)">[👤] ПРОФИЛЬ</div>
+            <div id="adm-nav" class="nav-item hidden" onclick="tab('adm', this)" style="color: #ff4444;">[🔐] ROOT_ACCESS</div>
             
-            <div id="admin-nav" class="nav-item hidden" onclick="tab('adm', this)" style="color: #ff5555; border-top: 1px solid #440000;">ROOT_ACCESS</div>
-
-            <div style="margin-top: auto; padding: 20px; border-top: 1px solid var(--border);">
-                <span id="user-display" style="color: var(--accent);">...</span>
-                <div style="font-size: 9px; opacity: 0.5;">STATUS: ONLINE</div>
+            <div style="margin-top:auto; padding:20px; font-size:12px; border-top:1px solid var(--border);">
+                USER: <span id="user-tag" style="color:var(--accent)">...</span>
             </div>
         </aside>
 
         <main class="main">
             <div id="v-home" class="view active">
-                <h2 style="font-family: 'Orbitron';">WELCOME_TO_ELBERR_OS</h2>
-                <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
-                <p>Все системы работают в штатном режиме. Последнее обновление: 2026.03.13</p>
+                <h2 style="font-family: 'Orbitron';">СИСТЕМА ГОТОВА.</h2>
+                <div style="background: rgba(0,210,255,0.1); border: 1px solid var(--accent); padding: 20px;">
+                    <p>> Проверка модулей... OK</p>
+                    <p>> Доступ к библиотеке... РАЗРЕШЕН</p>
+                </div>
             </div>
 
             <div id="v-games" class="view">
-                <h2 style="font-family: 'Orbitron';">SOFTWARE_LIBRARY</h2>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
-                    <div style="border: 1px solid var(--border); padding: 20px; text-align: center;">
-                        <b>Chapter 1</b><br>
-                        <button class="btn" style="padding: 5px;" onclick="alert('Загрузка...')">RUN</button>
-                    </div>
-                </div>
+                <h2 style="font-family: 'Orbitron';">LIBRARY_DATABASE</h2>
+                <div class="games-grid" id="g-list"></div>
             </div>
 
             <div id="v-prof" class="view">
-                <h2 style="font-family: 'Orbitron';">USER_DATA</h2>
-                <div id="prof-info" style="background: #000; padding: 20px; border: 1px solid var(--border);">
-                    Загрузка данных...
-                </div>
-                <button class="btn" style="width: 200px;" onclick="auth.signOut()">TERMINATE_SESSION</button>
+                <h2 style="font-family: 'Orbitron';">USER_PROFILE</h2>
+                <div id="prof-data" style="border: 1px solid var(--border); padding: 20px;"></div>
+                <button class="btn" style="margin-top:20px; width:200px;" onclick="auth.signOut()">ВЫЙТИ</button>
             </div>
 
             <div id="v-adm" class="view">
-                <h2 style="font-family: 'Orbitron'; color: #ff5555;">ADMIN_TERMINAL</h2>
-                <div id="admin-users" style="background: #110000; border: 1px solid #ff5555; padding: 20px;">
-                    </div>
+                <h2 style="font-family: 'Orbitron'; color:#ff4444;">ADMIN_PANEL</h2>
+                <div id="adm-list"></div>
             </div>
         </main>
     </div>
 
+    <div id="game-overlay">
+        <div style="background:#000; padding:10px; display:flex; justify-content:space-between; border-bottom:1px solid var(--accent);">
+            <span id="game-title" style="color:var(--accent)"></span>
+            <button onclick="closeGame()" style="color:red; background:none; border:none; cursor:pointer;">[ЗАКРЫТЬ X]</button>
+        </div>
+        <iframe id="game-frame"></iframe>
+    </div>
+
     <script>
-        // Конфиг Firebase
-        const firebaseConfig = {
+        // FIREBASE CONFIG
+        const cfg = {
             apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI",
             authDomain: "gamesfan-17986.firebaseapp.com",
             databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/",
             projectId: "gamesfan-17986"
         };
-        firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(cfg);
         const auth = firebase.auth(), db = firebase.database();
 
-        let isReg = false;
-        let uData = null;
+        let myUID = "", uData = {}, currentAuthMode = "login";
 
-        // Переключение Регистрация/Вход
-        function toggleMode() {
-            isReg = !isReg;
-            document.getElementById('auth-nick').classList.toggle('hidden', !isReg);
-            document.getElementById('auth-main-btn').innerText = isReg ? "REGISTER" : "LOGIN";
-            document.getElementById('auth-toggle').innerText = isReg ? "ALREADY_HAVE_ACCOUNT? LOGIN" : "NEW_USER? CREATE_PROFILE";
-        }
+        // ТВОИ 8 ИГР С ЗАСТАВКАМИ-КОДАМИ
+        const GAMES = [
+            { n: "ELBERR OS: Ch. 1", p: "ELBERR_OS/Chapter1/index.html", ico: "📁" },
+            { n: "ELBERR OS: Ch. 2", p: "ELBERR_OS/Chapter2/index.html", ico: "🔐" },
+            { n: "ELBERR OS: Ch. 3", p: "ELBERR_OS/Chapter3/index.html", ico: "🔌" },
+            { n: "ELBERR OS: Ch. 4", p: "ELBERR_OS/Chapter4/index.html", ico: "💾" },
+            { n: "ELBERR OS: Ch. 5", p: "ELBERR_OS/Chapter5/index.html", ico: "📡" },
+            { n: "ELBERR OS: Ch. 6", p: "ELBERR_OS/Chapter6/index.html", ico: "🧠" },
+            { n: "Slime Clicker", p: "Slime_Clicker/index.html", ico: "🧪" },
+            { n: "Root Terminal", p: "Terminal/index.html", ico: "⚡" }
+        ];
 
-        // Логика Входа и Регистрации
-        async function handleAuth() {
-            const email = document.getElementById('auth-email').value.trim();
-            const pass = document.getElementById('auth-pass').value.trim();
-            const nick = document.getElementById('auth-nick').value.trim();
+        // --- ЛОГИКА ИЗ ТВОЕГО ЗАПРОСА (ВОЗВРАЩЕНА) ---
+        function toggleAuthMode() {
+            const nickInput = document.getElementById('auth-n');
+            const authBtn = document.getElementById('auth-btn');
+            const authStatus = document.getElementById('auth-status');
+            const toggleLink = document.getElementById('toggle-auth');
 
-            if (!email || !pass) return showToast("ERROR: FILL ALL FIELDS");
-
-            try {
-                if (isReg) {
-                    if (!nick) return showToast("ERROR: NICKNAME REQUIRED");
-                    const res = await auth.createUserWithEmailAndPassword(email, pass);
-                    // СРАЗУ записываем в базу
-                    await db.ref('users/' + res.user.uid).set({
-                        nick: nick,
-                        email: email,
-                        lvl: 1,
-                        xp: 0,
-                        role: email === 'vetrovlev1@gmail.com' ? 'admin' : 'user'
-                    });
-                    showToast("SUCCESS: PROFILE CREATED");
-                } else {
-                    await auth.signInWithEmailAndPassword(email, pass);
-                    showToast("SUCCESS: ACCESS GRANTED");
-                }
-            } catch (e) {
-                showToast("ERROR: " + e.message);
+            if (currentAuthMode === "login") {
+                currentAuthMode = "reg";
+                nickInput.classList.remove('hidden');
+                authBtn.innerText = "ЗАРЕГИСТРИРОВАТЬСЯ";
+                authStatus.innerText = "Регистрация нового узла";
+                toggleLink.innerText = "Уже есть аккаунт? Войти";
+            } else {
+                currentAuthMode = "login";
+                nickInput.classList.add('hidden');
+                authBtn.innerText = "ВОЙТИ";
+                authStatus.innerText = "Авторизация в терминале";
+                toggleLink.innerText = "Нет аккаунта? Создать новый профиль";
             }
         }
 
-        // Следим за состоянием пользователя
+        async function handleAuth() {
+            const email = document.getElementById('auth-e').value.trim();
+            const pass = document.getElementById('auth-p').value.trim();
+            const nick = document.getElementById('auth-n').value.trim();
+
+            if (!email || !pass) return alert("Введите Email и Пароль!");
+            if (currentAuthMode === "reg" && !nick) return alert("Для регистрации необходимо указать Никнейм!");
+
+            try {
+                if (currentAuthMode === "login") {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                } else {
+                    const result = await auth.createUserWithEmailAndPassword(email, pass);
+                    await db.ref('users/' + result.user.uid).set({
+                        nick: nick,
+                        email: email,
+                        av: "https://ui-avatars.com/api/?background=00d2ff&color=000&bold=true&name=" + nick,
+                        bio: "Системный пользователь ELBERR_OS",
+                        xp: 0, lvl: 1, theme: 'dark'
+                    });
+                    alert("Профиль успешно создан!");
+                }
+            } catch (error) {
+                let msg = error.message;
+                if (error.code === "auth/user-not-found") msg = "Пользователь не найден.";
+                if (error.code === "auth/wrong-password") msg = "Неверный пароль.";
+                alert("Ошибка терминала: " + msg);
+            }
+        }
+        // --- КОНЕЦ ЛОГИКИ ИЗ ЗАПРОСА ---
+
+        // СЛЕЖКА ЗА СИСТЕМОЙ
         auth.onAuthStateChanged(user => {
             if (user) {
-                db.ref('users/' + user.uid).on('value', snap => {
-                    uData = snap.val();
-                    if (uData) {
+                myUID = user.uid;
+                // АДМИН ПАНЕЛЬ ДЛЯ ТВОЕГО EMAIL
+                if(user.email === "vetrovlev1@gmail.com") {
+                    document.getElementById('adm-nav').classList.remove('hidden');
+                }
+                
+                db.ref('users/' + user.uid).on('value', s => {
+                    uData = s.val();
+                    if(uData) {
                         document.getElementById('auth-screen').style.display = 'none';
                         document.getElementById('app').style.display = 'grid';
-                        renderUI(user);
+                        sync();
                     }
                 });
             } else {
@@ -237,20 +237,38 @@
             }
         });
 
-        function renderUI(user) {
-            document.getElementById('user-display').innerText = uData.nick;
-            document.getElementById('prof-info').innerHTML = `
+        function sync() {
+            document.getElementById('user-tag').innerText = uData.nick;
+            document.getElementById('prof-data').innerHTML = `
                 <p>NICKNAME: ${uData.nick}</p>
-                <p>EMAIL: ${uData.email}</p>
                 <p>LEVEL: ${uData.lvl}</p>
-                <p>UID: ${user.uid}</p>
+                <p>EMAIL: ${uData.email}</p>
             `;
+            drawGames();
+            if(uData.email === "vetrovlev1@gmail.com") loadAdmin();
+        }
 
-            // ПРОВЕРКА НА АДМИНА
-            if (user.email === 'vetrovlev1@gmail.com' || uData.role === 'admin') {
-                document.getElementById('admin-nav').classList.remove('hidden');
-                loadAdminData();
-            }
+        function drawGames() {
+            const container = document.getElementById('g-list'); container.innerHTML = "";
+            GAMES.forEach(game => {
+                container.innerHTML += `
+                    <div class="game-card" onclick="play('${game.p}', '${game.n}')">
+                        <span class="game-icon">${game.ico}</span>
+                        <div style="font-size:12px; font-weight:bold;">${game.n}</div>
+                        <div style="font-size:9px; color:var(--accent); margin-top:5px;">[RUN_CODE]</div>
+                    </div>`;
+            });
+        }
+
+        function play(path, title) {
+            document.getElementById('game-overlay').style.display = 'flex';
+            document.getElementById('game-frame').src = path;
+            document.getElementById('game-title').innerText = "> RUNNING: " + title;
+        }
+
+        function closeGame() {
+            document.getElementById('game-overlay').style.display = 'none';
+            document.getElementById('game-frame').src = "";
         }
 
         function tab(id, el) {
@@ -260,32 +278,17 @@
             el.classList.add('active');
         }
 
-        function showToast(txt) {
-            const t = document.getElementById('toast');
-            t.innerText = txt;
-            t.style.display = 'block';
-            setTimeout(() => t.style.display = 'none', 3000);
-        }
-
-        function loadAdminData() {
-            db.ref('users').on('value', snap => {
-                const box = document.getElementById('admin-users');
-                box.innerHTML = "<h4>TOTAL_USERS: " + snap.numChildren() + "</h4>";
-                snap.forEach(child => {
+        function loadAdmin() {
+            db.ref('users').on('value', s => {
+                const list = document.getElementById('adm-list'); list.innerHTML = "";
+                s.forEach(child => {
                     const u = child.val();
-                    box.innerHTML += `<div style="border-bottom:1px solid #333; padding:5px; font-size:12px;">
-                        ${u.nick} | ${u.email} 
-                        <button onclick="deleteUser('${child.key}')" style="color:red; background:none; border:none; float:right; cursor:pointer;">[DELETE]</button>
+                    list.innerHTML += `<div style="padding:10px; border-bottom:1px solid #333;">
+                        ${u.nick} (${u.email}) 
+                        <button onclick="db.ref('users/${child.key}').remove()" style="color:red; background:none; border:1px solid red; float:right;">DEL</button>
                     </div>`;
                 });
             });
-        }
-
-        async function deleteUser(uid) {
-            if(confirm("TERMINATE USER DATA?")) {
-                await db.ref('users/' + uid).remove();
-                showToast("USER_DELETED");
-            }
         }
     </script>
 </body>
