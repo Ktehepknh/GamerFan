@@ -15,77 +15,45 @@
             --accent: #00d2ff; --bg: #0a0c10; --card: #161b22;
             --text: #c9d1d9; --text-sec: #8b949e;
             --border: #30363d; --shadow: 0 10px 40px rgba(0,0,0,0.5);
-            --danger: #f85149; --online: #3fb950; --vip: #f2e05a;
+            --danger: #f85149;
         }
         body[data-theme="light"] {
             --bg: #f0f2f5; --card: #ffffff; --text: #1c1e21;
             --text-sec: #65676b; --border: #dddfe2;
         }
 
-        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; transition: 0.3s; }
         body, html { height: 100%; margin: 0; background: var(--bg); color: var(--text); overflow: hidden; }
 
-        /* Layout */
         #app { display: none; height: 100vh; grid-template-columns: 280px 1fr; }
-        .sidebar { background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; z-index: 100; }
-        .main { overflow-y: auto; padding: 40px; position: relative; }
+        .sidebar { background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+        .main { overflow-y: auto; padding: 40px; }
 
-        /* Nav */
         .nav-group { padding: 15px 0; border-bottom: 1px solid var(--border); }
-        .nav-label { padding: 0 25px 10px; font-size: 11px; text-transform: uppercase; color: var(--text-sec); font-weight: 700; letter-spacing: 1px; }
-        .nav-item { padding: 12px 25px; cursor: pointer; display: flex; align-items: center; gap: 12px; color: var(--text-sec); font-weight: 500; border-left: 4px solid transparent; }
+        .nav-label { padding: 0 25px 10px; font-size: 11px; text-transform: uppercase; color: var(--text-sec); font-weight: 700; }
+        .nav-item { padding: 12px 25px; cursor: pointer; display: flex; align-items: center; gap: 12px; color: var(--text-sec); border-left: 4px solid transparent; }
         .nav-item:hover { background: rgba(0, 210, 255, 0.05); color: var(--accent); }
         .nav-item.active { color: var(--accent); background: rgba(0, 210, 255, 0.1); border-left-color: var(--accent); }
 
-        /* Components */
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-bottom: 25px; box-shadow: var(--shadow); }
         .btn { padding: 12px 24px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-primary { background: var(--accent); color: #000; }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
         input, textarea, select { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; margin: 10px 0; }
 
         .view { display: none; animation: fadeIn 0.4s ease; }
         .view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Games Grid - КРАСИВЫЕ КАРТОЧКИ */
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
-        .game-card { 
-            background: var(--card); border-radius: 24px; border: 1px solid var(--border); 
-            padding: 20px; text-align: center; cursor: pointer; position: relative; 
-            overflow: hidden; transition: 0.4s;
-        }
-        .game-card:hover { 
-            transform: translateY(-10px); 
-            border-color: var(--accent); 
-            box-shadow: 0 0 25px rgba(0, 210, 255, 0.2);
-        }
-        .game-card img { 
-            width: 100px; height: 100px; border-radius: 20px; margin-bottom: 15px; 
-            object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
-        }
-        .game-card h4 { 
-            margin: 10px 0 0; font-family: 'Orbitron', sans-serif; font-size: 13px; 
-            letter-spacing: 0.5px; color: var(--accent);
-        }
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .game-card { background: var(--card); border-radius: 20px; border: 1px solid var(--border); padding: 20px; text-align: center; cursor: pointer; }
+        .game-card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .game-card img { width: 80px; height: 80px; border-radius: 15px; margin-bottom: 10px; }
 
-        /* Messenger */
-        .ms-container { height: calc(100vh - 200px); display: grid; grid-template-columns: 300px 1fr; background: var(--card); border-radius: 24px; border: 1px solid var(--border); overflow: hidden; }
-        .ms-list { border-right: 1px solid var(--border); overflow-y: auto; }
-        .ms-user { padding: 18px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 15px; }
-        .ms-user:hover { background: rgba(255,255,255,0.02); }
-        #chat-messages { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: rgba(0,0,0,0.1); }
-        .bubble { padding: 12px 18px; border-radius: 18px; max-width: 75%; font-size: 14px; line-height: 1.4; }
-        .mine { align-self: flex-end; background: var(--accent); color: #000; font-weight: 500; border-bottom-right-radius: 4px; }
-        .theirs { align-self: flex-start; background: var(--border); color: var(--text); border-bottom-left-radius: 4px; }
-
-        /* Overlays */
+        .xp-bar { width: 100%; height: 8px; background: var(--border); border-radius: 4px; margin-top: 5px; overflow: hidden; }
+        .xp-fill { height: 100%; background: var(--accent); width: 0%; }
+        
         #game-overlay { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; flex-direction: column; }
         #game-frame { flex: 1; border: none; }
-
-        .xp-bar { width: 100%; height: 8px; background: var(--border); border-radius: 4px; margin-top: 8px; overflow: hidden; }
-        .xp-fill { height: 100%; background: linear-gradient(90deg, #00d2ff, #3a7bd5); width: 0%; box-shadow: 0 0 10px var(--accent); }
-        .badge { font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: bold; background: var(--accent); color: #000; text-transform: uppercase; }
         
         .hidden { display: none !important; }
     </style>
@@ -93,54 +61,49 @@
 <body data-theme="dark">
 
     <div id="auth-screen" style="position:fixed; inset:0; background:var(--bg); z-index:10000; display:flex; align-items:center; justify-content:center;">
-        <div class="card" style="width:400px; text-align:center; border: 1px solid var(--accent);">
-            <h1 style="font-family:'Orbitron'; color:var(--accent); text-shadow: 0 0 15px var(--accent);">GAMESFAN OS</h1>
-            <p style="font-size:14px; color:var(--text-sec); letter-spacing: 2px;">ELBERR_OS ULTIMATE</p>
-            <input type="text" id="auth-n" placeholder="Имя пользователя" class="hidden">
-            <input type="email" id="auth-e" placeholder="Терминал (Email)">
-            <input type="password" id="auth-p" placeholder="Ключ доступа (Пароль)">
-            <button class="btn btn-primary" style="width:100%" onclick="authLogic('login')">ИНИЦИАЛИЗАЦИЯ</button>
-            <p id="toggle-auth" style="margin-top:20px; cursor:pointer; font-size:12px; color:var(--text-sec)" onclick="document.getElementById('auth-n').classList.toggle('hidden'); this.innerText='Режим регистрации активен'">Создать новый аккаунт</p>
+        <div class="card" style="width:380px; text-align:center;">
+            <h1 style="font-family:'Orbitron'; color:var(--accent)">GF OS</h1>
+            <p id="auth-title" style="color:var(--text-sec)">Авторизация</p>
+            
+            <input type="text" id="reg-nick" placeholder="Ваш Никнейм" class="hidden">
+            <input type="email" id="auth-email" placeholder="Email">
+            <input type="password" id="auth-pass" placeholder="Пароль">
+            
+            <button class="btn btn-primary" id="main-auth-btn" style="width:100%" onclick="handleAuth()">ВОЙТИ</button>
+            
+            <p id="auth-toggle" style="margin-top:15px; cursor:pointer; font-size:12px; color:var(--accent)" onclick="toggleAuth()">Нет аккаунта? Создать</p>
         </div>
     </div>
 
     <div id="app">
         <aside class="sidebar">
-            <div style="padding:40px 25px;">
-                <h2 style="font-family:'Orbitron'; color:var(--accent); margin:0; letter-spacing:1px;">GF_OS 4.0</h2>
-                <small style="color:var(--text-sec)">by Mark-42 Studio</small>
+            <div style="padding:30px 25px;">
+                <h2 style="font-family:'Orbitron'; color:var(--accent); margin:0;">GF_OS 4.0</h2>
             </div>
 
             <nav class="nav-group">
                 <div class="nav-label">Система</div>
                 <div class="nav-item active" onclick="tab('home', this)">🏠 База</div>
-                <div class="nav-item" onclick="tab('games', this)">🎮 Библиотека</div>
-                <div class="nav-item" onclick="tab('comm', this)">📢 Общий Канал</div>
+                <div class="nav-item" onclick="tab('games', this)">🎮 Игры</div>
             </nav>
 
             <nav class="nav-group">
-                <div class="nav-label">Связь</div>
-                <div class="nav-item" onclick="tab('friends', this)">👥 Пользователи</div>
+                <div class="nav-label">Сеть</div>
                 <div class="nav-item" onclick="tab('msg', this)">💬 Сообщения</div>
-            </nav>
-
-            <nav class="nav-group">
-                <div class="nav-label">Настройки</div>
                 <div class="nav-item" onclick="tab('prof', this)">👤 Профиль</div>
-                <div class="nav-item" onclick="tab('set', this)">⚙️ Конфигурация</div>
             </nav>
 
             <div id="adm-nav" class="nav-group hidden">
                 <div class="nav-label" style="color:var(--danger)">Root Access</div>
-                <div class="nav-item" onclick="tryAdminAccess(this)" style="color:var(--danger)">🛡️ ТЕРМИНАЛ УПРАВЛЕНИЯ</div>
+                <div class="nav-item" onclick="tab('adm', this)" style="color:var(--danger)">🛡️ ТЕРМИНАЛ УПРАВЛЕНИЯ</div>
             </div>
 
-            <div style="margin-top:auto; padding:25px; border-top:1px solid var(--border);">
+            <div style="margin-top:auto; padding:20px; border-top:1px solid var(--border);">
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <img id="my-av-min" src="" style="width:40px; height:40px; border-radius:12px; background:#222; border:1px solid var(--accent);">
+                    <img id="my-av-min" src="" style="width:40px; height:40px; border-radius:10px;">
                     <div style="overflow:hidden">
-                        <div id="my-nick-min" style="font-weight:700; font-size:14px; color:var(--accent)">...</div>
-                        <div style="font-size:10px; color:var(--text-sec)">LEVEL <span id="my-lvl-min">1</span></div>
+                        <div id="my-nick-min" style="font-weight:700; font-size:13px; color:var(--accent)">...</div>
+                        <div style="font-size:10px;">Level <span id="my-lvl-min">1</span></div>
                         <div class="xp-bar"><div id="my-xp-fill" class="xp-fill"></div></div>
                     </div>
                 </div>
@@ -148,145 +111,119 @@
         </aside>
 
         <main class="main">
-            
             <div id="v-home" class="view active">
-                <h1 style="font-family:'Orbitron'">СИСТЕМА <span style="color:var(--accent)">ELBERR_OS</span> ГОТОВА</h1>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:25px; margin-top:30px;">
-                    <div class="card" style="background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); color:#000; border:none;">
-                        <h2 style="font-family:'Orbitron'">CHAPTER 6: FINAL</h2>
-                        <p style="font-weight:500">Последнее обновление ELBERR_OS загружено. Погрузись в финал истории прямо сейчас.</p>
-                        <button class="btn" style="background:#000; color:#fff" onclick="tab('games')">ЗАПУСТИТЬ</button>
-                    </div>
-                    <div class="card">
-                        <h3 style="font-family:'Orbitron'; font-size:16px;">Статистика терминала</h3>
-                        <p>Опыт системы: <b id="stat-xp" style="color:var(--accent)">0</b> XP</p>
-                        <p>Ранг доступа: <b id="stat-rank" style="color:var(--accent)">User</b></p>
-                    </div>
+                <h1 style="font-family:'Orbitron'">СИСТЕМА <span id="user-welcome" style="color:var(--accent)">...</span></h1>
+                <div class="card" style="background: linear-gradient(135deg, #00d2ff, #3a7bd5); color:#000;">
+                    <h2>ELBERR_OS: CHAPTER 6</h2>
+                    <p>Финал истории уже доступен в библиотеке!</p>
+                    <button class="btn" style="background:#000; color:#fff" onclick="tab('games')">ИГРАТЬ</button>
                 </div>
             </div>
 
             <div id="v-games" class="view">
-                <h1 style="font-family:'Orbitron'">БИБЛИОТЕКА ELBERR</h1>
-                <input type="text" placeholder="Поиск по архиву..." oninput="drawGames(this.value)" style="border-color:var(--accent)">
-                <div class="games-grid" id="games-grid" style="margin-top:30px;"></div>
-            </div>
-
-            <div id="v-comm" class="view">
-                <h1 style="font-family:'Orbitron'">ОБЩИЙ КАНАЛ</h1>
-                <div class="card">
-                    <textarea id="post-text" placeholder="Введите данные для передачи в сеть..." style="height:100px;"></textarea>
-                    <button class="btn btn-primary" style="float:right" onclick="sendPost()">ТРАНСЛЯЦИЯ (+10 XP)</button>
-                    <div style="clear:both"></div>
-                </div>
-                <div id="posts-container"></div>
-            </div>
-
-            <div id="v-msg" class="view">
-                <h1 style="font-family:'Orbitron'">МЕССЕНДЖЕР</h1>
-                <div class="ms-container">
-                    <div class="ms-list" id="chats-list"></div>
-                    <div style="display:flex; flex-direction:column;">
-                        <div id="chat-header" style="padding:20px; background:var(--card); font-family:'Orbitron'; border-bottom:1px solid var(--border); color:var(--accent)">Выберите терминал</div>
-                        <div id="chat-messages"></div>
-                        <div style="padding:25px; background:var(--card); display:flex; gap:15px;">
-                            <input type="text" id="ms-input" placeholder="Введите сообщение...">
-                            <button class="btn btn-primary" onclick="sendMessage()">➤</button>
-                        </div>
-                    </div>
-                </div>
+                <h1>БИБЛИОТЕКА</h1>
+                <div class="games-grid" id="games-grid"></div>
             </div>
 
             <div id="v-prof" class="view">
-                <h1 style="font-family:'Orbitron'">ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ</h1>
-                <div class="card" style="display:flex; gap:30px; align-items:center;">
-                    <img id="prof-av" src="" style="width:120px; height:120px; border-radius:30px; border:2px solid var(--accent); padding:5px;">
-                    <div>
-                        <h2 id="prof-nick" style="font-family:'Orbitron'; margin:0">...</h2>
-                        <p id="prof-bio" style="color:var(--text-sec); margin:10px 0;"></p>
-                        <span class="badge" id="prof-lvl">LVL 1</span>
-                    </div>
-                </div>
+                <h1>ПРОФИЛЬ</h1>
                 <div class="card">
-                    <h3>Настройки Личности</h3>
-                    <label>URL Аватара:</label>
-                    <input type="text" id="edit-av">
-                    <label>Статус:</label>
-                    <textarea id="edit-bio"></textarea>
-                    <button class="btn btn-primary" onclick="saveProfile()">ОБНОВИТЬ ДАННЫЕ</button>
+                    <img id="prof-av" src="" style="width:100px; height:100px; border-radius:20px; border:2px solid var(--accent)">
+                    <h2 id="prof-nick">...</h2>
+                    <p id="prof-bio"></p>
+                    <button class="btn btn-primary" onclick="auth.signOut()">ВЫЙТИ ИЗ СИСТЕМЫ</button>
                 </div>
-            </div>
-
-            <div id="v-set" class="view">
-                <h1 style="font-family:'Orbitron'">КОНФИГУРАЦИЯ</h1>
-                <div class="card">
-                    <h3>Визуальный интерфейс</h3>
-                    <select onchange="setTheme(this.value)">
-                        <option value="dark">Dark Mode (Default)</option>
-                        <option value="light">Light Mode</option>
-                    </select>
-                </div>
-                <button class="btn" style="background:var(--danger); color:white; width:100%" onclick="auth.signOut()">ОТКЛЮЧИТЬСЯ ОТ СЕТИ</button>
             </div>
 
             <div id="v-adm" class="view">
-                <h1 style="color:var(--danger); font-family:'Orbitron'">🛡️ ROOT ACCESS GRANTED</h1>
+                <h1 style="color:var(--danger)">🛡️ ADMIN TERMINAL</h1>
                 <div class="card">
-                    <h3>Активные узлы (Пользователи)</h3>
-                    <div id="adm-users"></div>
+                    <h3>Список пользователей</h3>
+                    <div id="adm-users-list"></div>
                 </div>
             </div>
-
         </main>
     </div>
 
     <div id="game-overlay">
-        <div style="padding:15px 30px; background:#000; display:flex; justify-content:space-between; color:var(--accent); align-items:center; border-bottom:1px solid var(--accent);">
-            <b id="active-game-title" style="font-family:'Orbitron'">...</b>
-            <button onclick="closeGame()" style="background:var(--danger); color:white; border:none; padding:8px 20px; border-radius:8px; cursor:pointer; font-family:'Orbitron'; font-size:12px;">CLOSE_TERMINAL</button>
+        <div style="padding:10px 20px; background:#000; border-bottom:1px solid var(--accent); display:flex; justify-content:space-between; align-items:center;">
+            <b id="active-game-title" style="color:var(--accent); font-family:'Orbitron'"></b>
+            <button onclick="closeGame()" style="background:red; color:white; border:none; padding:5px 15px; border-radius:5px; cursor:pointer;">ВЫХОД</button>
         </div>
         <iframe id="game-frame"></iframe>
     </div>
 
     <script>
-        const cfg = { apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI", authDomain: "gamesfan-17986.firebaseapp.com", databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/", projectId: "gamesfan-17986" };
+        // КОНФИГУРАЦИЯ
+        const cfg = { 
+            apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI", 
+            authDomain: "gamesfan-17986.firebaseapp.com", 
+            databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/", 
+            projectId: "gamesfan-17986" 
+        };
         firebase.initializeApp(cfg);
         const auth = firebase.auth(), db = firebase.database();
 
-        let myUID = "", uData = {}, selChatID = null;
+        let myUID = "", uData = {}, isRegMode = false;
 
-        // ИСПРАВЛЕННЫЕ ПУТИ И КРАСИВЫЕ ИКОНКИ
         const GAMES = [
-            { n: "Slime Clicker", p: "Slime_Clicker/index.html", i: "https://cdn-icons-png.flaticon.com/512/826/826908.png" },
-            { n: "Slime Farm 2D", p: "Slime_Farm_2D/index.html", i: "https://cdn-icons-png.flaticon.com/512/2392/2392326.png" },
-            
-            // ELBERR_OS СЕРИЯ
-            { n: "ELBERR OS: Chapter 1", p: "ELBERR_OS/Chapter1/index.html", i: "https://cdn-icons-png.flaticon.com/512/2092/2092663.png" },
-            { n: "ELBERR OS: Chapter 2", p: "ELBERR_OS/Chapter2/index.html", i: "https://cdn-icons-png.flaticon.com/512/2092/2092663.png" },
-            { n: "ELBERR OS: Chapter 3", p: "ELBERR_OS/Chapter3/index.html", i: "https://cdn-icons-png.flaticon.com/512/2092/2092663.png" },
-            { n: "ELBERR OS: Chapter 4", p: "ELBERR_OS/Chapter4/index.html", i: "https://cdn-icons-png.flaticon.com/512/2092/2092663.png" },
-            { n: "ELBERR OS: Chapter 5", p: "ELBERR_OS/Chapter5/index.html", i: "https://cdn-icons-png.flaticon.com/512/2092/2092663.png" },
-            { n: "ELBERR OS: Chapter 6", p: "ELBERR_OS/Chapter6/index.html", i: "https://cdn-icons-png.flaticon.com/512/2092/2092663.png" }
+            { n: "ELBERR OS: Chapter 1", p: "ELBERR_OS/Chapter1/index.html", i: "https://cdn-icons-png.flaticon.com/512/618/618861.png" },
+            { n: "ELBERR OS: Chapter 6", p: "ELBERR_OS/Chapter6/index.html", i: "https://cdn-icons-png.flaticon.com/512/1162/1162456.png" },
+            { n: "Slime Clicker", p: "Slime_Clicker/index.html", i: "https://cdn-icons-png.flaticon.com/512/826/826908.png" }
         ];
 
-        async function authLogic(t) {
-            const e = document.getElementById('auth-e').value, p = document.getElementById('auth-p').value, n = document.getElementById('auth-n').value;
-            try {
-                if(t === 'login') await auth.signInWithEmailAndPassword(e, p);
-                else {
-                    const r = await auth.createUserWithEmailAndPassword(e, p);
-                    await db.ref('users/' + r.user.uid).set({ nick: n, email: e, av: "https://ui-avatars.com/api/?background=00d2ff&color=000&name="+n, bio: "Системный пользователь ELBERR_OS", xp: 0, lvl: 1, theme: 'dark' });
-                }
-            } catch(ex) { alert("Ошибка доступа: " + ex.message); }
+        // ЛОГИКА АВТОРИЗАЦИИ
+        function toggleAuth() {
+            isRegMode = !isRegMode;
+            document.getElementById('reg-nick').classList.toggle('hidden', !isRegMode);
+            document.getElementById('auth-title').innerText = isRegMode ? "Регистрация" : "Авторизация";
+            document.getElementById('main-auth-btn').innerText = isRegMode ? "ЗАРЕГИСТРИРОВАТЬСЯ" : "ВОЙТИ";
+            document.getElementById('auth-toggle').innerText = isRegMode ? "Уже есть аккаунт? Войти" : "Нет аккаунта? Создать";
         }
 
-        auth.onAuthStateChanged(u => {
-            if(u) {
-                myUID = u.uid;
-                db.ref('users/' + u.uid).on('value', s => {
-                    uData = s.val(); if(!uData) return;
-                    document.getElementById('auth-screen').style.display = 'none';
-                    document.getElementById('app').style.display = 'grid';
-                    sync();
+        async function handleAuth() {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const nick = document.getElementById('reg-nick').value;
+
+            if(!email || !pass) return alert("Заполните поля!");
+
+            try {
+                if(isRegMode) {
+                    if(!nick) return alert("Введите никнейм!");
+                    const res = await auth.createUserWithEmailAndPassword(email, pass);
+                    // Запись в базу
+                    await db.ref('users/' + res.user.uid).set({
+                        nick: nick,
+                        email: email,
+                        av: "https://ui-avatars.com/api/?background=00d2ff&color=000&name=" + nick,
+                        bio: "Новый пользователь GF OS",
+                        xp: 0,
+                        lvl: 1
+                    });
+                } else {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                }
+            } catch(e) { alert("Ошибка: " + e.message); }
+        }
+
+        // ОТСЛЕЖИВАНИЕ СОСТОЯНИЯ ВХОДА
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                myUID = user.uid;
+                // Проверка на админа ПО ПОЧТЕ ИЗ AUTH
+                if (user.email === "vetrovlev1@gmail.com") {
+                    document.getElementById('adm-nav').classList.remove('hidden');
+                }
+                
+                // Получение данных из базы
+                db.ref('users/' + user.uid).on('value', s => {
+                    uData = s.val();
+                    if(uData) {
+                        document.getElementById('auth-screen').style.display = 'none';
+                        document.getElementById('app').style.display = 'grid';
+                        sync();
+                    }
                 });
             } else {
                 document.getElementById('app').style.display = 'none';
@@ -295,34 +232,25 @@
         });
 
         function sync() {
+            document.getElementById('user-welcome').innerText = uData.nick;
             document.getElementById('my-nick-min').innerText = uData.nick;
             document.getElementById('my-av-min').src = uData.av;
             document.getElementById('my-lvl-min').innerText = uData.lvl;
             document.getElementById('my-xp-fill').style.width = (uData.xp % 100) + "%";
+            
             document.getElementById('prof-nick').innerText = uData.nick;
             document.getElementById('prof-av').src = uData.av;
             document.getElementById('prof-bio').innerText = uData.bio;
-            document.getElementById('prof-lvl').innerText = "LEVEL " + uData.lvl;
-            document.getElementById('stat-xp').innerText = uData.xp;
-            document.body.setAttribute('data-theme', uData.theme || 'dark');
-            if(uData.email === "vetrovlev1@gmail.com") document.getElementById('adm-nav').classList.remove('hidden');
-            drawGames(); drawPosts(); loadActiveChats();
+            
+            drawGames();
+            if(uData.email === "vetrovlev1@gmail.com") loadAdmin();
         }
 
-        function tab(id, el) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById('v-' + id).classList.add('active');
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                el.classList.add('active');
-            }
-        }
-
-        function drawGames(q = "") {
-            const container = document.getElementById('games-grid'); container.innerHTML = "";
-            GAMES.filter(g => g.n.toLowerCase().includes(q.toLowerCase())).forEach(g => {
-                container.innerHTML += `<div class="game-card" onclick="play('${g.p}', '${g.n}')">
-                    <img src="${g.i}"><h4>${g.n}</h4></div>`;
+        function drawGames() {
+            const g = document.getElementById('games-grid'); g.innerHTML = "";
+            GAMES.forEach(game => {
+                g.innerHTML += `<div class="game-card" onclick="play('${game.p}', '${game.n}')">
+                    <img src="${game.i}"><h4>${game.n}</h4></div>`;
             });
         }
 
@@ -334,85 +262,22 @@
 
         function closeGame() { document.getElementById('game-overlay').style.display = 'none'; document.getElementById('game-frame').src = ""; }
 
-        function addXP(amount) {
-            let newXP = (uData.xp || 0) + amount;
-            let newLvl = Math.floor(newXP / 100) + 1;
-            db.ref('users/' + myUID).update({ xp: newXP, lvl: newLvl });
-        }
-
-        function sendPost() {
-            const txt = document.getElementById('post-text').value; if(!txt.trim()) return;
-            db.ref('community/global').push({ author: uData.nick, text: txt, time: Date.now() });
-            document.getElementById('post-text').value = "";
-            addXP(10);
-        }
-
-        function drawPosts() {
-            db.ref('community/global').on('value', s => {
-                const c = document.getElementById('posts-container'); c.innerHTML = "";
-                let arr = []; s.forEach(p => arr.push(p.val()));
-                arr.reverse().forEach(p => {
-                    c.innerHTML += `<div class="card"><b style="color:var(--accent)">${p.author}</b><p style="margin-top:10px">${p.text}</p></div>`;
-                });
-            });
-        }
-
-        function startChat(uid, nick) {
-            selChatID = [myUID, uid].sort().join('_');
-            tab('msg');
-            document.getElementById('chat-header').innerText = "Terminal: " + nick;
-            loadMessages();
-        }
-
-        function loadActiveChats() {
-            db.ref('users').once('value', s => {
-                const list = document.getElementById('chats-list'); list.innerHTML = `<div class="nav-label" style="padding:15px">Активные узлы</div>`;
-                s.forEach(u => {
-                    if(u.key === myUID) return;
-                    list.innerHTML += `<div class="ms-user" onclick="startChat('${u.key}', '${u.val().nick}')">
-                        <img src="${u.val().av}" style="width:35px; height:35px; border-radius:8px">
-                        <b>${u.val().nick}</b></div>`;
-                });
-            });
-        }
-
-        function loadMessages() {
-            db.ref('chats/' + selChatID).on('value', s => {
-                const box = document.getElementById('chat-messages'); box.innerHTML = "";
-                s.forEach(msg => {
-                    const side = msg.val().sender === myUID ? 'mine' : 'theirs';
-                    box.innerHTML += `<div class="bubble ${side}">${msg.val().text}</div>`;
-                });
-                box.scrollTop = box.scrollHeight;
-            });
-        }
-
-        function sendMessage() {
-            const txt = document.getElementById('ms-input').value; if(!txt.trim() || !selChatID) return;
-            db.ref('chats/' + selChatID).push({ sender: myUID, text: txt, time: Date.now() });
-            document.getElementById('ms-input').value = "";
-            addXP(1);
-        }
-
-        function saveProfile() {
-            const av = document.getElementById('edit-av').value, bio = document.getElementById('edit-bio').value;
-            db.ref('users/' + myUID).update({ av: av || uData.av, bio: bio || uData.bio });
-            alert("Данные терминала обновлены");
-        }
-
-        function setTheme(t) { db.ref('users/' + myUID + '/theme').set(t); }
-
-        function tryAdminAccess(el) {
-            if(prompt("ENTER ROOT PASSWORD:") === "12.02.2014") { tab('adm', el); loadAdmin(); }
+        function tab(id, el) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('v-' + id).classList.add('active');
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+            }
         }
 
         function loadAdmin() {
             db.ref('users').on('value', s => {
-                const b = document.getElementById('adm-users'); b.innerHTML = "";
-                s.forEach(u => {
-                    b.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; padding:10px; border:1px solid var(--border); border-radius:10px;">
-                        <span>${u.val().nick} (${u.val().email})</span>
-                        <button class="btn" style="background:red; padding:5px 10px;" onclick="db.ref('users/${u.key}').remove()">УДАЛИТЬ</button>
+                const list = document.getElementById('adm-users-list'); list.innerHTML = "";
+                s.forEach(user => {
+                    list.innerHTML += `<div style="padding:10px; border-bottom:1px solid #333; display:flex; justify-content:space-between;">
+                        <span>${user.val().nick} (${user.val().email})</span>
+                        <button onclick="db.ref('users/${user.key}').remove()" style="color:red; background:none; border:none; cursor:pointer;">УДАЛИТЬ</button>
                     </div>`;
                 });
             });
@@ -420,4 +285,3 @@
     </script>
 </body>
 </html>
-
