@@ -3,263 +3,425 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GamesFan OS | Professional Edition</title>
+    <title>ELBERR_OS Professional | Mark-42 Studio</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Стиль из твоего файла с неоновыми правками */
         :root {
-            --g-blue: #00d2ff; --g-bg: #050608; --g-surface: #0d1117;
-            --g-border: #30363d; --g-text: #c9d1d9; --vk-blue: #0077ff;
+            --accent: #00d2ff;
+            --bg: #050608;
+            --card: #0d1117;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --glow: 0 0 20px rgba(0, 210, 255, 0.4);
+            --vk-blue: #0077ff;
         }
-        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
-        body { background: var(--g-bg); color: var(--g-text); overflow: hidden; }
 
-        /* AUTH */
-        #auth-screen { position: fixed; inset: 0; background: var(--g-bg); display: flex; align-items: center; justify-content: center; z-index: 5000; }
-        .auth-card { width: 380px; padding: 35px; border: 1px solid var(--g-blue); border-radius: 2px; text-align: center; background: var(--g-surface); box-shadow: 0 0 15px rgba(0,210,255,0.2); }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--g-border); background: #000; color: var(--g-blue); outline: none; }
+        * { box-sizing: border-box; transition: 0.3s; }
+        body, html { 
+            height: 100%; margin: 0; background: var(--bg); color: var(--text); 
+            font-family: 'Roboto Mono', monospace; overflow: hidden; 
+        }
 
-        /* APP LAYOUT */
-        #app { display: none; height: 100vh; grid-template-columns: 260px 1fr; }
-        .sidebar { background: #090c10; border-right: 1px solid var(--g-border); display: flex; flex-direction: column; }
-        .nav-item { padding: 15px 25px; cursor: pointer; color: #8b949e; border-bottom: 1px solid #161b22; }
-        .nav-item:hover, .nav-item.active { color: var(--g-blue); background: rgba(0,210,255,0.05); }
-        .main { padding: 30px; overflow-y: auto; }
+        /* --- ЭКРАН АВТОРИЗАЦИИ (СТИЛЬ ТЕРМИНАЛА) --- */
+        #auth-screen {
+            position: fixed; inset: 0; background: var(--bg); z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+            background-image: radial-gradient(circle at center, #10141b 0%, #050608 100%);
+        }
+        .auth-card {
+            background: var(--card); border: 2px solid var(--accent);
+            padding: 45px; width: 420px; text-align: center;
+            box-shadow: var(--glow); position: relative;
+        }
+        .auth-card h1 { font-family: 'Orbitron'; letter-spacing: 4px; color: var(--accent); text-shadow: var(--glow); margin-bottom: 5px; }
+        
+        input {
+            width: 100%; background: #000; border: 1px solid var(--border);
+            padding: 14px; margin: 10px 0; color: var(--accent); font-family: 'Roboto Mono';
+            outline: none; border-radius: 0;
+        }
+        input:focus { border-color: var(--accent); box-shadow: var(--glow); }
 
-        /* GAMES GRID */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
-        .game-card { background: #000; border: 1px solid var(--g-border); padding: 15px; text-align: center; cursor: pointer; }
-        .game-card:hover { border-color: var(--g-blue); transform: translateY(-3px); }
-        .game-icon { font-size: 40px; margin-bottom: 10px; display: block; }
+        .btn-main {
+            width: 100%; padding: 15px; border: 1px solid var(--accent);
+            background: rgba(0, 210, 255, 0.1); color: var(--accent);
+            font-family: 'Orbitron'; cursor: pointer; font-weight: bold; margin-top: 10px;
+        }
+        .btn-main:hover { background: var(--accent); color: #000; box-shadow: var(--glow); }
 
-        /* MESSENGER & COMMUNITY */
-        #messenger-overlay { position: fixed; inset: 0; background: #000; z-index: 10001; display: none; flex-direction: column; }
-        .ms-body { flex: 1; display: grid; grid-template-columns: 300px 1fr; overflow: hidden; }
-        .u-list { background: #0d1117; border-right: 1px solid var(--g-border); overflow-y: auto; }
-        .chat-area { display: flex; flex-direction: column; background: #050608; }
-        #pm-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .m-out { background: var(--vk-blue); align-self: flex-end; padding: 10px; border-radius: 10px; }
-        .m-in { background: #30363d; align-self: flex-start; padding: 10px; border-radius: 10px; }
+        /* --- ОСНОВНОЙ ИНТЕРФЕЙС --- */
+        #app { display: none; height: 100vh; grid-template-columns: 280px 1fr; }
+        
+        .sidebar { 
+            background: #090c10; border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; 
+        }
+        .nav-item {
+            padding: 18px 25px; cursor: pointer; color: #8b949e;
+            border-bottom: 1px solid #161b22; font-size: 13px; font-weight: bold;
+        }
+        .nav-item:hover, .nav-item.active { 
+            color: var(--accent); background: rgba(0, 210, 255, 0.05); 
+            border-left: 4px solid var(--accent);
+        }
+
+        .main { padding: 40px; overflow-y: auto; position: relative; }
+
+        /* --- ИГРЫ (8 КАРТОЧЕК) --- */
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .game-card {
+            background: var(--card); border: 1px solid var(--border);
+            padding: 20px; text-align: center; cursor: pointer; position: relative;
+        }
+        .game-card:hover { border-color: var(--accent); transform: scale(1.05); box-shadow: var(--glow); }
+        .game-card b { display: block; margin-top: 10px; font-size: 12px; color: var(--accent); }
+        .code-icon { font-size: 40px; filter: drop-shadow(0 0 10px var(--accent)); }
+
+        /* --- МЕССЕНДЖЕР --- */
+        #messenger-overlay { 
+            position: fixed; inset: 0; background: #000; z-index: 11000; 
+            display: none; flex-direction: column; 
+        }
+        .ms-header { background: var(--vk-blue); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
+        .ms-container { flex: 1; display: grid; grid-template-columns: 320px 1fr; overflow: hidden; }
+        .user-list { background: #0d1117; border-right: 1px solid var(--border); overflow-y: auto; }
+        .chat-window { display: flex; flex-direction: column; background: #050608; }
+        #chat-messages { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .msg { max-width: 70%; padding: 12px 18px; border-radius: 15px; font-size: 14px; }
+        .msg.me { background: var(--vk-blue); align-self: flex-end; color: #fff; }
+        .msg.them { background: #30363d; align-self: flex-start; color: #fff; }
+
+        /* --- АДМИН ПАНЕЛЬ --- */
+        #v-adm { background: rgba(255, 0, 0, 0.02); }
+        .admin-box { border: 1px solid #ff4444; padding: 20px; background: #110000; }
 
         .hidden { display: none !important; }
-        .view { display: none; }
+        .view { display: none; animation: fadeIn 0.3s ease; }
         .view.active { display: block; }
-        #game-overlay { position: fixed; inset: 0; background: #000; z-index: 20000; display: none; flex-direction: column; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        #game-overlay { position: fixed; inset: 0; background: #000; z-index: 15000; display: none; flex-direction: column; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-card">
-            <h2 style="font-family: 'Orbitron'; color:var(--g-blue);">GAMESFAN OS</h2>
-            <p id="auth-status" style="font-size: 10px; margin-bottom: 10px;">Авторизация в терминале</p>
-            <input type="text" id="auth-n" placeholder="НИКНЕЙМ" class="hidden">
-            <input type="email" id="auth-e" placeholder="EMAIL">
-            <input type="password" id="auth-p" placeholder="ПАРОЛЬ">
-            <button class="btn-blue" id="auth-btn" style="width:100%; padding:10px; background:transparent; color:var(--g-blue); border:1px solid var(--g-blue); cursor:pointer;" onclick="handleAuth()">ВОЙТИ</button>
-            <p id="toggle-auth" style="margin-top:15px; font-size:12px; cursor:pointer; color:var(--g-blue);" onclick="toggleAuthMode()">Создать аккаунт</p>
+            <h1>ELBERR_OS</h1>
+            <p id="auth-status" style="font-size: 10px; color: var(--accent); opacity: 0.6; margin-bottom: 20px;">SYSTEM_AUTHORIZATION_REQUIRED</p>
+            
+            <input type="text" id="auth-n" placeholder="NICKNAME (для новых узлов)" class="hidden">
+            <input type="email" id="auth-e" placeholder="TERMINAL_EMAIL">
+            <input type="password" id="auth-p" placeholder="ACCESS_KEY">
+            
+            <button class="btn-main" id="auth-btn" onclick="handleAuth()">ВХОД В СИСТЕМУ</button>
+            <p id="toggle-auth" style="margin-top:20px; cursor:pointer; font-size:11px; color:var(--accent)" onclick="toggleAuthMode()">Нет аккаунта? Создать новый профиль</p>
         </div>
     </div>
 
     <div id="app">
         <aside class="sidebar">
-            <div style="padding:25px; color:var(--g-blue); font-family:'Orbitron'; font-weight:700;">GF_OS v5.0</div>
-            <div class="nav-item active" onclick="tab('lib', this)">🎮 Игры</div>
-            <div class="nav-item" onclick="tab('comm', this)">📢 Сообщество</div>
-            <div class="nav-item" onclick="openMessenger()" style="color:var(--vk-blue);">💬 Messenger</div>
-            <div id="adm-nav" class="nav-item hidden" onclick="tryAdminAccess(this)" style="color:#ff4444;">🛡️ ROOT CONTROL</div>
-            <div id="cur-u" style="margin-top:auto; padding:25px; border-top:1px solid var(--g-border);">...</div>
+            <div style="padding: 30px 25px; border-bottom: 1px solid var(--border);">
+                <b style="font-family: 'Orbitron'; color: var(--accent); font-size: 18px;">GF_OS 5.2</b>
+            </div>
+            
+            <div class="nav-item active" onclick="tab('home', this)">[01] ТЕРМИНАЛ</div>
+            <div class="nav-item" onclick="tab('lib', this)">[02] БИБЛИОТЕКА</div>
+            <div class="nav-item" onclick="tab('comm', this)">[03] СООБЩЕСТВО</div>
+            <div class="nav-item" onclick="openMessenger()" style="color: var(--vk-blue);">[04] MESSENGER</div>
+            <div id="adm-nav" class="nav-item hidden" onclick="tryAdminAccess(this)" style="color: #ff4444;">[00] ROOT_CONTROL</div>
+
+            <div style="margin-top: auto; padding: 25px; border-top: 1px solid var(--border);">
+                <div id="my-nick-display" style="color: var(--accent); font-weight: bold;">...</div>
+                <div style="font-size: 9px; opacity: 0.4; margin-top: 5px;">STATUS: ENCRYPTED</div>
+                <button onclick="auth.signOut()" style="background:none; border:none; color:red; cursor:pointer; font-size:10px; padding:0; margin-top:10px;">ВЫЙТИ</button>
+            </div>
         </aside>
 
         <main class="main">
-            <div id="v-lib" class="view active">
-                <h1 style="font-family:'Orbitron'">LIBRARY</h1><br>
-                <div class="grid" id="game-list"></div>
+            <div id="v-home" class="view active">
+                <h2 style="font-family: 'Orbitron';">> ДОБРО ПОЖАЛОВАТЬ, <span id="welcome-nick">...</span></h2>
+                <div style="border: 1px solid var(--border); padding: 20px; margin-top: 20px; background: rgba(255,255,255,0.02);">
+                    <p style="color: var(--accent);">[СИСТЕМНОЕ СООБЩЕНИЕ]</p>
+                    <p>Все модули ELBERR_OS загружены успешно. Ваша сессия защищена сквозным шифрованием.</p>
+                </div>
+            </div>
+
+            <div id="v-lib" class="view">
+                <h2 style="font-family: 'Orbitron';">SOFTWARE_ARCHIVE</h2><br>
+                <div class="games-grid" id="games-container"></div>
             </div>
 
             <div id="v-comm" class="view">
-                <h1 style="font-family:'Orbitron'">COMMUNITY</h1><br>
-                <div id="post-ui">
-                    <textarea id="post-in" style="width:100%; background:#000; color:#fff; padding:10px;" placeholder="Что нового?"></textarea>
-                    <button onclick="sendPost()" style="padding:10px; background:var(--g-blue); border:none; margin-top:5px; cursor:pointer;">Опубликовать</button>
+                <h2 style="font-family: 'Orbitron';">GF_NETWORK</h2><br>
+                <div style="background: var(--card); padding: 20px; border: 1px solid var(--border);">
+                    <textarea id="post-text" placeholder="Введите ваше сообщение для всех пользователей..." style="width:100%; height:80px; background:#000; border:1px solid var(--border); color:#fff; padding:10px; outline:none;"></textarea>
+                    <button class="btn-main" onclick="sendPost()" style="width:200px; margin-top:10px;">ОПУБЛИКОВАТЬ</button>
                 </div>
-                <div id="feed" style="margin-top:20px;"></div>
+                <div id="community-feed" style="margin-top:30px;"></div>
             </div>
 
             <div id="v-adm" class="view">
-                <h1 style="color:#ff4444; font-family:'Orbitron'">ROOT_TERMINAL</h1><br>
-                <div id="adm-users-list"></div>
+                <h2 style="font-family: 'Orbitron'; color: #ff4444;">ADMIN_TERMINAL</h2>
+                <div class="admin-box" id="admin-users-list"></div>
             </div>
         </main>
     </div>
 
     <div id="messenger-overlay">
-        <div style="background:var(--vk-blue); padding:15px; display:flex; justify-content:space-between;">
-            <b>Gamer's Messenger</b>
-            <button onclick="closeMessenger()" style="background:none; border:1px solid white; color:white; cursor:pointer;">ЗАКРЫТЬ</button>
+        <div class="ms-header">
+            <b style="font-family: 'Orbitron';">GAMERS_MESSENGER</b>
+            <button onclick="closeMessenger()" style="background:none; border:1px solid #fff; color:#fff; cursor:pointer; padding:5px 15px;">ЗАКРЫТЬ [X]</button>
         </div>
-        <div class="ms-body">
-            <div class="u-list" id="ms-u-box"></div>
-            <div class="chat-area">
-                <div id="pm-messages"></div>
-                <div style="padding:20px; display:flex; gap:10px;">
-                    <input id="pm-in" style="margin:0;" placeholder="Сообщение...">
-                    <button onclick="sendPM()" style="padding:10px; background:var(--vk-blue); border:none; color:white;">➤</button>
+        <div class="ms-container">
+            <div class="user-list" id="ms-user-list"></div>
+            <div class="chat-window">
+                <div id="chat-messages"></div>
+                <div style="padding: 20px; background: #0d1117; display: flex; gap: 10px;">
+                    <input type="text" id="ms-input" placeholder="Введите сообщение..." style="margin:0;">
+                    <button class="btn-main" onclick="sendPM()" style="margin:0; width:100px;">ОТПР.</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="game-overlay">
-        <div style="background:#1c1c1c; padding:10px; display:flex; justify-content:space-between;">
-            <b id="game-title">Загрузка...</b>
-            <button onclick="closeGame()" style="background:red; color:white; border:none; padding:5px 15px; cursor:pointer;">ЗАКРЫТЬ</button>
+        <div style="background:#000; padding:10px; display:flex; justify-content:space-between; border-bottom:1px solid var(--accent);">
+            <b id="active-game-name" style="color:var(--accent)">...</b>
+            <button onclick="closeGame()" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">[ВЫХОД]</button>
         </div>
         <iframe id="game-frame" style="flex:1; border:none;"></iframe>
     </div>
 
     <script>
-        const cfg = { apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI", authDomain: "gamesfan-17986.firebaseapp.com", databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/", projectId: "gamesfan-17986" };
-        firebase.initializeApp(cfg);
+        // CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI",
+            authDomain: "gamesfan-17986.firebaseapp.com",
+            databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/",
+            projectId: "gamesfan-17986"
+        };
+        firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(), db = firebase.database();
 
-        let myNick = "", selUID = null, currentAuthMode = "login", adminUnlocked = false;
+        let myUID = "", uData = {}, currentAuthMode = "login", selUID = null;
 
-        const GAMES = [
-            { n: "ELBERR OS: Ch. 1", p: "ELBERR_OS/Chapter1/index.html", ico: "📁" },
-            { n: "ELBERR OS: Ch. 2", p: "ELBERR_OS/Chapter2/index.html", ico: "🔐" },
-            { n: "ELBERR OS: Ch. 3", p: "ELBERR_OS/Chapter3/index.html", ico: "🔌" },
-            { n: "ELBERR OS: Ch. 4", p: "ELBERR_OS/Chapter4/index.html", ico: "💾" },
+        const GAMES_DB = [
+            { n: "ELBERR OS: Ch. 1", p: "ELBERR_OS/Chapter1/index.html", ico: "📂" },
+            { n: "ELBERR OS: Ch. 2", p: "ELBERR_OS/Chapter2/index.html", ico: "🔑" },
+            { n: "ELBERR OS: Ch. 3", p: "ELBERR_OS/Chapter3/index.html", ico: "⚙️" },
+            { n: "ELBERR OS: Ch. 4", p: "ELBERR_OS/Chapter4/index.html", ico: "💿" },
             { n: "ELBERR OS: Ch. 5", p: "ELBERR_OS/Chapter5/index.html", ico: "📡" },
             { n: "ELBERR OS: Ch. 6", p: "ELBERR_OS/Chapter6/index.html", ico: "🧠" },
             { n: "Slime Clicker", p: "Slime_Clicker/index.html", ico: "🧪" },
-            { n: "Slime Farm 2D", p: "Slime_Farm_2D/index.html", ico: "🚜" }
+            { n: "Terminal Root", p: "Terminal/index.html", ico: "⚡" }
         ];
 
-        // --- AUTH LOGIC (ТВОЯ ЛЮБИМАЯ ВЕРСИЯ) ---
+        // --- AUTH LOGIC (ПОЛНАЯ ИСПРАВЛЕННАЯ) ---
         function toggleAuthMode() {
             const nickInput = document.getElementById('auth-n');
             const authBtn = document.getElementById('auth-btn');
             const authStatus = document.getElementById('auth-status');
             const toggleLink = document.getElementById('toggle-auth');
+
             if (currentAuthMode === "login") {
-                currentAuthMode = "reg"; nickInput.classList.remove('hidden');
-                authBtn.innerText = "ЗАРЕГИСТРИРОВАТЬСЯ"; authStatus.innerText = "Регистрация нового узла";
+                currentAuthMode = "reg";
+                nickInput.classList.remove('hidden');
+                authBtn.innerText = "ЗАРЕГИСТРИРОВАТЬСЯ";
+                authStatus.innerText = "Регистрация нового узла";
                 toggleLink.innerText = "Уже есть аккаунт? Войти";
             } else {
-                currentAuthMode = "login"; nickInput.classList.add('hidden');
-                authBtn.innerText = "ВОЙТИ"; authStatus.innerText = "Авторизация в терминале";
-                toggleLink.innerText = "Создать аккаунт";
+                currentAuthMode = "login";
+                nickInput.classList.add('hidden');
+                authBtn.innerText = "ВОЙТИ";
+                authStatus.innerText = "Авторизация в терминале";
+                toggleLink.innerText = "Нет аккаунта? Создать новый профиль";
             }
         }
 
         async function handleAuth() {
-            const e=document.getElementById('auth-e').value.trim(), p=document.getElementById('auth-p').value.trim(), n=document.getElementById('auth-n').value.trim();
-            if(!e || !p) return alert("Заполните поля!");
+            const email = document.getElementById('auth-e').value.trim();
+            const pass = document.getElementById('auth-p').value.trim();
+            const nick = document.getElementById('auth-n').value.trim();
+
+            if (!email || !pass) return alert("Введите Email и Пароль!");
+            if (currentAuthMode === "reg" && !nick) return alert("Укажите ваш Никнейм!");
+
             try {
-                if(currentAuthMode === "login") await auth.signInWithEmailAndPassword(e, p);
-                else {
-                    const r = await auth.createUserWithEmailAndPassword(e, p);
-                    await db.ref('users/' + r.user.uid).set({ nick: n, email: e, xp: 0, lvl: 1 });
-                    alert("Профиль создан!");
+                if (currentAuthMode === "login") {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                } else {
+                    const res = await auth.createUserWithEmailAndPassword(email, pass);
+                    await db.ref('users/' + res.user.uid).set({
+                        nick: nick, email: email, xp: 0, lvl: 1, bio: "System User"
+                    });
+                    alert("Профиль успешно создан!");
                 }
-            } catch(ex) { alert(ex.message); }
+            } catch (err) { alert("Ошибка: " + err.message); }
         }
 
-        auth.onAuthStateChanged(u => {
-            if(u) {
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('app').style.display = 'grid';
-                if(u.email === "vetrovlev1@gmail.com") document.getElementById('adm-nav').classList.remove('hidden');
-                db.ref('users/' + u.uid).on('value', s => {
-                    myNick = s.val()?.nick || "User";
-                    document.getElementById('cur-u').innerText = "CONNECTED: " + myNick;
+        // --- SYSTEM SYNC ---
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                myUID = user.uid;
+                db.ref('users/' + user.uid).on('value', snap => {
+                    uData = snap.val();
+                    if (uData) {
+                        document.getElementById('auth-screen').style.display = 'none';
+                        document.getElementById('app').style.display = 'grid';
+                        document.getElementById('my-nick-display').innerText = uData.nick;
+                        document.getElementById('welcome-nick').innerText = uData.nick;
+                        
+                        // Проверка на админа по почте
+                        if (user.email === "vetrovlev1@gmail.com") {
+                            document.getElementById('adm-nav').classList.remove('hidden');
+                        }
+                        
+                        syncContent();
+                    }
                 });
-                drawGames(); loadUsers(); loadPosts();
             } else {
-                document.getElementById('auth-screen').style.display = 'flex';
                 document.getElementById('app').style.display = 'none';
+                document.getElementById('auth-screen').style.display = 'flex';
             }
         });
 
-        // --- GAMES & SYSTEM ---
-        function drawGames() {
-            const container = document.getElementById('game-list'); container.innerHTML = "";
-            GAMES.forEach(g => {
-                container.innerHTML += `<div class="game-card" onclick="play('${g.p}', '${g.n}')">
-                    <span class="game-icon">${g.ico}</span><b>${g.n}</b></div>`;
+        function syncContent() {
+            renderGames();
+            loadPosts();
+            loadUsersForMessenger();
+        }
+
+        // --- GAMES ---
+        function renderGames() {
+            const cont = document.getElementById('games-container');
+            cont.innerHTML = "";
+            GAMES_DB.forEach(g => {
+                cont.innerHTML += `
+                    <div class="game-card" onclick="playGame('${g.p}', '${g.n}')">
+                        <div class="code-icon">${g.ico}</div>
+                        <b>${g.n}</b>
+                    </div>`;
             });
         }
-        function play(path, name) {
+        function playGame(path, name) {
             document.getElementById('game-overlay').style.display = 'flex';
-            document.getElementById('game-title').innerText = name;
+            document.getElementById('active-game-name').innerText = "> RUNNING: " + name;
             document.getElementById('game-frame').src = path;
         }
-        function closeGame() { document.getElementById('game-overlay').style.display = 'none'; document.getElementById('game-frame').src = ""; }
+        function closeGame() {
+            document.getElementById('game-overlay').style.display = 'none';
+            document.getElementById('game-frame').src = "";
+        }
+
+        // --- COMMUNITY ---
+        function sendPost() {
+            const txt = document.getElementById('post-text').value;
+            if(!txt.trim()) return;
+            db.ref('community/posts').push({
+                author: uData.nick,
+                text: txt,
+                time: Date.now()
+            });
+            document.getElementById('post-text').value = "";
+        }
+        function loadPosts() {
+            db.ref('community/posts').limitToLast(20).on('value', snap => {
+                const feed = document.getElementById('community-feed');
+                feed.innerHTML = "";
+                snap.forEach(post => {
+                    const p = post.val();
+                    feed.innerHTML = `
+                        <div style="border: 1px solid var(--border); padding: 15px; margin-bottom: 15px; background: #000;">
+                            <b style="color: var(--accent);">${p.author}:</b>
+                            <p style="margin-top: 5px;">${p.text}</p>
+                        </div>` + feed.innerHTML;
+                });
+            });
+        }
+
+        // --- MESSENGER ---
+        function openMessenger() { document.getElementById('messenger-overlay').style.display = 'flex'; }
+        function closeMessenger() { document.getElementById('messenger-overlay').style.display = 'none'; }
+        
+        function loadUsersForMessenger() {
+            db.ref('users').on('value', snap => {
+                const list = document.getElementById('ms-user-list');
+                list.innerHTML = "";
+                snap.forEach(user => {
+                    if (user.key === myUID) return;
+                    const div = document.createElement('div');
+                    div.className = "nav-item";
+                    div.innerHTML = user.val().nick;
+                    div.onclick = () => selectChat(user.key, user.val().nick);
+                    list.appendChild(div);
+                });
+            });
+        }
+
+        function selectChat(uid, name) {
+            selUID = uid;
+            const chatID = [myUID, uid].sort().join('_');
+            db.ref('chats/' + chatID).on('value', snap => {
+                const box = document.getElementById('chat-messages');
+                box.innerHTML = "";
+                snap.forEach(msg => {
+                    const m = msg.val();
+                    const d = document.createElement('div');
+                    d.className = m.from === myUID ? "msg me" : "msg them";
+                    d.innerText = m.txt;
+                    box.appendChild(d);
+                });
+                box.scrollTop = box.scrollHeight;
+            });
+        }
+
+        function sendPM() {
+            const input = document.getElementById('ms-input');
+            if(!input.value.trim() || !selUID) return;
+            const chatID = [myUID, selUID].sort().join('_');
+            db.ref('chats/' + chatID).push({
+                from: myUID,
+                txt: input.value,
+                time: Date.now()
+            });
+            input.value = "";
+        }
+
+        // --- ADMIN ---
+        function tryAdminAccess(el) {
+            const pass = prompt("ROOT_ACCESS_PASSWORD:");
+            if (pass === "12.02.2014") {
+                tab('adm', el);
+                loadAdminPanel();
+            } else { alert("ACCESS DENIED"); }
+        }
+
+        function loadAdminPanel() {
+            db.ref('users').on('value', snap => {
+                const list = document.getElementById('admin-users-list');
+                list.innerHTML = "<h4>УПРАВЛЕНИЕ УЗЛАМИ:</h4><br>";
+                snap.forEach(user => {
+                    list.innerHTML += `
+                        <div style="display:flex; justify-content:space-between; padding: 10px; border-bottom: 1px solid #333;">
+                            <span>${user.val().nick} (${user.val().email})</span>
+                            <button onclick="db.ref('users/${user.key}').remove()" style="color:red; background:none; border:1px solid red; cursor:pointer;">[DELETE]</button>
+                        </div>`;
+                });
+            });
+        }
 
         function tab(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById('v-' + id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             if(el) el.classList.add('active');
-        }
-
-        // --- MESSENGER & COMMUNITY (ИЗ ТВОЕГО ФАЙЛА) ---
-        function openMessenger() { document.getElementById('messenger-overlay').style.display = 'flex'; }
-        function closeMessenger() { document.getElementById('messenger-overlay').style.display = 'none'; }
-        
-        function loadUsers() {
-            db.ref('users').on('value', s => {
-                const box = document.getElementById('ms-u-box'); box.innerHTML = "";
-                s.forEach(u => {
-                    if(u.key === auth.currentUser.uid) return;
-                    const div = document.createElement('div'); div.style.padding = "15px"; div.style.cursor = "pointer";
-                    div.innerHTML = `<b>${u.val().nick}</b>`;
-                    div.onclick = () => { selUID = u.key; openChat(u.val().nick); };
-                    box.appendChild(div);
-                });
-            });
-        }
-        function openChat(name) {
-            const id = [auth.currentUser.uid, selUID].sort().join('_');
-            db.ref('chats/' + id).on('value', s => {
-                const b = document.getElementById('pm-messages'); b.innerHTML = "";
-                s.forEach(m => { b.innerHTML += `<div class="${m.val().from===auth.currentUser.uid?'m-out':'m-in'}">${m.val().t}</div>`; });
-            });
-        }
-        function sendPM() {
-            const t = document.getElementById('pm-in').value; if(!t.trim() || !selUID) return;
-            const id = [auth.currentUser.uid, selUID].sort().join('_');
-            db.ref('chats/' + id).push({ from: auth.currentUser.uid, t: t });
-            document.getElementById('pm-in').value = "";
-        }
-
-        function sendPost() {
-            const t = document.getElementById('post-in').value; if(!t.trim()) return;
-            db.ref('community/main').push({ author: myNick, txt: t, time: Date.now() });
-            document.getElementById('post-in').value = "";
-        }
-        function loadPosts() {
-            db.ref('community/main').on('value', s => {
-                const f = document.getElementById('feed'); f.innerHTML = "";
-                s.forEach(p => { f.innerHTML = `<div style="border:1px solid #333; padding:10px; margin-bottom:10px;"><b>${p.val().author}:</b><p>${p.val().txt}</p></div>` + f.innerHTML; });
-            });
-        }
-
-        function tryAdminAccess(el) {
-            if(adminUnlocked) return tab('adm', el);
-            if(prompt("ROOT PASSWORD:") === "12.02.2014") { adminUnlocked = true; tab('adm', el); loadAdminData(); }
-        }
-        function loadAdminData() {
-            db.ref('users').on('value', s => {
-                const b = document.getElementById('adm-users-list'); b.innerHTML = "";
-                s.forEach(u => { b.innerHTML += `<div>${u.val().nick} <button onclick="db.ref('users/${u.key}').remove()">Удалить</button></div>`; });
-            });
         }
     </script>
 </body>
