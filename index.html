@@ -3,204 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ELBERR_OS Professional | Mark-42 Studio</title>
+    <title>ELBERR_OS 6.0 Pro | Mark-42 Studio</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --accent: #00d2ff;
-            --bg: #050608;
-            --card: #0d1117;
-            --border: #30363d;
+            --accent: #00f2ff;
+            --accent-hover: #00d2ff;
+            --bg: #050508;
+            --panel: rgba(13, 17, 23, 0.7);
+            --border: rgba(0, 242, 255, 0.2);
             --text: #c9d1d9;
-            --glow: 0 0 20px rgba(0, 210, 255, 0.4);
+            --glow: 0 0 20px rgba(0, 242, 255, 0.5);
             --vk-blue: #0077ff;
+            --danger: #ff0055;
         }
 
-        * { box-sizing: border-box; transition: 0.3s; }
-        body, html { 
-            height: 100%; margin: 0; background: var(--bg); color: var(--text); 
-            font-family: 'Roboto Mono', monospace; overflow: hidden; 
-        }
-
-        /* --- ЭКРАН АВТОРИЗАЦИИ (СТИЛЬ ТЕРМИНАЛА) --- */
-        #auth-screen {
-            position: fixed; inset: 0; background: var(--bg); z-index: 10000;
-            display: flex; align-items: center; justify-content: center;
-            background-image: radial-gradient(circle at center, #10141b 0%, #050608 100%);
-        }
-        .auth-card {
-            background: var(--card); border: 2px solid var(--accent);
-            padding: 45px; width: 420px; text-align: center;
-            box-shadow: var(--glow); position: relative;
-        }
-        .auth-card h1 { font-family: 'Orbitron'; letter-spacing: 4px; color: var(--accent); text-shadow: var(--glow); margin-bottom: 5px; }
+        * { box-sizing: border-box; transition: 0.2s ease-in-out; }
+        body, html { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: 'Roboto Mono', monospace; overflow: hidden; }
         
-        input {
-            width: 100%; background: #000; border: 1px solid var(--border);
-            padding: 14px; margin: 10px 0; color: var(--accent); font-family: 'Roboto Mono';
-            outline: none; border-radius: 0;
-        }
-        input:focus { border-color: var(--accent); box-shadow: var(--glow); }
+        /* Анимированный фон ОС */
+        #os-bg { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, #0a0e17 0%, #000000 100%); z-index: 1; }
+        #os-bg::after { content: ''; position: absolute; inset: 0; background: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.1; animation: drift 50s linear infinite; }
+        @keyframes drift { from { background-position: 0 0; } to { background-position: -1000px 1000px; } }
 
-        .btn-main {
-            width: 100%; padding: 15px; border: 1px solid var(--accent);
-            background: rgba(0, 210, 255, 0.1); color: var(--accent);
-            font-family: 'Orbitron'; cursor: pointer; font-weight: bold; margin-top: 10px;
-        }
-        .btn-main:hover { background: var(--accent); color: #000; box-shadow: var(--glow); }
+        /* СКРОЛЛБАРЫ */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
 
-        /* --- ОСНОВНОЙ ИНТЕРФЕЙС --- */
-        #app { display: none; height: 100vh; grid-template-columns: 280px 1fr; }
+        /* --- AUTH SCREEN --- */
+        #auth-screen { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); background: rgba(0,0,0,0.8); }
+        .auth-card { background: rgba(10, 14, 20, 0.8); border: 1px solid var(--border); padding: 50px; width: 450px; text-align: center; border-radius: 20px; box-shadow: var(--glow); backdrop-filter: blur(30px); position: relative; overflow: hidden; }
+        .auth-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, var(--accent), transparent 30%); animation: rotate 4s linear infinite; opacity: 0.1; pointer-events: none; }
+        @keyframes rotate { 100% { transform: rotate(360deg); } }
         
-        .sidebar { 
-            background: #090c10; border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; 
-        }
-        .nav-item {
-            padding: 18px 25px; cursor: pointer; color: #8b949e;
-            border-bottom: 1px solid #161b22; font-size: 13px; font-weight: bold;
-        }
-        .nav-item:hover, .nav-item.active { 
-            color: var(--accent); background: rgba(0, 210, 255, 0.05); 
-            border-left: 4px solid var(--accent);
-        }
+        .auth-card h1 { font-family: 'Orbitron'; letter-spacing: 5px; color: var(--accent); text-shadow: var(--glow); margin-bottom: 5px; font-weight: 900; }
+        
+        input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border); padding: 15px; margin: 10px 0; color: var(--accent); font-family: 'Roboto Mono'; outline: none; border-radius: 10px; font-weight: bold; }
+        input:focus { border-color: var(--accent); box-shadow: inset 0 0 10px rgba(0,242,255,0.2); background: rgba(0,242,255,0.05); }
+
+        .btn-main { width: 100%; padding: 15px; border: 1px solid var(--accent); background: rgba(0, 242, 255, 0.1); color: var(--accent); font-family: 'Orbitron'; cursor: pointer; font-weight: bold; margin-top: 15px; border-radius: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-main:hover { background: var(--accent); color: #000; box-shadow: var(--glow); transform: translateY(-2px); }
+
+        /* --- MAIN OS UI --- */
+        #app { display: none; height: 100vh; grid-template-columns: 280px 1fr; position: relative; z-index: 10; }
+        
+        .sidebar { background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; backdrop-filter: blur(30px); box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
+        .sidebar-header { padding: 30px 25px; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.3); }
+        
+        .nav-item { padding: 18px 25px; cursor: pointer; color: #8b949e; border-bottom: 1px solid rgba(255,255,255,0.02); font-size: 12px; font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+        .nav-item:hover, .nav-item.active { color: var(--accent); background: rgba(0, 242, 255, 0.05); border-left: 4px solid var(--accent); padding-left: 21px; text-shadow: 0 0 8px var(--accent); }
 
         .main { padding: 40px; overflow-y: auto; position: relative; }
+        .view { display: none; animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .view.active { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- ИГРЫ (8 КАРТОЧЕК) --- */
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-        .game-card {
-            background: var(--card); border: 1px solid var(--border);
-            padding: 20px; text-align: center; cursor: pointer; position: relative;
-        }
-        .game-card:hover { border-color: var(--accent); transform: scale(1.05); box-shadow: var(--glow); }
-        .game-card b { display: block; margin-top: 10px; font-size: 12px; color: var(--accent); }
-        .code-icon { font-size: 40px; filter: drop-shadow(0 0 10px var(--accent)); }
+        /* --- DASHBOARD & CARDS --- */
+        h2 { font-family: 'Orbitron'; border-bottom: 1px solid var(--border); padding-bottom: 15px; display: inline-block; color: #fff; }
+        .glass-box { background: rgba(13, 17, 23, 0.6); border: 1px solid var(--border); padding: 25px; border-radius: 15px; backdrop-filter: blur(10px); }
+        
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
+        .game-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 25px 20px; text-align: center; cursor: pointer; border-radius: 15px; position: relative; overflow: hidden; }
+        .game-card::before { content: ''; position: absolute; inset: 0; background: var(--accent); opacity: 0; transition: 0.3s; z-index: 0; }
+        .game-card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,242,255,0.1); }
+        .game-card:hover::before { opacity: 0.05; }
+        .game-card * { position: relative; z-index: 1; }
+        .game-card b { display: block; margin-top: 15px; font-size: 13px; color: #fff; font-family: 'Orbitron'; }
+        .code-icon { font-size: 45px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
+        .game-card:hover .code-icon { filter: drop-shadow(0 0 15px var(--accent)); }
 
-        /* --- МЕССЕНДЖЕР --- */
-        #messenger-overlay { 
-            position: fixed; inset: 0; background: #000; z-index: 11000; 
-            display: none; flex-direction: column; 
-        }
-        .ms-header { background: var(--vk-blue); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
+        /* --- MESSENGER --- */
+        #messenger-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 11000; display: none; flex-direction: column; backdrop-filter: blur(15px); }
+        .ms-header { background: rgba(0, 119, 255, 0.1); border-bottom: 1px solid var(--vk-blue); padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 0 20px rgba(0, 119, 255, 0.2); }
         .ms-container { flex: 1; display: grid; grid-template-columns: 320px 1fr; overflow: hidden; }
-        .user-list { background: #0d1117; border-right: 1px solid var(--border); overflow-y: auto; }
-        .chat-window { display: flex; flex-direction: column; background: #050608; }
-        #chat-messages { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .msg { max-width: 70%; padding: 12px 18px; border-radius: 15px; font-size: 14px; }
-        .msg.me { background: var(--vk-blue); align-self: flex-end; color: #fff; }
-        .msg.them { background: #30363d; align-self: flex-start; color: #fff; }
+        .user-list { background: rgba(0,0,0,0.5); border-right: 1px solid rgba(255,255,255,0.05); overflow-y: auto; }
+        .chat-window { display: flex; flex-direction: column; background: rgba(5,6,8,0.8); }
+        #chat-messages { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .msg { max-width: 65%; padding: 15px 20px; border-radius: 20px; font-size: 13px; line-height: 1.5; position: relative; }
+        .msg.me { background: linear-gradient(135deg, var(--vk-blue), #00d2ff); align-self: flex-end; color: #fff; border-bottom-right-radius: 2px; box-shadow: 0 5px 15px rgba(0,119,255,0.2); }
+        .msg.them { background: #1a1e24; align-self: flex-start; color: #fff; border-bottom-left-radius: 2px; border: 1px solid rgba(255,255,255,0.1); }
 
-        /* --- АДМИН ПАНЕЛЬ --- */
-        #v-adm { background: rgba(255, 0, 0, 0.02); }
-        .admin-box { border: 1px solid #ff4444; padding: 20px; background: #110000; }
+        /* --- IN-GAME OVERLAY --- */
+        #game-overlay { position: fixed; inset: 0; background: #000; z-index: 15000; display: none; flex-direction: column; }
+        .game-header { background: #050508; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); box-shadow: var(--glow); z-index: 10; }
+        #game-frame { flex: 1; border: none; width: 100%; height: 100%; background: #000; }
 
         .hidden { display: none !important; }
-        .view { display: none; animation: fadeIn 0.3s ease; }
-        .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        #game-overlay { position: fixed; inset: 0; background: #000; z-index: 15000; display: none; flex-direction: column; }
     </style>
 </head>
 <body>
 
+    <div id="os-bg"></div>
+
+    <template id="slime-farm-2-code">
+        <!DOCTYPE html>
+        <html lang="ru">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                :root { --accent: #ffcc00; --diam: #00f2ff; --panel: rgba(15, 15, 20, 0.98); --border: rgba(255, 255, 255, 0.1); --bg-color: #000; }
+                * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; user-select: none; outline: none; touch-action: manipulation; }
+                body { margin: 0; background: var(--bg-color); color: white; overflow: hidden; height: 100vh; transition: 0.3s; }
+                body.hd-on .paddock { box-shadow: inset 0 0 25px rgba(255,204,0,0.05); border-color: rgba(255,204,0,0.3); }
+                body.hd-on .slime-img { filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
+                body.hd-on #hud { border-color: var(--accent); box-shadow: 0 0 20px rgba(255,204,0,0.1); }
+                #bg { position: fixed; inset: 0; background: url('assets/background.jpg') center/cover; filter: brightness(0.15); z-index: 1; }
+                #app { position: relative; z-index: 10; display: flex; height: 100vh; width: 100vw; }
+                #main { flex: 1; display: flex; flex-direction: column; padding: 15px; }
+                #hud { display: flex; gap: 15px; background: rgba(0,0,0,0.8); padding: 12px 20px; border-radius: 22px; border: 1px solid var(--border); align-items: center; margin-bottom: 10px; backdrop-filter: blur(15px); }
+                .stat { font-size: 18px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+                .res-img { width: 22px; height: 22px; object-fit: contain; }
+                .res-img-s { width: 15px; height: 15px; vertical-align: middle; margin-left: 2px; }
+                #grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 12px; flex: 1; }
+                .paddock { background: rgba(255,255,255,0.02); border: 2px solid var(--border); border-radius: 28px; position: relative; cursor: pointer; transition: 0.1s; }
+                .paddock:active { transform: scale(0.97); background: rgba(255,255,255,0.05); }
+                .slime-img { position: absolute; width: 44px; height: 44px; pointer-events: none; transform: translate(-50%, -50%); transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+                #side { width: 400px; background: var(--panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; backdrop-filter: blur(25px); }
+                .tabs { display: flex; background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--border); }
+                .tab { flex: 1; padding: 18px 5px; text-align: center; cursor: pointer; font-size: 10px; font-weight: bold; color: #555; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: 0.2s; }
+                .tab img { width: 22px; height: 22px; filter: grayscale(1); opacity: 0.4; }
+                .tab.active { color: var(--accent); background: rgba(255,204,0,0.03); }
+                .tab.active img { filter: grayscale(0); opacity: 1; }
+                .list { flex: 1; overflow-y: auto; padding: 15px; scrollbar-width: none; }
+                .card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 20px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+                .btn { background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 14px; font-weight: 900; cursor: pointer; font-size: 11px; width: 100%; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+                .btn:disabled { opacity: 0.2; cursor: not-allowed; }
+                .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+                .modal-content { width: 340px; background: #0a0a0a; padding: 30px; border-radius: 32px; border: 2px solid var(--accent); position: relative; }
+                .sett-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: bold; }
+                .code-input { width: 100%; padding: 14px; background: #151515; border: 1px solid #333; color: var(--accent); border-radius: 12px; margin-top: 10px; text-align: center; font-weight: bold; letter-spacing: 1px; }
+            </style>
+        </head>
+        <body class="hd-on">
+            <div id="bg"></div>
+            <div id="modal-settings" class="modal">
+                <div class="modal-content">
+                    <h2 style="color:var(--accent); margin-top:0; text-align:center;">ОПЦИИ</h2>
+                    <div class="sett-row"><span>МУЗЫКА</span><input type="checkbox" id="set-music" onchange="applySett()"></div>
+                    <div class="sett-row"><span>ЗВУКИ</span><input type="checkbox" id="set-sfx" checked onchange="applySett()"></div>
+                    <div class="sett-row"><span>HD ГРАФИКА</span><input type="checkbox" id="set-hd" checked onchange="applySett()"></div>
+                    <div style="margin-top:20px; border-top: 1px solid #222; padding-top:20px;">
+                        <input type="text" id="promo-code" class="code-input" placeholder="КОД / ADMIN">
+                        <button class="btn" style="margin-top:10px;" onclick="claimCode()">ПРИМЕНИТЬ</button>
+                    </div>
+                    <button class="btn" style="background:#333; color:white; margin-top:30px;" onclick="closeSett()">ВЕРНУТЬСЯ</button>
+                    <button class="btn" style="background:#400; color:white; margin-top:10px; font-size:9px;" onclick="fullReset()">СБРОСИТЬ ПРОГРЕСС</button>
+                </div>
+            </div>
+            <div id="modal-admin" class="modal">
+                <div class="modal-content" style="border-color:#ff0055; box-shadow: 0 0 40px rgba(255,0,85,0.3);">
+                    <h2 style="color:#ff0055; margin-top:0; text-align:center;">ADMIN PANEL</h2>
+                    <div style="font-size:11px; color:#888;">МОНЕТЫ:<input type="number" id="adm-coins" class="code-input"></div>
+                    <div style="font-size:11px; color:#888; margin-top:10px;">АЛМАЗЫ:<input type="number" id="adm-diams" class="code-input"></div>
+                    <div style="font-size:11px; color:#888; margin-top:10px;">МНОЖИТЕЛЬ ЦЕН:<input type="number" id="adm-price" step="0.1" class="code-input"></div>
+                    <button class="btn" style="background:#ff0055; color:white; margin-top:15px;" onclick="applyAdmin()">СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
+                    <button class="btn" style="background:#222; color:white; margin-top:8px;" onclick="unlockAll()">РАЗБЛОКИРОВАТЬ ВСЁ</button>
+                    <button class="btn" style="background:#444; color:white; margin-top:15px;" onclick="closeAdmin()">ЗАКРЫТЬ</button>
+                </div>
+            </div>
+
+            <div id="app">
+                <div id="main">
+                    <div id="hud">
+                        <div class="stat"><img src="assets/coin.png" class="res-img"><span id="c-val">0</span></div>
+                        <div class="stat"><img src="assets/diamond.png" class="res-img"><span id="d-val">0</span></div>
+                        <button id="v-btn" class="btn" style="width:120px; background:linear-gradient(45deg, #8e44ad, #2980b9); color:white;" onclick="vipClick()">VIP СБОР</button>
+                        <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
+                            <div id="r-display" style="font-size:10px; font-weight:900; background:rgba(255,255,255,0.05); padding:6px 12px; border-radius:10px;">РАНГ</div>
+                            <button class="btn" style="width:42px; background:#1a1a1a; color:white;" onclick="openSett()">⚙</button>
+                        </div>
+                    </div>
+                    <div id="grid"></div>
+                    <div style="display:flex; justify-content:center; gap:10px; margin-top:12px;">
+                        <button class="btn" style="width:60px; background:#111; color:white;" onclick="setPage(0)">1</button>
+                        <button class="btn" style="width:60px; background:#111; color:white;" onclick="setPage(1)">2</button>
+                        <button class="btn" style="width:60px; background:#111; color:white;" onclick="setPage(2)">3</button>
+                        <button class="btn" style="width:60px; background:#111; color:white;" onclick="setPage(3)">4</button>
+                    </div>
+                </div>
+                <aside id="side">
+                    <div class="tabs">
+                        <div class="tab active" id="t-s" onclick="openTab('s')"><img src="assets/slime11.png">МАРКЕТ</div>
+                        <div class="tab" id="t-v" onclick="openTab('v')"><img src="assets/diamond.png">VIP</div>
+                        <div class="tab" id="t-u" onclick="openTab('u')"><img src="assets/up.png" onerror="this.src='assets/coin.png'">РАНГИ</div>
+                        <div class="tab" id="t-q" onclick="openTab('q')"><img src="assets/quest.png" onerror="this.src='assets/diamond.png'">КВЕСТЫ</div>
+                    </div>
+                    <div id="list-s" class="list"></div>
+                    <div id="list-v" class="list" style="display:none"></div>
+                    <div id="list-u" class="list" style="display:none"></div>
+                    <div id="list-q" class="list" style="display:none"></div>
+                </aside>
+            </div>
+            
+            <audio id="s-click" src="assets/click.mp3"></audio>
+            <audio id="s-music" src="assets/music.mp3" loop></audio>
+
+            <script>
+                const RANKS = [{n:"Медный", c:"#cd7f32", m:1}, {n:"Серебряный", c:"#bdc3c7", m:5}, {n:"Золотой", c:"#ffcc00", m:25}, {n:"Алмазный", c:"#00f2ff", m:100}, {n:"Эмеральдовый", c:"#2ecc71", m:500}, {n:"Рубиновый", c:"#e74c3c", m:2500}, {n:"Обсидиановый", c:"#34495e", m:10000}, {n:"Мифический", c:"#9b59b6", m:50000}];
+                const DIAM_IDS = [30, 27, 26, 22, 21, 20, 19, 18, 17, 16];
+                let lastClick = 0;
+                let game = { coins: 200, diams: 0, rank: 0, page: 0, clicks: 0, inv: new Array(33).fill(0), capacity: 8, isVip: false, usedCodes: [], settings: { music: false, sfx: true, hd: true }, adminPriceMult: 1.0 };
+                const toEven = (n) => Math.ceil(n / 2) * 2;
+                function fNum(n) { if (n < 1000) return Math.floor(n); const s = ['', 'K', 'M', 'B', 'T', 'Q']; const i = Math.floor(Math.log10(n) / 3); return (n / Math.pow(1000, i)).toFixed(1).replace(/\.0$/, '') + s[i]; }
+
+                function init() { let saved = localStorage.getItem('m42_sf2_pro_v8'); if(saved) game = JSON.parse(saved); if(!game.adminPriceMult) game.adminPriceMult = 1.0; document.getElementById('set-music').checked = game.settings.music; document.getElementById('set-sfx').checked = game.settings.sfx; document.getElementById('set-hd').checked = game.settings.hd; applySett(); render(); }
+                function render() { document.getElementById('c-val').innerText = fNum(game.coins); document.getElementById('d-val').innerText = fNum(game.diams); document.getElementById('r-display').innerText = RANKS[game.rank].n.toUpperCase(); document.getElementById('r-display').style.color = RANKS[game.rank].c; document.getElementById('v-btn').style.filter = game.isVip ? 'none' : 'grayscale(1) opacity(0.5)'; renderGrid(); renderShop(); renderVipShop(); renderUpgrades(); renderQuests(); localStorage.setItem('m42_sf2_pro_v8', JSON.stringify(game)); }
+                function renderGrid() { const g = document.getElementById('grid'); g.innerHTML = ""; let start = game.page * 8 + 1; const pos = [{x:30,y:30},{x:70,y:30},{x:30,y:70},{x:70,y:70},{x:50,y:50},{x:50,y:20},{x:20,y:50},{x:80,y:50}]; for(let i=0; i<8; i++) { let id = start + i; if(id > 32) break; let p = document.createElement('div'); p.className = 'paddock'; let count = game.inv[id]; p.innerHTML = `<div style="position:absolute;top:8px;left:10px;font-size:9px;color:#444;font-weight:900;">№${id} • ${count}/${game.capacity}</div>`; p.onclick = () => { let now = Date.now(); if(now - lastClick < 50) return; lastClick = now; if(game.inv[id] > 0) { game.coins += toEven(id * count * RANKS[game.rank].m); game.clicks++; if(game.settings.sfx) { let a = document.getElementById('s-click'); a.currentTime = 0; a.play(); } render(); } }; for(let j=0; j < Math.min(count, 8); j++) { let s = document.createElement('img'); s.className = 'slime-img'; s.src = `assets/slime${id}.png`; s.onerror = () => s.src = 'https://cdn-icons-png.flaticon.com/512/825/825561.png'; s.style.left = pos[j].x + "%"; s.style.top = pos[j].y + "%"; p.appendChild(s); } g.appendChild(p); } }
+                function renderShop() { let h = ""; for(let i=1; i<=32; i++) { if(DIAM_IDS.includes(i)) continue; let pr = toEven((150 * Math.pow(i, 2.8)) * game.adminPriceMult); let full = game.inv[i] >= game.capacity; h += `<div class="card"><img src="assets/slime${i}.png" style="width:38px" onerror="this.src='https://cdn-icons-png.flaticon.com/512/825/825561.png'"><div style="flex:1"><b>Слайм №${i}</b><br><small style="color:var(--accent)">${fNum(pr)} <img src="assets/coin.png" class="res-img-s"></small></div><button class="btn" style="width:85px" onclick="buySlime(${i}, ${pr})" ${game.coins < pr || full ? 'disabled' : ''}>${full ? 'MAX' : 'КУПИТЬ'}</button></div>`; } document.getElementById('list-s').innerHTML = h; }
+                function renderVipShop() { let vp = toEven(100 * game.adminPriceMult); let h = `<div class="card" style="border:1px solid #8e44ad; background:rgba(142,68,173,0.1)"><div style="flex:1"><b>VIP КАРТА</b><br><small>Сбор в 1 клик</small></div><button class="btn" style="width:110px; background:#8e44ad; color:white;" onclick="buyVip(${vp})" ${game.diams < vp || game.isVip ? 'disabled' : ''}>${game.isVip ? 'АКТИВНО' : fNum(vp)+' <img src="assets/diamond.png" class="res-img-s">'}</button></div>`; DIAM_IDS.forEach(i => { let pr = toEven((40 * Math.pow(i-15, 2.5)) * game.adminPriceMult); let full = game.inv[i] >= game.capacity; h += `<div class="card" style="border-color:var(--diam)"><img src="assets/slime${i}.png" style="width:38px" onerror="this.src='https://cdn-icons-png.flaticon.com/512/825/825561.png'"><div style="flex:1"><b>Редкий №${i}</b><br><small style="color:var(--diam)">${fNum(pr)} <img src="assets/diamond.png" class="res-img-s"></small></div><button class="btn" style="width:85px; background:var(--diam)" onclick="buyDiamSlime(${i}, ${pr})" ${game.diams < pr || full ? 'disabled' : ''}>КУПИТЬ</button></div>`; }); document.getElementById('list-v').innerHTML = h; }
+                function renderUpgrades() { let cost = toEven(((game.rank + 1) * 120000 * (game.rank + 1)) * game.adminPriceMult); let max = game.rank >= RANKS.length - 1; document.getElementById('list-u').innerHTML = `<div class="card" style="flex-direction:column; text-align:center; padding:25px;"><div style="font-size:11px; color:#666; margin-bottom:5px;">ВАШ СТАТУС</div><div style="font-size:22px; font-weight:900; color:${RANKS[game.rank].c}; margin-bottom:10px;">${RANKS[game.rank].n}</div><div style="font-size:12px; margin-bottom:20px;">ПРИБЫЛЬ: <b style="color:var(--accent)">x${fNum(RANKS[game.rank].m)}</b></div><button class="btn" onclick="upRank(${cost})" ${game.coins < cost || max ? 'disabled' : ''}>${max ? 'МАКСИМАЛЬНЫЙ РАНГ' : 'ПОВЫСИТЬ ЗА ' + fNum(cost) + ' <img src="assets/coin.png" class="res-img-s">'}</button></div>`; }
+                function renderQuests() { let h = `<div style="text-align:center; font-size:10px; color:#444; margin-bottom:12px;">ЗАДАНИЯ РАНГА: ${RANKS[game.rank].n}</div>`; for(let i=1; i<=8; i++) { let goal = toEven(i * 1500 * (game.rank + 1)); let rew = toEven(i * 20 * (game.rank + 1)); let done = game.clicks >= goal; let id = 'Q'+game.rank+i; if(done && !game.usedCodes.includes(id)) { game.diams += rew; game.usedCodes.push(id); } h += `<div class="card" style="opacity:${done?0.3:1}"><div style="flex:1"><b>Квест #${i}</b><br><small>Цель: ${fNum(goal)} кликов</small></div><div style="font-weight:900; color:var(--diam)">+${fNum(rew)} <img src="assets/diamond.png" class="res-img-s"></div></div>`; } document.getElementById('list-q').innerHTML = h; }
+                function buySlime(id, p) { if(game.coins >= p && game.inv[id] < game.capacity) { game.coins -= p; game.inv[id]++; render(); } } function buyDiamSlime(id, p) { if(game.diams >= p && game.inv[id] < game.capacity) { game.diams -= p; game.inv[id]++; render(); } } function buyVip(p) { if(game.diams >= p) { game.diams -= p; game.isVip = true; render(); } } function upRank(c) { if(game.coins >= c && game.rank < RANKS.length-1) { game.coins -= c; game.rank++; render(); } } function vipClick() { if(!game.isVip) return; let t = 0; game.inv.forEach((c, id) => { if(c > 0) t += toEven(id * c * RANKS[game.rank].m); }); if(t > 0) { game.coins += t; game.clicks++; render(); } }
+                function claimCode() { const c = document.getElementById('promo-code').value.toUpperCase(); if(c === '12.02.2014') { openAdmin(); return; } if(game.usedCodes.includes(c)) return alert("Уже использован!"); let r = null; const codes = { 'START': {c: 1000, d: 0}, 'SLIME': {c: 0, d: 50}, 'COINS': {c: 5000, d: 0}, 'GEMS': {c: 0, d: 200}, 'FARM': {c: 15000, d: 0}, 'MARK42': {c: 50000, d: 500}, 'LEVELUP': {c: 100000, d: 0}, 'BOOSTER': {c: 0, d: 1000} }; if(codes[c]) { game.coins += toEven(codes[c].c); game.diams += toEven(codes[c].d); game.usedCodes.push(c); render(); alert("Код принят!"); } else alert("Неверный код!"); }
+                function openAdmin() { closeSett(); document.getElementById('modal-admin').style.display = 'flex'; document.getElementById('adm-coins').value = game.coins; document.getElementById('adm-diams').value = game.diams; document.getElementById('adm-price').value = game.adminPriceMult; } function closeAdmin() { document.getElementById('modal-admin').style.display = 'none'; } function applyAdmin() { game.coins = parseInt(document.getElementById('adm-coins').value) || 0; game.diams = parseInt(document.getElementById('adm-diams').value) || 0; game.adminPriceMult = parseFloat(document.getElementById('adm-price').value) || 1.0; render(); alert("Данные обновлены!"); } function unlockAll() { game.inv.fill(game.capacity); game.isVip = true; render(); alert("Всё разблокировано!"); }
+                function applySett() { game.settings.music = document.getElementById('set-music').checked; game.settings.sfx = document.getElementById('set-sfx').checked; game.settings.hd = document.getElementById('set-hd').checked; if(game.settings.hd) document.body.classList.add('hd-on'); else document.body.classList.remove('hd-on'); let m = document.getElementById('s-music'); if(game.settings.music) m.play().catch(()=>{}); else m.pause(); }
+                function openSett() { document.getElementById('modal-settings').style.display = 'flex'; } function closeSett() { document.getElementById('modal-settings').style.display = 'none'; } function fullReset() { if(confirm("Сбросить весь прогресс?")) { localStorage.clear(); location.reload(); } } function setPage(p) { game.page = p; render(); } function openTab(t) { document.querySelectorAll('.tab').forEach(x => x.classList.remove('active')); document.querySelectorAll('.list').forEach(x => x.style.display = 'none'); document.getElementById('t-'+t).classList.add('active'); document.getElementById('list-'+t).style.display = 'block'; }
+                init();
+            <\/script>
+        </body>
+        </html>
+    </template>
+
     <div id="auth-screen">
         <div class="auth-card">
             <h1>ELBERR_OS</h1>
-            <p id="auth-status" style="font-size: 10px; color: var(--accent); opacity: 0.6; margin-bottom: 20px;">SYSTEM_AUTHORIZATION_REQUIRED</p>
+            <p id="auth-status" style="font-size: 11px; color: var(--accent); opacity: 0.8; margin-bottom: 25px; font-weight:bold;">УСТАНОВКА БЕЗОПАСНОГО СОЕДИНЕНИЯ...</p>
             
-            <input type="text" id="auth-n" placeholder="NICKNAME (для новых узлов)" class="hidden">
+            <input type="text" id="auth-n" placeholder="NICKNAME [Только для новых]" class="hidden">
             <input type="email" id="auth-e" placeholder="TERMINAL_EMAIL">
             <input type="password" id="auth-p" placeholder="ACCESS_KEY">
             
             <button class="btn-main" id="auth-btn" onclick="handleAuth()">ВХОД В СИСТЕМУ</button>
-            <p id="toggle-auth" style="margin-top:20px; cursor:pointer; font-size:11px; color:var(--accent)" onclick="toggleAuthMode()">Нет аккаунта? Создать новый профиль</p>
+            <p id="toggle-auth" style="margin-top:20px; cursor:pointer; font-size:12px; color:var(--text); opacity:0.7" onclick="toggleAuthMode()">Нет доступа? Запросить новый профиль</p>
         </div>
     </div>
 
     <div id="app">
         <aside class="sidebar">
-            <div style="padding: 30px 25px; border-bottom: 1px solid var(--border);">
-                <b style="font-family: 'Orbitron'; color: var(--accent); font-size: 18px;">GF_OS 5.2</b>
+            <div class="sidebar-header">
+                <b style="font-family: 'Orbitron'; color: var(--accent); font-size: 22px; text-shadow: var(--glow);">MARK-42 OS</b>
+                <div style="font-size: 10px; color: #666; margin-top: 5px;">VER 6.0 PROFESSIONAL</div>
             </div>
             
-            <div class="nav-item active" onclick="tab('home', this)">[01] ТЕРМИНАЛ</div>
-            <div class="nav-item" onclick="tab('lib', this)">[02] БИБЛИОТЕКА</div>
-            <div class="nav-item" onclick="tab('comm', this)">[03] СООБЩЕСТВО</div>
-            <div class="nav-item" onclick="openMessenger()" style="color: var(--vk-blue);">[04] MESSENGER</div>
-            <div id="adm-nav" class="nav-item hidden" onclick="tryAdminAccess(this)" style="color: #ff4444;">[00] ROOT_CONTROL</div>
+            <div class="nav-item active" onclick="tab('home', this)">[01] ДАШБОРД</div>
+            <div class="nav-item" onclick="tab('lib', this)">[02] БАЗА ДАННЫХ ИГР</div>
+            <div class="nav-item" onclick="tab('comm', this)">[03] ОБЩИЙ КАНАЛ</div>
+            <div class="nav-item" onclick="openMessenger()" style="color: var(--accent);">[04] СВЯЗЬ (MESSENGER)</div>
+            <div id="adm-nav" class="nav-item hidden" onclick="tryAdminAccess(this)" style="color: var(--danger); text-shadow: 0 0 10px rgba(255,0,85,0.5);">[00] ROOT_ACCESS</div>
 
-            <div style="margin-top: auto; padding: 25px; border-top: 1px solid var(--border);">
-                <div id="my-nick-display" style="color: var(--accent); font-weight: bold;">...</div>
-                <div style="font-size: 9px; opacity: 0.4; margin-top: 5px;">STATUS: ENCRYPTED</div>
-                <button onclick="auth.signOut()" style="background:none; border:none; color:red; cursor:pointer; font-size:10px; padding:0; margin-top:10px;">ВЫЙТИ</button>
+            <div style="margin-top: auto; padding: 30px 25px; background: rgba(0,0,0,0.5);">
+                <div style="font-size:10px; color:#666; margin-bottom:5px;">ПОЛЬЗОВАТЕЛЬ:</div>
+                <div id="my-nick-display" style="color: var(--accent); font-weight: bold; font-size: 14px; letter-spacing: 1px;">...</div>
+                <button onclick="auth.signOut()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:11px; padding:0; margin-top:15px; font-weight:bold;">[ ОТКЛЮЧИТЬСЯ ]</button>
             </div>
         </aside>
 
         <main class="main">
             <div id="v-home" class="view active">
-                <h2 style="font-family: 'Orbitron';">> ДОБРО ПОЖАЛОВАТЬ, <span id="welcome-nick">...</span></h2>
-                <div style="border: 1px solid var(--border); padding: 20px; margin-top: 20px; background: rgba(255,255,255,0.02);">
-                    <p style="color: var(--accent);">[СИСТЕМНОЕ СООБЩЕНИЕ]</p>
-                    <p>Все модули ELBERR_OS загружены успешно. Ваша сессия защищена сквозным шифрованием.</p>
+                <h2>> СИСТЕМА АКТИВНА, <span id="welcome-nick" style="color:var(--accent)">...</span></h2>
+                <div class="glass-box" style="margin-top: 30px;">
+                    <b style="color: var(--accent); font-size: 16px;">[ ИНФОРМАЦИОННАЯ СВОДКА ]</b>
+                    <p style="margin-top: 15px; line-height: 1.6; color: #aaa;">
+                        Добро пожаловать в обновленный терминал <b>ELBERR_OS 6.0</b>.<br>
+                        Все протоколы Mark-42 Studio загружены штатно. Обнаружен встроенный модуль <b>Slime Farm 2D</b> в Базе Данных Игр. 
+                        Связь с серверами Firebase установлена и защищена квантовым шифрованием.
+                    </p>
                 </div>
             </div>
 
             <div id="v-lib" class="view">
-                <h2 style="font-family: 'Orbitron';">SOFTWARE_ARCHIVE</h2><br>
+                <h2>> ЗАШИФРОВАННЫЙ АРХИВ</h2>
                 <div class="games-grid" id="games-container"></div>
             </div>
 
             <div id="v-comm" class="view">
-                <h2 style="font-family: 'Orbitron';">GF_NETWORK</h2><br>
-                <div style="background: var(--card); padding: 20px; border: 1px solid var(--border);">
-                    <textarea id="post-text" placeholder="Введите ваше сообщение для всех пользователей..." style="width:100%; height:80px; background:#000; border:1px solid var(--border); color:#fff; padding:10px; outline:none;"></textarea>
-                    <button class="btn-main" onclick="sendPost()" style="width:200px; margin-top:10px;">ОПУБЛИКОВАТЬ</button>
+                <h2>> ГЛОБАЛЬНАЯ СЕТЬ GF_NETWORK</h2>
+                <div class="glass-box" style="margin-top: 20px;">
+                    <textarea id="post-text" placeholder="Передать сообщение в общую сеть..." style="width:100%; height:100px; background:rgba(0,0,0,0.5); border:1px solid var(--border); color:#fff; padding:15px; outline:none; border-radius:10px; font-family:'Roboto Mono'; resize:none;"></textarea>
+                    <button class="btn-main" onclick="sendPost()" style="width:250px;">ОТПРАВИТЬ ДАННЫЕ</button>
                 </div>
-                <div id="community-feed" style="margin-top:30px;"></div>
+                <div id="community-feed" style="margin-top:30px; display:flex; flex-direction:column; gap:15px;"></div>
             </div>
 
             <div id="v-adm" class="view">
-                <h2 style="font-family: 'Orbitron'; color: #ff4444;">ADMIN_TERMINAL</h2>
-                <div class="admin-box" id="admin-users-list"></div>
+                <h2 style="color: var(--danger); border-bottom-color: var(--danger);">> КОНСОЛЬ АДМИНИСТРАТОРА</h2>
+                <div class="glass-box" id="admin-users-list" style="border-color:var(--danger); margin-top: 20px;"></div>
             </div>
         </main>
     </div>
 
     <div id="messenger-overlay">
         <div class="ms-header">
-            <b style="font-family: 'Orbitron';">GAMERS_MESSENGER</b>
-            <button onclick="closeMessenger()" style="background:none; border:1px solid #fff; color:#fff; cursor:pointer; padding:5px 15px;">ЗАКРЫТЬ [X]</button>
+            <b style="font-family: 'Orbitron'; color: var(--accent); font-size: 18px; text-shadow: var(--glow);">MARK-42 SECURE CHAT</b>
+            <button onclick="closeMessenger()" style="background:transparent; border:1px solid var(--accent); color:var(--accent); cursor:pointer; padding:8px 20px; border-radius:8px; font-weight:bold;">ЗАКРЫТЬ</button>
         </div>
         <div class="ms-container">
             <div class="user-list" id="ms-user-list"></div>
             <div class="chat-window">
                 <div id="chat-messages"></div>
-                <div style="padding: 20px; background: #0d1117; display: flex; gap: 10px;">
-                    <input type="text" id="ms-input" placeholder="Введите сообщение..." style="margin:0;">
-                    <button class="btn-main" onclick="sendPM()" style="margin:0; width:100px;">ОТПР.</button>
+                <div style="padding: 25px; background: #0a0e17; display: flex; gap: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
+                    <input type="text" id="ms-input" placeholder="Введите зашифрованное сообщение..." style="margin:0; flex:1;">
+                    <button class="btn-main" onclick="sendPM()" style="margin:0; width:150px;">ОТПРАВИТЬ</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="game-overlay">
-        <div style="background:#000; padding:10px; display:flex; justify-content:space-between; border-bottom:1px solid var(--accent);">
-            <b id="active-game-name" style="color:var(--accent)">...</b>
-            <button onclick="closeGame()" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">[ВЫХОД]</button>
+        <div class="game-header">
+            <b id="active-game-name" style="color:var(--accent); font-family:'Orbitron'; font-size:16px;">...</b>
+            <div style="display:flex; gap:15px;">
+                <button onclick="toggleFS()" style="color:#fff; background:none; border:1px solid #fff; cursor:pointer; font-weight:bold; padding:5px 15px; border-radius:5px;">FULLSCREEN</button>
+                <button onclick="closeGame()" style="color:var(--danger); background:none; border:1px solid var(--danger); cursor:pointer; font-weight:bold; padding:5px 15px; border-radius:5px;">ЗАКРЫТЬ ИГРУ</button>
+            </div>
         </div>
-        <iframe id="game-frame" style="flex:1; border:none;"></iframe>
+        <iframe id="game-frame"></iframe>
     </div>
 
     <script>
-        // CONFIG
+        // CONFIG FIREBASE (Из 1 части)
         const firebaseConfig = {
             apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI",
             authDomain: "gamesfan-17986.firebaseapp.com",
@@ -212,18 +340,20 @@
 
         let myUID = "", uData = {}, currentAuthMode = "login", selUID = null;
 
+        // БАЗА ИГР (Slime Farm 2 теперь ВСТРОЕНА)
         const GAMES_DB = [
-            { n: "ELBERR OS: Ch. 1", p: "ELBERR_OS/Chapter1/index.html", ico: "📂" },
-            { n: "ELBERR OS: Ch. 2", p: "ELBERR_OS/Chapter2/index.html", ico: "🔑" },
+            { n: "ELBERR OS: Ch. 1", p: "ELBERR_OS/Chapter1/index.html", ico: "📁" },
+            { n: "ELBERR OS: Ch. 2", p: "ELBERR_OS/Chapter2/index.html", ico: "🔐" },
             { n: "ELBERR OS: Ch. 3", p: "ELBERR_OS/Chapter3/index.html", ico: "⚙️" },
             { n: "ELBERR OS: Ch. 4", p: "ELBERR_OS/Chapter4/index.html", ico: "💿" },
             { n: "ELBERR OS: Ch. 5", p: "ELBERR_OS/Chapter5/index.html", ico: "📡" },
             { n: "ELBERR OS: Ch. 6", p: "ELBERR_OS/Chapter6/index.html", ico: "🧠" },
-            { n: "Slime Clicker", p: "Slime_Clicker/index.html", ico: "🧪" },
-            { n: "Slime Farm 2D", p: "Slime_Farm_2D/index.html", ico: "🚜" }
+            { n: "Slime Clicker 2D", p: "Slime_Clicker/index.html", ico: "🧪" },
+            // ВСТРОЕННАЯ ИГРА:
+            { n: "Slime Farm 2D (BUILT-IN)", isEmbedded: true, ico: "🚜" }
         ];
 
-        // --- AUTH LOGIC (ПОЛНАЯ ИСПРАВЛЕННАЯ) ---
+        // --- AUTH LOGIC ---
         function toggleAuthMode() {
             const nickInput = document.getElementById('auth-n');
             const authBtn = document.getElementById('auth-btn');
@@ -233,15 +363,15 @@
             if (currentAuthMode === "login") {
                 currentAuthMode = "reg";
                 nickInput.classList.remove('hidden');
-                authBtn.innerText = "ЗАРЕГИСТРИРОВАТЬСЯ";
-                authStatus.innerText = "Регистрация нового узла";
-                toggleLink.innerText = "Уже есть аккаунт? Войти";
+                authBtn.innerText = "СОЗДАТЬ УЗЕЛ";
+                authStatus.innerText = "РЕГИСТРАЦИЯ НОВОГО ПРОФИЛЯ";
+                toggleLink.innerText = "Уже есть доступ? Войти в систему";
             } else {
                 currentAuthMode = "login";
                 nickInput.classList.add('hidden');
-                authBtn.innerText = "ВОЙТИ";
-                authStatus.innerText = "Авторизация в терминале";
-                toggleLink.innerText = "Нет аккаунта? Создать новый профиль";
+                authBtn.innerText = "ВХОД В СИСТЕМУ";
+                authStatus.innerText = "УСТАНОВКА БЕЗОПАСНОГО СОЕДИНЕНИЯ...";
+                toggleLink.innerText = "Нет доступа? Запросить новый профиль";
             }
         }
 
@@ -250,20 +380,18 @@
             const pass = document.getElementById('auth-p').value.trim();
             const nick = document.getElementById('auth-n').value.trim();
 
-            if (!email || !pass) return alert("Введите Email и Пароль!");
-            if (currentAuthMode === "reg" && !nick) return alert("Укажите ваш Никнейм!");
+            if (!email || !pass) return alert("Введите данные терминала!");
+            if (currentAuthMode === "reg" && !nick) return alert("Укажите ваш позывной (Nick)!");
 
             try {
                 if (currentAuthMode === "login") {
                     await auth.signInWithEmailAndPassword(email, pass);
                 } else {
                     const res = await auth.createUserWithEmailAndPassword(email, pass);
-                    await db.ref('users/' + res.user.uid).set({
-                        nick: nick, email: email, xp: 0, lvl: 1, bio: "System User"
-                    });
+                    await db.ref('users/' + res.user.uid).set({ nick: nick, email: email, xp: 0, lvl: 1 });
                     alert("Профиль успешно создан!");
                 }
-            } catch (err) { alert("Ошибка: " + err.message); }
+            } catch (err) { alert("Ошибка доступа: " + err.message); }
         }
 
         // --- SYSTEM SYNC ---
@@ -278,11 +406,9 @@
                         document.getElementById('my-nick-display').innerText = uData.nick;
                         document.getElementById('welcome-nick').innerText = uData.nick;
                         
-                        // Проверка на админа по почте
                         if (user.email === "vetrovlev1@gmail.com") {
                             document.getElementById('adm-nav').classList.remove('hidden');
                         }
-                        
                         syncContent();
                     }
                 });
@@ -292,43 +418,54 @@
             }
         });
 
-        function syncContent() {
-            renderGames();
-            loadPosts();
-            loadUsersForMessenger();
-        }
+        function syncContent() { renderGames(); loadPosts(); loadUsersForMessenger(); }
 
-        // --- GAMES ---
+        // --- БАЗА ИГР ---
         function renderGames() {
             const cont = document.getElementById('games-container');
             cont.innerHTML = "";
             GAMES_DB.forEach(g => {
                 cont.innerHTML += `
-                    <div class="game-card" onclick="playGame('${g.p}', '${g.n}')">
+                    <div class="game-card" onclick="playGame('${g.p}', '${g.n}', ${g.isEmbedded})">
                         <div class="code-icon">${g.ico}</div>
                         <b>${g.n}</b>
                     </div>`;
             });
         }
-        function playGame(path, name) {
+        
+        function playGame(path, name, isEmbedded) {
             document.getElementById('game-overlay').style.display = 'flex';
-            document.getElementById('active-game-name').innerText = "> RUNNING: " + name;
-            document.getElementById('game-frame').src = path;
+            document.getElementById('active-game-name').innerText = "> ЗАПУСК МОДУЛЯ: " + name;
+            
+            let frame = document.getElementById('game-frame');
+            if(isEmbedded) {
+                // ВСТРОЕННАЯ ИГРА: Загружаем код из <template> прямо в iframe
+                frame.removeAttribute('src');
+                frame.srcdoc = document.getElementById('slime-farm-2-code').innerHTML.replace(/<\\\/script>/g, '</script>');
+            } else {
+                frame.removeAttribute('srcdoc');
+                frame.src = path;
+            }
         }
+        
         function closeGame() {
             document.getElementById('game-overlay').style.display = 'none';
             document.getElementById('game-frame').src = "";
+            document.getElementById('game-frame').removeAttribute('srcdoc');
+            if (document.fullscreenElement) document.exitFullscreen();
         }
 
-        // --- COMMUNITY ---
+        function toggleFS() {
+            let elem = document.getElementById('game-overlay');
+            if (!document.fullscreenElement) elem.requestFullscreen().catch(e => console.log(e));
+            else document.exitFullscreen();
+        }
+
+        // --- СООБЩЕСТВО ---
         function sendPost() {
             const txt = document.getElementById('post-text').value;
             if(!txt.trim()) return;
-            db.ref('community/posts').push({
-                author: uData.nick,
-                text: txt,
-                time: Date.now()
-            });
+            db.ref('community/posts').push({ author: uData.nick, text: txt, time: Date.now() });
             document.getElementById('post-text').value = "";
         }
         function loadPosts() {
@@ -338,15 +475,15 @@
                 snap.forEach(post => {
                     const p = post.val();
                     feed.innerHTML = `
-                        <div style="border: 1px solid var(--border); padding: 15px; margin-bottom: 15px; background: #000;">
-                            <b style="color: var(--accent);">${p.author}:</b>
-                            <p style="margin-top: 5px;">${p.text}</p>
+                        <div class="glass-box" style="padding: 15px;">
+                            <b style="color: var(--accent); font-size:14px;">${p.author}</b>
+                            <p style="margin-top: 8px; font-size:13px; color:#ddd;">${p.text}</p>
                         </div>` + feed.innerHTML;
                 });
             });
         }
 
-        // --- MESSENGER ---
+        // --- МЕССЕНДЖЕР ---
         function openMessenger() { document.getElementById('messenger-overlay').style.display = 'flex'; }
         function closeMessenger() { document.getElementById('messenger-overlay').style.display = 'none'; }
         
@@ -358,8 +495,12 @@
                     if (user.key === myUID) return;
                     const div = document.createElement('div');
                     div.className = "nav-item";
-                    div.innerHTML = user.val().nick;
-                    div.onclick = () => selectChat(user.key, user.val().nick);
+                    div.innerHTML = "💬 " + user.val().nick;
+                    div.onclick = () => {
+                        document.querySelectorAll('#ms-user-list .nav-item').forEach(n=>n.classList.remove('active'));
+                        div.classList.add('active');
+                        selectChat(user.key, user.val().nick);
+                    };
                     list.appendChild(div);
                 });
             });
@@ -386,32 +527,26 @@
             const input = document.getElementById('ms-input');
             if(!input.value.trim() || !selUID) return;
             const chatID = [myUID, selUID].sort().join('_');
-            db.ref('chats/' + chatID).push({
-                from: myUID,
-                txt: input.value,
-                time: Date.now()
-            });
+            db.ref('chats/' + chatID).push({ from: myUID, txt: input.value, time: Date.now() });
             input.value = "";
         }
 
-        // --- ADMIN ---
+        // --- АДМИНКА ---
         function tryAdminAccess(el) {
             const pass = prompt("ROOT_ACCESS_PASSWORD:");
-            if (pass === "12.02.2014") {
-                tab('adm', el);
-                loadAdminPanel();
-            } else { alert("ACCESS DENIED"); }
+            if (pass === "12.02.2014") { tab('adm', el); loadAdminPanel(); } 
+            else { alert("ACCESS DENIED"); }
         }
 
         function loadAdminPanel() {
             db.ref('users').on('value', snap => {
                 const list = document.getElementById('admin-users-list');
-                list.innerHTML = "<h4>УПРАВЛЕНИЕ УЗЛАМИ:</h4><br>";
+                list.innerHTML = "<h3 style='color:var(--danger)'>БАЗА ДАННЫХ УЗЛОВ:</h3><br>";
                 snap.forEach(user => {
                     list.innerHTML += `
-                        <div style="display:flex; justify-content:space-between; padding: 10px; border-bottom: 1px solid #333;">
-                            <span>${user.val().nick} (${user.val().email})</span>
-                            <button onclick="db.ref('users/${user.key}').remove()" style="color:red; background:none; border:1px solid red; cursor:pointer;">[DELETE]</button>
+                        <div style="display:flex; justify-content:space-between; padding: 15px; border-bottom: 1px solid rgba(255,0,85,0.2); background:rgba(0,0,0,0.5); border-radius:10px; margin-bottom:10px;">
+                            <span style="color:#fff"><b>${user.val().nick}</b> <br><small style="color:#888">${user.val().email}</small></span>
+                            <button onclick="db.ref('users/${user.key}').remove()" style="color:#fff; background:var(--danger); border:none; cursor:pointer; border-radius:5px; font-weight:bold; padding:0 15px;">УДАЛИТЬ</button>
                         </div>`;
                 });
             });
@@ -420,7 +555,7 @@
         function tab(id, el) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById('v-' + id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
             if(el) el.classList.add('active');
         }
     </script>
