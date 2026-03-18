@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ELBERR_OS PRO | Mark-42 Studio</title>
     
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
 
     <style>
+        /* ========== CSS Variables ========== */
         :root {
             --accent: #00d2ff;
             --bg: #050608;
@@ -25,106 +28,494 @@
             --error: #ff4444;
         }
 
-        * { box-sizing: border-box; transition: 0.3s; }
-        body, html { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: 'Roboto Mono', monospace; overflow: hidden; }
+        /* ========== Global Styles ========== */
+        * { 
+            box-sizing: border-box; 
+            transition: 0.3s; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        body, html { 
+            height: 100%; 
+            margin: 0; 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Roboto Mono', monospace; 
+            overflow: hidden; 
+        }
 
-        /* --- AUTH --- */
+        /* ========== Auth Screen ========== */
         #auth-screen {
-            position: fixed; inset: 0; background: var(--bg); z-index: 10000;
-            display: flex; align-items: center; justify-content: center;
+            position: fixed; 
+            inset: 0; 
+            background: var(--bg); 
+            z-index: 10000;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
             background-image: radial-gradient(circle at center, #10141b 0%, #050608 100%);
         }
-        .auth-card { background: var(--card); border: 2px solid var(--accent); padding: 45px; width: 420px; text-align: center; box-shadow: var(--glow); animation: pulse 2s infinite; }
-        .auth-card h1 { font-family: 'Orbitron'; color: var(--accent); text-shadow: var(--glow); margin: 0 0 20px 0; }
+
+        .auth-card { 
+            background: var(--card); 
+            border: 2px solid var(--accent); 
+            padding: 45px; 
+            width: 420px; 
+            text-align: center; 
+            box-shadow: var(--glow); 
+            animation: pulse 2s infinite; 
+        }
+
+        .auth-card h1 { 
+            font-family: 'Orbitron'; 
+            color: var(--accent); 
+            text-shadow: var(--glow); 
+            margin: 0 0 20px 0; 
+        }
         
-        input, textarea, select { width: 100%; background: #000; border: 1px solid var(--border); padding: 14px; margin: 10px 0; color: var(--accent); font-family: 'Roboto Mono'; outline: none; border-radius: 0; }
-        input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: var(--glow); }
+        /* ========== Form Elements ========== */
+        input, textarea, select { 
+            width: 100%; 
+            background: #000; 
+            border: 1px solid var(--border); 
+            padding: 14px; 
+            margin: 10px 0; 
+            color: var(--accent); 
+            font-family: 'Roboto Mono'; 
+            outline: none; 
+            border-radius: 0; 
+        }
 
-        .btn-main { width: 100%; padding: 15px; border: 1px solid var(--accent); background: rgba(0, 210, 255, 0.1); color: var(--accent); font-family: 'Orbitron'; cursor: pointer; font-weight: bold; margin-top: 10px; position: relative; overflow: hidden; }
-        .btn-main:hover { background: var(--accent); color: #000; box-shadow: var(--glow); }
-        .btn-main::after { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255,255,255,0.5); transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s; }
-        .btn-main:active::after { width: 300px; height: 300px; }
+        input:focus, textarea:focus, select:focus { 
+            border-color: var(--accent); 
+            box-shadow: var(--glow); 
+        }
 
-        /* --- NOTIFICATIONS --- */
+        /* ========== Buttons ========== */
+        .btn-main { 
+            width: 100%; 
+            padding: 15px; 
+            border: 1px solid var(--accent); 
+            background: rgba(0, 210, 255, 0.1); 
+            color: var(--accent); 
+            font-family: 'Orbitron'; 
+            cursor: pointer; 
+            font-weight: bold; 
+            margin-top: 10px; 
+            position: relative; 
+            overflow: hidden; 
+        }
+
+        .btn-main:hover { 
+            background: var(--accent); 
+            color: #000; 
+            box-shadow: var(--glow); 
+        }
+
+        .btn-main::after { 
+            content: ''; 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            width: 0; 
+            height: 0; 
+            border-radius: 50%; 
+            background: rgba(255,255,255,0.5); 
+            transform: translate(-50%, -50%); 
+            transition: width 0.3s, height 0.3s; 
+        }
+
+        .btn-main:active::after { 
+            width: 300px; 
+            height: 300px; 
+        }
+
+        /* ========== Notifications ========== */
         #notification-container {
-            position: fixed; top: 20px; right: 20px; z-index: 20000;
-            display: flex; flex-direction: column; gap: 10px;
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            z-index: 20000;
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px;
             pointer-events: none;
         }
+
         .notification {
-            background: var(--card); border: 1px solid var(--accent); padding: 15px 25px;
-            box-shadow: var(--glow); color: var(--text); min-width: 250px;
-            animation: slideIn 0.3s ease; pointer-events: auto;
+            background: var(--card); 
+            border: 1px solid var(--accent); 
+            padding: 15px 25px;
+            box-shadow: var(--glow); 
+            color: var(--text); 
+            min-width: 250px;
+            animation: slideIn 0.3s ease; 
+            pointer-events: auto;
             border-left: 4px solid var(--accent);
         }
-        .notification.admin { border-color: var(--orange); box-shadow: var(--admin-glow); }
-        .notification .title { font-family: 'Orbitron'; color: var(--accent); font-size: 12px; }
-        .notification.admin .title { color: var(--orange); }
-        .notification .close { float: right; cursor: pointer; color: var(--border); }
 
-        /* --- LAYOUT --- */
-        #app { display: none; height: 100vh; grid-template-columns: 280px 1fr; }
-        .sidebar { background: #090c10; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .nav-item { padding: 18px 25px; cursor: pointer; color: #8b949e; border-bottom: 1px solid #161b22; font-size: 12px; font-weight: bold; text-transform: uppercase; position: relative; }
-        .nav-item:hover, .nav-item.active { color: var(--accent); background: rgba(0, 210, 255, 0.05); border-left: 4px solid var(--accent); }
-        .nav-item[data-badge]::after { 
-            content: attr(data-badge); position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
-            background: var(--accent); color: #000; padding: 2px 6px; border-radius: 10px; font-size: 10px;
+        .notification.admin { 
+            border-color: var(--orange); 
+            box-shadow: var(--admin-glow); 
         }
 
-        .main { padding: 40px; overflow-y: auto; }
-        .view { display: none; }
-        .view.active { display: block; animation: fadeIn 0.4s ease; }
+        .notification .title { 
+            font-family: 'Orbitron'; 
+            color: var(--accent); 
+            font-size: 12px; 
+        }
 
-        /* --- GAMES --- */
-        .section-tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .section-tab { padding: 10px 20px; cursor: pointer; color: var(--border); font-family: 'Orbitron'; font-size: 12px; }
-        .section-tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .game-card { background: var(--card); border: 1px solid var(--border); padding: 30px 20px; text-align: center; cursor: pointer; }
-        .game-card:hover { border-color: var(--accent); box-shadow: var(--glow); transform: translateY(-3px); }
-        .game-card i { font-size: 40px; display: block; margin-bottom: 15px; filter: drop-shadow(0 0 10px var(--accent)); }
-        .game-card b { font-family: 'Orbitron'; font-size: 11px; color: #fff; }
+        .notification.admin .title { 
+            color: var(--orange); 
+        }
 
-        /* --- CHAT & SOCIAL --- */
-        .post { background: #000; border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; animation: fadeIn 0.3s; }
-        .post.admin-post { border-color: var(--orange); box-shadow: var(--admin-glow); }
-        .nick-orange { color: var(--orange) !important; font-weight: 900; text-shadow: var(--admin-glow); }
-        .chip { display: inline-block; padding: 5px 12px; border: 1px solid var(--border); margin: 5px; cursor: pointer; font-size: 11px; }
-        .chip.active { border-color: var(--accent); color: var(--accent); box-shadow: var(--glow); }
+        .notification .close { 
+            float: right; 
+            cursor: pointer; 
+            color: var(--border); 
+        }
 
-        /* --- MESSENGER --- */
-        .messenger-container { display: grid; grid-template-columns: 280px 1fr; gap: 20px; height: 600px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); }
-        .contacts-list { border-right: 1px solid var(--border); overflow-y: auto; }
-        .contact-item { padding: 15px; border-bottom: 1px solid var(--border); cursor: pointer; }
-        .contact-item:hover { background: rgba(0,210,255,0.05); }
-        .contact-item.active { background: rgba(0,210,255,0.1); border-left: 3px solid var(--accent); }
-        .contact-item .last-msg { font-size: 11px; color: var(--border); margin-top: 5px; }
-        .chat-area { display: flex; flex-direction: column; height: 100%; }
-        .messages-area { flex: 1; overflow-y: auto; padding: 20px; }
-        .message { margin-bottom: 15px; padding: 10px; background: rgba(255,255,255,0.02); }
-        .message.own { background: rgba(0,210,255,0.05); border-left: 2px solid var(--accent); }
-        .message-input-area { display: flex; padding: 10px; gap: 10px; }
+        /* ========== Main Layout ========== */
+        #app { 
+            display: none; 
+            height: 100vh; 
+            grid-template-columns: 280px 1fr; 
+        }
 
-        /* --- SETTINGS --- */
-        .settings-group { background: var(--card); border: 1px solid var(--border); padding: 25px; margin-bottom: 20px; }
-        .settings-group h3 { color: var(--accent); font-family: 'Orbitron'; margin-top: 0; }
-        .identity-list { display: flex; flex-wrap: wrap; gap: 10px; margin: 15px 0; }
+        .sidebar { 
+            background: #090c10; 
+            border-right: 1px solid var(--border); 
+            display: flex; 
+            flex-direction: column; 
+        }
 
-        /* --- ANIMATIONS --- */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes pulse { 0% { box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); } 50% { box-shadow: 0 0 40px rgba(0, 210, 255, 0.6); } 100% { box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); } }
-        
+        .nav-item { 
+            padding: 18px 25px; 
+            cursor: pointer; 
+            color: #8b949e; 
+            border-bottom: 1px solid #161b22; 
+            font-size: 12px; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            position: relative; 
+        }
+
+        .nav-item:hover, .nav-item.active { 
+            color: var(--accent); 
+            background: rgba(0, 210, 255, 0.05); 
+            border-left: 4px solid var(--accent); 
+        }
+
+        .nav-item[data-badge]::after { 
+            content: attr(data-badge); 
+            position: absolute; 
+            right: 15px; 
+            top: 50%; 
+            transform: translateY(-50%);
+            background: var(--accent); 
+            color: #000; 
+            padding: 2px 6px; 
+            border-radius: 10px; 
+            font-size: 10px;
+        }
+
+        .main { 
+            padding: 40px; 
+            overflow-y: auto; 
+        }
+
+        .view { 
+            display: none; 
+        }
+
+        .view.active { 
+            display: block; 
+            animation: fadeIn 0.4s ease; 
+        }
+
+        /* ========== Games Section ========== */
+        .section-tabs { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 30px; 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 10px; 
+        }
+
+        .section-tab { 
+            padding: 10px 20px; 
+            cursor: pointer; 
+            color: var(--border); 
+            font-family: 'Orbitron'; 
+            font-size: 12px; 
+        }
+
+        .section-tab.active { 
+            color: var(--accent); 
+            border-bottom: 2px solid var(--accent); 
+        }
+
+        .games-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+            gap: 20px; 
+        }
+
+        .game-card { 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            padding: 30px 20px; 
+            text-align: center; 
+            cursor: pointer; 
+        }
+
+        .game-card:hover { 
+            border-color: var(--accent); 
+            box-shadow: var(--glow); 
+            transform: translateY(-3px); 
+        }
+
+        .game-card i { 
+            font-size: 40px; 
+            display: block; 
+            margin-bottom: 15px; 
+            filter: drop-shadow(0 0 10px var(--accent)); 
+        }
+
+        .game-card b { 
+            font-family: 'Orbitron'; 
+            font-size: 11px; 
+            color: #fff; 
+        }
+
+        /* ========== Social Section ========== */
+        .post { 
+            background: #000; 
+            border: 1px solid var(--border); 
+            padding: 20px; 
+            margin-bottom: 15px; 
+            animation: fadeIn 0.3s; 
+        }
+
+        .post.admin-post { 
+            border-color: var(--orange); 
+            box-shadow: var(--admin-glow); 
+        }
+
+        .nick-orange { 
+            color: var(--orange) !important; 
+            font-weight: 900; 
+            text-shadow: var(--admin-glow); 
+        }
+
+        .chip { 
+            display: inline-block; 
+            padding: 5px 12px; 
+            border: 1px solid var(--border); 
+            margin: 5px; 
+            cursor: pointer; 
+            font-size: 11px; 
+        }
+
+        .chip.active { 
+            border-color: var(--accent); 
+            color: var(--accent); 
+            box-shadow: var(--glow); 
+        }
+
+        /* ========== Messenger ========== */
+        .messenger-container { 
+            display: grid; 
+            grid-template-columns: 280px 1fr; 
+            gap: 20px; 
+            height: 600px; 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid var(--border); 
+        }
+
+        .contacts-list { 
+            border-right: 1px solid var(--border); 
+            overflow-y: auto; 
+        }
+
+        .contact-item { 
+            padding: 15px; 
+            border-bottom: 1px solid var(--border); 
+            cursor: pointer; 
+        }
+
+        .contact-item:hover { 
+            background: rgba(0,210,255,0.05); 
+        }
+
+        .contact-item.active { 
+            background: rgba(0,210,255,0.1); 
+            border-left: 3px solid var(--accent); 
+        }
+
+        .contact-item .last-msg { 
+            font-size: 11px; 
+            color: var(--border); 
+            margin-top: 5px; 
+        }
+
+        .chat-area { 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; 
+        }
+
+        .messages-area { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+        }
+
+        .message { 
+            margin-bottom: 15px; 
+            padding: 10px; 
+            background: rgba(255,255,255,0.02); 
+        }
+
+        .message.own { 
+            background: rgba(0,210,255,0.05); 
+            border-left: 2px solid var(--accent); 
+        }
+
+        .message-input-area { 
+            display: flex; 
+            padding: 10px; 
+            gap: 10px; 
+        }
+
+        /* ========== Settings ========== */
+        .settings-group { 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            padding: 25px; 
+            margin-bottom: 20px; 
+        }
+
+        .settings-group h3 { 
+            color: var(--accent); 
+            font-family: 'Orbitron'; 
+            margin-top: 0; 
+        }
+
+        .identity-list { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+            margin: 15px 0; 
+        }
+
+        /* ========== Admin Panel ========== */
+        .user-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px; 
+            background: #000; 
+            border: 1px solid var(--border); 
+            margin-bottom: 10px; 
+        }
+
+        /* ========== Game Overlay ========== */
+        #game-overlay { 
+            position: fixed; 
+            inset: 0; 
+            background: #000; 
+            z-index: 15000; 
+            display: none; 
+            flex-direction: column; 
+        }
+
+        .game-bar { 
+            background: #0d1117; 
+            padding: 10px 25px; 
+            display: flex; 
+            justify-content: space-between; 
+            border-bottom: 1px solid var(--accent); 
+            align-items: center; 
+        }
+
+        .game-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .fullscreen-btn {
+            background: none;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 5px 15px;
+            cursor: pointer;
+            font-family: 'Orbitron';
+            font-size: 11px;
+        }
+
+        .fullscreen-btn:hover {
+            background: var(--accent);
+            color: #000;
+            box-shadow: var(--glow);
+        }
+
+        /* ========== Danger Zone ========== */
+        .danger-zone {
+            border-color: red !important;
+        }
+
+        .danger-zone h3 {
+            color: red !important;
+        }
+
+        .btn-danger {
+            border-color: red !important;
+            color: red !important;
+        }
+
+        .btn-danger:hover {
+            background: red !important;
+            color: #000 !important;
+        }
+
+        /* ========== Animations ========== */
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        @keyframes slideIn { 
+            from { transform: translateX(100%); opacity: 0; } 
+            to { transform: translateX(0); opacity: 1; } 
+        }
+
+        @keyframes pulse { 
+            0% { box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); } 
+            50% { box-shadow: 0 0 40px rgba(0, 210, 255, 0.6); } 
+            100% { box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); } 
+        }
+
+        /* ========== Utilities ========== */
         .hidden { display: none !important; }
-        .badge { background: var(--accent); color: #000; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 10px; }
+        
+        .badge { 
+            background: var(--accent); 
+            color: #000; 
+            padding: 2px 6px; 
+            border-radius: 10px; 
+            font-size: 10px; 
+            margin-left: 10px; 
+        }
     </style>
 </head>
 <body>
-
-    <!-- NOTIFICATIONS -->
+    <!-- ========== NOTIFICATION SYSTEM ========== -->
     <div id="notification-container"></div>
 
+    <!-- ========== AUTH SCREEN ========== -->
     <div id="auth-screen">
         <div class="auth-card">
             <h1>ELBERR_OS</h1>
@@ -138,7 +529,9 @@
         </div>
     </div>
 
+    <!-- ========== MAIN APPLICATION ========== -->
     <div id="app">
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div style="padding: 35px 25px; border-bottom: 1px solid var(--border);">
                 <b style="font-family:'Orbitron'; color:var(--accent); font-size:18px;">MARK-42 PRO</b>
@@ -149,12 +542,14 @@
             <div class="nav-item" onclick="tab('settings', this)">Настройки</div>
             <div class="nav-item" onclick="tryAdminAccess(this)" style="color:var(--orange)">[ADMIN_ROOT]</div>
             
+            <!-- User Status -->
             <div style="margin-top: auto; padding: 25px; border-top: 1px solid var(--border);">
                 <div id="user-status" style="font-weight: bold; font-size: 11px;">Loading...</div>
                 <button onclick="auth.signOut()" style="background:none; border:none; color:red; cursor:pointer; font-size:10px; margin-top:10px;">ВЫЙТИ</button>
             </div>
         </aside>
 
+        <!-- Main Content Area -->
         <main class="main">
             <!-- GAMES SECTION -->
             <div id="v-games" class="view active">
@@ -225,11 +620,19 @@
                 <div class="settings-group">
                     <h3>УВЕДОМЛЕНИЯ</h3>
                     <label style="display:flex; align-items:center; gap:10px;">
-                        <input type="checkbox" id="notify-messages" checked> Уведомления о сообщениях
+                        <input type="checkbox" id="notify-messages" checked onchange="updateNotifySettings()"> Уведомления о сообщениях
                     </label>
                     <label style="display:flex; align-items:center; gap:10px;">
-                        <input type="checkbox" id="notify-posts" checked> Уведомления о постах
+                        <input type="checkbox" id="notify-posts" checked onchange="updateNotifySettings()"> Уведомления о постах
                     </label>
+                </div>
+
+                <!-- DANGER ZONE -->
+                <div class="settings-group danger-zone">
+                    <h3>ОПАСНАЯ ЗОНА</h3>
+                    <button class="btn-main btn-danger" style="width:200px;" onclick="if(confirm('УДАЛИТЬ ВСЕ СООБЩЕНИЯ?\nЭто действие необратимо!')) clearAllData()">
+                        🗑️ ОЧИСТИТЬ ВСЕ СООБЩЕНИЯ
+                    </button>
                 </div>
             </div>
 
@@ -250,39 +653,64 @@
         </main>
     </div>
 
-    <!-- GAME OVERLAY -->
+    <!-- ========== GAME OVERLAY ========== -->
     <div id="game-overlay">
         <div class="game-bar">
-            <b id="gtxt" style="font-family:'Orbitron'; color:var(--accent)">LOADING...</b>
+            <div class="game-bar-left">
+                <b id="gtxt" style="font-family:'Orbitron'; color:var(--accent)">LOADING...</b>
+                <button class="fullscreen-btn" onclick="toggleFullscreen()" id="fullscreen-btn">⛶ ПОЛНЫЙ ЭКРАН</button>
+            </div>
             <button onclick="closeGame()" style="background:none; border:1px solid red; color:red; padding:5px 15px; cursor:pointer;">CLOSE [X]</button>
         </div>
-        <iframe id="gframe" style="flex:1; border:none; background:#000;"></iframe>
+        <iframe id="gframe" style="flex:1; border:none; background:#000;" title="Game Frame" allowfullscreen></iframe>
     </div>
 
+    <!-- ========== JAVASCRIPT ========== -->
     <script>
+        // ========== FIREBASE CONFIG ==========
         const firebaseConfig = {
             apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI",
             authDomain: "gamesfan-17986.firebaseapp.com",
             databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/",
             projectId: "gamesfan-17986"
         };
+        
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(), db = firebase.database();
+        const auth = firebase.auth();
+        const db = firebase.database();
 
-        let isLogin = true, selectedNick = "", myData = { identities: [] }, currentChat = "";
-        let unreadMessages = {}, lastMessages = {}, notificationSettings = { messages: true, posts: true };
+        // ========== GLOBAL VARIABLES ==========
+        let isLogin = true;
+        let selectedNick = "";
+        let myData = { 
+            nick: "Гость", 
+            identities: ["Гость"],
+            theme: 'default',
+            notifySettings: { messages: true, posts: true }
+        };
+        let currentChat = "";
+        let unreadMessages = {};
+        let lastMessages = {};
+        let notificationSettings = { messages: true, posts: true };
         let currentGameFilter = 'all';
 
-        // GAMES DATABASE
+        // ========== GAMES DATABASE ==========
+        // ПРАВИЛЬНЫЕ ЛОКАЛЬНЫЕ ПУТИ К ИГРАМ
         const GAMES = [
             // Slime игры
             { n: "Slime Clicker 2D", p: "Slime_Clicker/index.html", i: "🧪", category: "slime" },
             { n: "Slime Farm 2D", p: "Slime_Farm_2D/index.html", i: "🚜", category: "slime" },
             { n: "Slime Farm 2", p: "Slime_Farm2/index.html", i: "🍄", category: "slime" },
+            
             // ELBERR OS (Старый)
             { n: "ELBERR OS: Ch 1", p: "ELBERR_OS/Chapter1/index.html", i: "💾", category: "elberr_old" },
             { n: "ELBERR OS: Ch 2", p: "ELBERR_OS/Chapter2/index.html", i: "🔐", category: "elberr_old" },
             { n: "ELBERR OS: Ch 3", p: "ELBERR_OS/Chapter3/index.html", i: "⚙️", category: "elberr_old" },
+            { n: "ELBERR OS: Ch 4", p: "ELBERR_OS/Chapter4/index.html", i: "💿", category: "elberr_old" },
+            { n: "ELBERR OS: Ch 5", p: "ELBERR_OS/Chapter5/index.html", i: "📡", category: "elberr_old" },
+            { n: "ELBERR OS: Ch 6", p: "ELBERR_OS/Chapter6/index.html", i: "🧠", category: "elberr_old" },
+            
             // ELBERR OS Remake
             { n: "ELBERR OS R: Ch 1", p: "ELBERR_OS_REMAKE/Chapter1/index.html", i: "🆕", category: "elberr_new" },
             { n: "ELBERR OS R: Ch 2", p: "ELBERR_OS_REMAKE/Chapter2/index.html", i: "✨", category: "elberr_new" },
@@ -292,7 +720,7 @@
             { n: "ELBERR OS R: Ch 6", p: "ELBERR_OS_REMAKE/Chapter6/index.html", i: "🔥", category: "elberr_new" }
         ];
 
-        // --- NOTIFICATION SYSTEM ---
+        // ========== NOTIFICATION SYSTEM ==========
         function showNotification(title, message, isAdmin = false) {
             const container = document.getElementById('notification-container');
             const notif = document.createElement('div');
@@ -303,10 +731,12 @@
                 <div style="margin-top:5px; font-size:12px;">${message}</div>
             `;
             container.appendChild(notif);
-            setTimeout(() => { if(notif.parentElement) notif.remove(); }, 5000);
+            setTimeout(() => { 
+                if(notif.parentElement) notif.remove(); 
+            }, 5000);
         }
 
-        // --- AUTH ---
+        // ========== AUTH FUNCTIONS ==========
         function toggleAuthMode() { 
             isLogin = !isLogin; 
             document.getElementById('reg-nick').classList.toggle('hidden', isLogin); 
@@ -314,17 +744,30 @@
         }
 
         async function processAuth() {
-            const e = document.getElementById('reg-email').value, p = document.getElementById('reg-pass').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-pass').value;
+            
+            if (!email || !password) {
+                showNotification('ERROR', 'Заполните все поля', true);
+                return;
+            }
+            
             try { 
                 if(isLogin) {
-                    await auth.signInWithEmailAndPassword(e,p);
+                    await auth.signInWithEmailAndPassword(email, password);
                     showNotification('SYSTEM', 'Доступ разрешен');
                 } else { 
-                    const r = await auth.createUserWithEmailAndPassword(e,p); 
-                    await db.ref('users/'+r.user.uid).set({
-                        nick: document.getElementById('reg-nick').value, 
-                        email: e, 
-                        identities: [document.getElementById('reg-nick').value],
+                    const nick = document.getElementById('reg-nick').value;
+                    if (!nick) {
+                        showNotification('ERROR', 'Введите никнейм', true);
+                        return;
+                    }
+                    
+                    const result = await auth.createUserWithEmailAndPassword(email, password); 
+                    await db.ref('users/' + result.user.uid).set({
+                        nick: nick, 
+                        email: email, 
+                        identities: [nick],
                         theme: 'default',
                         notifySettings: { messages: true, posts: true }
                     });
@@ -335,16 +778,25 @@
             }
         }
 
+        // ========== AUTH STATE OBSERVER ==========
         auth.onAuthStateChanged(user => {
             if(user) {
+                // User is signed in
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'grid';
                 
-                db.ref('users/' + user.uid).on('value', s => {
-                    myData = s.val() || { nick: "Гость", identities: ["Гость"], theme: 'default', notifySettings: { messages: true, posts: true } };
+                // Load user data
+                db.ref('users/' + user.uid).on('value', snapshot => {
+                    myData = snapshot.val() || { 
+                        nick: "Гость", 
+                        identities: ["Гость"], 
+                        theme: 'default', 
+                        notifySettings: { messages: true, posts: true } 
+                    };
+                    
                     document.getElementById('user-status').innerText = myData.nick;
                     
-                    // Проверка на админа
+                    // Check if admin
                     if(user.email === "vetrovlev1@gmail.com") {
                         document.getElementById('user-status').className = 'nick-orange';
                         myData.isAdmin = true;
@@ -353,9 +805,17 @@
                     renderIdentities();
                     updateSettingsUI();
                     
-                    // Применяем тему
+                    // Apply theme
                     if(myData.theme) changeTheme(myData.theme, true);
                     if(myData.notifySettings) notificationSettings = myData.notifySettings;
+                    
+                    // Update checkboxes
+                    if (document.getElementById('notify-messages')) {
+                        document.getElementById('notify-messages').checked = notificationSettings.messages;
+                    }
+                    if (document.getElementById('notify-posts')) {
+                        document.getElementById('notify-posts').checked = notificationSettings.posts;
+                    }
                 });
                 
                 renderGames(); 
@@ -365,68 +825,76 @@
                 
                 showNotification('WELCOME', `> ${myData.nick} подключен к сети`);
             } else { 
+                // User is signed out
                 document.getElementById('auth-screen').style.display = 'flex'; 
                 document.getElementById('app').style.display = 'none'; 
             }
         });
 
-        // --- GAMES SECTION ---
+        // ========== GAMES SECTION ==========
         function renderGames() {
             const filtered = currentGameFilter === 'all' 
                 ? GAMES 
                 : GAMES.filter(g => g.category === currentGameFilter);
             
-            document.getElementById('games-container').innerHTML = filtered.map(g => 
-                `<div class="game-card" onclick="launch('${g.p}', '${g.n}')">
-                    <i>${g.i}</i>
-                    <b>${g.n}</b>
-                </div>`
-            ).join('');
+            const container = document.getElementById('games-container');
+            if (container) {
+                container.innerHTML = filtered.map(g => 
+                    `<div class="game-card" onclick="launch('${g.p}', '${g.n}')">
+                        <i>${g.i}</i>
+                        <b>${g.n}</b>
+                    </div>`
+                ).join('');
+            }
         }
 
-        function filterGames(category, el) {
+        function filterGames(category, element) {
             currentGameFilter = category;
             document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
+            element.classList.add('active');
             renderGames();
         }
 
-        // --- CORE FUNCTIONS ---
-        function tab(id, el) { 
+        // ========== TAB NAVIGATION ==========
+        function tab(id, element) { 
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); 
             document.getElementById('v-' + id).classList.add('active'); 
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); 
-            if(el) el.classList.add('active'); 
+            if(element) element.classList.add('active'); 
         }
 
+        // ========== IDENTITY FUNCTIONS ==========
         function renderIdentities() {
             const ids = [...new Set([myData.nick, ...(myData.identities || [])])];
-            document.getElementById('chips-container').innerHTML = ids.map(id => 
-                `<div class="chip ${selectedNick===id?'active':''}" onclick="selectedNick='${id}';renderIdentities()">${id}</div>`
-            ).join('');
+            const container = document.getElementById('chips-container');
+            if (container) {
+                container.innerHTML = ids.map(id => 
+                    `<div class="chip ${selectedNick === id ? 'active' : ''}" onclick="selectedNick='${id}';renderIdentities()">${id}</div>`
+                ).join('');
+            }
             if(!selectedNick) selectedNick = ids[0];
         }
 
         function addIdentity() { 
-            const n = prompt("Identity name:"); 
-            if(n){ 
+            const newIdentity = prompt("Введите имя новой идентичности:"); 
+            if(newIdentity && newIdentity.trim()) { 
                 myData.identities = myData.identities || []; 
-                myData.identities.push(n); 
-                db.ref('users/'+auth.currentUser.uid+'/identities').set(myData.identities);
-                showNotification('SYSTEM', `Идентичность ${n} добавлена`);
+                myData.identities.push(newIdentity.trim()); 
+                db.ref('users/' + auth.currentUser.uid + '/identities').set(myData.identities);
+                showNotification('SYSTEM', `Идентичность ${newIdentity} добавлена`);
             } 
         }
 
-        // --- SOCIAL SECTION ---
+        // ========== SOCIAL FUNCTIONS ==========
         function sendPost() {
-            const t = document.getElementById('post-input').value; 
-            if(!t.trim()) return;
+            const postText = document.getElementById('post-input').value; 
+            if(!postText.trim()) return;
             
-            const isAdmin = auth.currentUser.email === "vetrovlev1@gmail.com" && selectedNick.includes(myData.nick);
+            const isAdmin = auth.currentUser.email === "vetrovlev1@gmail.com";
             
             db.ref('posts').push({
                 author: selectedNick, 
-                text: t, 
+                text: postText, 
                 isAdmin: isAdmin,
                 time: Date.now()
             });
@@ -444,12 +912,12 @@
                 return;
             }
             
-            const t = document.getElementById('admin-post-input').value;
-            if(!t.trim()) return;
+            const postText = document.getElementById('admin-post-input').value;
+            if(!postText.trim()) return;
             
             db.ref('posts').push({
                 author: myData.nick + " [ADMIN]", 
-                text: t, 
+                text: postText, 
                 isAdmin: true,
                 time: Date.now()
             });
@@ -459,23 +927,25 @@
         }
 
         function loadPosts() {
-            db.ref('posts').limitToLast(50).on('value', s => {
-                const f = document.getElementById('feed'); 
-                f.innerHTML = "";
-                let ps = []; 
-                s.forEach(c => ps.push(c.val()));
-                ps.reverse().forEach(p => { 
-                    f.innerHTML += `
-                        <div class="post ${p.isAdmin ? 'admin-post' : ''}">
-                            <b class="${p.isAdmin ? 'nick-orange' : ''}">${p.author}:</b>
-                            <p>${p.text}</p>
+            db.ref('posts').limitToLast(50).on('value', snapshot => {
+                const feed = document.getElementById('feed'); 
+                if (!feed) return;
+                
+                feed.innerHTML = "";
+                let posts = []; 
+                snapshot.forEach(child => posts.push(child.val()));
+                posts.reverse().forEach(post => { 
+                    feed.innerHTML += `
+                        <div class="post ${post.isAdmin ? 'admin-post' : ''}">
+                            <b class="${post.isAdmin ? 'nick-orange' : ''}">${post.author}:</b>
+                            <p>${post.text}</p>
                         </div>
                     `; 
                 });
                 
-                // Уведомление о новом посте (кроме своих)
-                if(ps.length > 0 && notificationSettings.posts) {
-                    const latest = ps[0];
+                // Notification for new post (except own)
+                if(posts.length > 0 && notificationSettings.posts) {
+                    const latest = posts[0];
                     if(latest.author !== selectedNick) {
                         showNotification('НОВЫЙ ПОСТ', `${latest.author}: ${latest.text.substring(0,50)}...`, latest.isAdmin);
                     }
@@ -483,20 +953,22 @@
             });
         }
 
-        // --- MESSENGER ---
+        // ========== MESSENGER FUNCTIONS ==========
         function loadContacts() {
-            db.ref('users').on('value', snap => {
-                const cont = document.getElementById('contacts-list'); 
-                cont.innerHTML = "";
+            db.ref('users').on('value', snapshot => {
+                const contactsList = document.getElementById('contacts-list'); 
+                if (!contactsList) return;
                 
-                snap.forEach(u => {
-                    if(u.key !== auth.currentUser.uid) {
-                        const lastMsg = lastMessages[u.key] || 'Нет сообщений';
-                        const unread = unreadMessages[u.key] || 0;
+                contactsList.innerHTML = "";
+                
+                snapshot.forEach(user => {
+                    if(user.key !== auth.currentUser.uid) {
+                        const lastMsg = lastMessages[user.key] || 'Нет сообщений';
+                        const unread = unreadMessages[user.key] || 0;
                         
-                        cont.innerHTML += `
-                            <div class="contact-item ${currentChat === u.key ? 'active' : ''}" onclick="startChat('${u.key}', '${u.val().nick}')">
-                                <b>${u.val().nick}</b>
+                        contactsList.innerHTML += `
+                            <div class="contact-item ${currentChat === user.key ? 'active' : ''}" onclick="startChat('${user.key}', '${user.val().nick}')">
+                                <b>${user.val().nick}</b>
                                 ${unread > 0 ? `<span class="badge">${unread}</span>` : ''}
                                 <div class="last-msg">${lastMsg}</div>
                             </div>
@@ -515,13 +987,13 @@
         }
 
         function sendMsg() {
-            const t = document.getElementById('msg-input').value; 
-            if(!t.trim() || !currentChat) return;
+            const msgText = document.getElementById('msg-input').value; 
+            if(!msgText.trim() || !currentChat) return;
             
             const chatID = [auth.currentUser.uid, currentChat].sort().join('_');
             db.ref('chats/' + chatID).push({ 
                 sender: myData.nick, 
-                text: t, 
+                text: msgText, 
                 time: Date.now() 
             });
             
@@ -532,33 +1004,35 @@
             if(!currentChat) return;
             
             const chatID = [auth.currentUser.uid, currentChat].sort().join('_');
-            db.ref('chats/' + chatID).off(); // Убираем старый listener
-            db.ref('chats/' + chatID).on('value', snap => {
-                const box = document.getElementById('chat-messages'); 
-                box.innerHTML = "";
+            db.ref('chats/' + chatID).off(); // Remove old listener
+            db.ref('chats/' + chatID).on('value', snapshot => {
+                const messagesArea = document.getElementById('chat-messages'); 
+                if (!messagesArea) return;
+                
+                messagesArea.innerHTML = "";
                 let lastMsg = "";
                 
-                snap.forEach(m => {
-                    const isOwn = m.val().sender === myData.nick;
-                    box.innerHTML += `
+                snapshot.forEach(message => {
+                    const isOwn = message.val().sender === myData.nick;
+                    messagesArea.innerHTML += `
                         <div class="message ${isOwn ? 'own' : ''}">
-                            <b style="color:${isOwn ? 'var(--accent)' : '#fff'}">${m.val().sender}:</b>
-                            <div>${m.val().text}</div>
-                            <small style="color:var(--border); font-size:9px;">${new Date(m.val().time).toLocaleTimeString()}</small>
+                            <b style="color:${isOwn ? 'var(--accent)' : '#fff'}">${message.val().sender}:</b>
+                            <div>${message.val().text}</div>
+                            <small style="color:var(--border); font-size:9px;">${new Date(message.val().time).toLocaleTimeString()}</small>
                         </div>
                     `;
-                    lastMsg = m.val().text;
+                    lastMsg = message.val().text;
                 });
                 
                 lastMessages[currentChat] = lastMsg.substring(0,30) + (lastMsg.length > 30 ? '...' : '');
-                box.scrollTop = box.scrollHeight;
+                messagesArea.scrollTop = messagesArea.scrollHeight;
             });
         }
 
         function loadMessagesListener() {
-            // Слушаем все входящие сообщения для уведомлений
-            db.ref('chats').on('value', snap => {
-                snap.forEach(chat => {
+            // Listen for all incoming messages for notifications
+            db.ref('chats').on('value', snapshot => {
+                snapshot.forEach(chat => {
                     const participants = chat.key.split('_');
                     if(participants.includes(auth.currentUser.uid)) {
                         const otherUser = participants.find(p => p !== auth.currentUser.uid);
@@ -576,7 +1050,7 @@
             });
         }
 
-        // --- SETTINGS ---
+        // ========== SETTINGS FUNCTIONS ==========
         function updateSettingsUI() {
             const identitiesDiv = document.getElementById('settings-identities');
             if(identitiesDiv) {
@@ -620,16 +1094,24 @@
             }
         }
 
-        // --- ADMIN LOGIC ---
-        function tryAdminAccess(el) {
+        function updateNotifySettings() {
+            notificationSettings = {
+                messages: document.getElementById('notify-messages').checked,
+                posts: document.getElementById('notify-posts').checked
+            };
+            db.ref('users/' + auth.currentUser.uid).update({ notifySettings: notificationSettings });
+        }
+
+        // ========== ADMIN FUNCTIONS ==========
+        function tryAdminAccess(element) {
             if(auth.currentUser.email === "vetrovlev1@gmail.com") {
-                tab('adm', el); 
+                tab('adm', element); 
                 loadAdminPanel();
                 showNotification('ADMIN ACCESS', 'Добро пожаловать, администратор', true);
             } else {
                 const pass = prompt("ROOT_ACCESS_PASSWORD:");
                 if (pass === "12.02.2014") { 
-                    tab('adm', el); 
+                    tab('adm', element); 
                     loadAdminPanel(); 
                 } else { 
                     showNotification('ACCESS DENIED', 'Неверный пароль', true);
@@ -638,14 +1120,16 @@
         }
 
         function loadAdminPanel() {
-            db.ref('users').on('value', snap => {
+            db.ref('users').on('value', snapshot => {
                 const list = document.getElementById('admin-users-list');
+                if (!list) return;
+                
                 list.innerHTML = "<h4>УПРАВЛЕНИЕ УЗЛАМИ:</h4><br>";
-                snap.forEach(u => {
+                snapshot.forEach(user => {
                     list.innerHTML += `
                         <div class="user-row">
-                            <span><b>${u.val().nick}</b> (${u.val().email || 'Guest'})</span>
-                            <button onclick="db.ref('users/${u.key}').remove(); showNotification('ADMIN', 'Пользователь удален')" 
+                            <span><b>${user.val().nick}</b> (${user.val().email || 'Guest'})</span>
+                            <button onclick="db.ref('users/${user.key}').remove(); showNotification('ADMIN', 'Пользователь удален', true)" 
                                     style="color:red; background:none; border:1px solid red; cursor:pointer; padding:5px;">
                                 [DELETE]
                             </button>
@@ -655,12 +1139,28 @@
             });
         }
 
-        // --- GAME LAUNCHER ---
-        function launch(p, t) { 
+        // ========== DATA CLEAR FUNCTIONS ==========
+        function clearAllData() {
+            if(auth.currentUser.email !== "vetrovlev1@gmail.com") {
+                showNotification('ACCESS DENIED', 'Только для админа', true);
+                return;
+            }
+            
+            db.ref('posts').remove()
+                .then(() => showNotification('СИСТЕМА', 'Все посты удалены', true))
+                .catch(err => showNotification('ОШИБКА', err.message, true));
+            
+            db.ref('chats').remove()
+                .then(() => showNotification('СИСТЕМА', 'Все чаты удалены', true))
+                .catch(err => showNotification('ОШИБКА', err.message, true));
+        }
+
+        // ========== GAME LAUNCHER ==========
+        function launch(gamePath, gameName) { 
             document.getElementById('game-overlay').style.display = 'flex'; 
-            document.getElementById('gtxt').innerText = "> " + t; 
-            document.getElementById('gframe').src = p; 
-            showNotification('LAUNCHER', `Запуск: ${t}`);
+            document.getElementById('gtxt').innerText = "> " + gameName; 
+            document.getElementById('gframe').src = gamePath; 
+            showNotification('LAUNCHER', `Запуск: ${gameName}`);
         }
         
         function closeGame() { 
@@ -668,13 +1168,44 @@
             document.getElementById('gframe').src = ""; 
         }
 
-        // --- NOTIFICATION SETTINGS ---
-        function updateNotifySettings() {
-            notificationSettings = {
-                messages: document.getElementById('notify-messages').checked,
-                posts: document.getElementById('notify-posts').checked
-            };
-            db.ref('users/' + auth.currentUser.uid).update({ notifySettings: notificationSettings });
+        // ========== FULLSCREEN FUNCTION ==========
+        function toggleFullscreen() {
+            const iframe = document.getElementById('gframe');
+            const btn = document.getElementById('fullscreen-btn');
+            
+            if (!document.fullscreenElement) {
+                // Enter fullscreen
+                if (iframe.requestFullscreen) {
+                    iframe.requestFullscreen();
+                } else if (iframe.webkitRequestFullscreen) { /* Safari */
+                    iframe.webkitRequestFullscreen();
+                } else if (iframe.msRequestFullscreen) { /* IE/Edge */
+                    iframe.msRequestFullscreen();
+                }
+                btn.textContent = '✕ ВЫЙТИ ИЗ ПОЛНОГО ЭКРАНА';
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) { /* Safari */
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { /* IE/Edge */
+                    document.msExitFullscreen();
+                }
+                btn.textContent = '⛶ ПОЛНЫЙ ЭКРАН';
+            }
+        }
+
+        // Listen for fullscreen change events
+        document.addEventListener('fullscreenchange', updateFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+        document.addEventListener('msfullscreenchange', updateFullscreenButton);
+
+        function updateFullscreenButton() {
+            const btn = document.getElementById('fullscreen-btn');
+            if (btn) {
+                btn.textContent = document.fullscreenElement ? '✕ ВЫЙТИ ИЗ ПОЛНОГО ЭКРАНА' : '⛶ ПОЛНЫЙ ЭКРАН';
+            }
         }
     </script>
 </body>
