@@ -2,1210 +2,888 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ELBERR_OS PRO | Mark-42 Studio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>GamerFan | Игровое сообщество</title>
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-        /* ========== CSS Variables ========== */
-        :root {
-            --accent: #00d2ff;
-            --bg: #050608;
-            --card: #0d1117;
-            --border: #30363d;
-            --text: #c9d1d9;
-            --glow: 0 0 20px rgba(0, 210, 255, 0.4);
-            --orange: #ff8c00;
-            --admin-glow: 0 0 15px rgba(255, 140, 0, 0.6);
-            --success: #00ff88;
-            --error: #ff4444;
-        }
-
-        /* ========== Global Styles ========== */
-        * { 
-            box-sizing: border-box; 
-            transition: 0.3s; 
+        * {
             margin: 0;
             padding: 0;
-        }
-        
-        body, html { 
-            height: 100%; 
-            margin: 0; 
-            background: var(--bg); 
-            color: var(--text); 
-            font-family: 'Roboto Mono', monospace; 
-            overflow: hidden; 
+            box-sizing: border-box;
         }
 
-        /* ========== Auth Screen ========== */
-        #auth-screen {
-            position: fixed; 
-            inset: 0; 
-            background: var(--bg); 
-            z-index: 10000;
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            background-image: radial-gradient(circle at center, #10141b 0%, #050608 100%);
+        :root {
+            --bg: #0a0a0a;
+            --bg-card: #141414;
+            --bg-elevated: #1e1e1e;
+            --accent: #ff4757;
+            --accent-gradient: linear-gradient(135deg, #ff4757, #ff6b81);
+            --text: #ffffff;
+            --text-secondary: #a0a0a0;
+            --border: #2a2a2a;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
 
-        .auth-card { 
-            background: var(--card); 
-            border: 2px solid var(--accent); 
-            padding: 45px; 
-            width: 420px; 
-            text-align: center; 
-            box-shadow: var(--glow); 
-            animation: pulse 2s infinite; 
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .auth-card h1 { 
-            font-family: 'Orbitron'; 
-            color: var(--accent); 
-            text-shadow: var(--glow); 
-            margin: 0 0 20px 0; 
-        }
-        
-        /* ========== Form Elements ========== */
-        input, textarea, select { 
-            width: 100%; 
-            background: #000; 
-            border: 1px solid var(--border); 
-            padding: 14px; 
-            margin: 10px 0; 
-            color: var(--accent); 
-            font-family: 'Roboto Mono'; 
-            outline: none; 
-            border-radius: 0; 
+        /* ========== РЕЖИМЫ ========== */
+        /* ПО УМОЛЧАНИЮ — ПК РЕЖИМ (сайдбар слева) */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 90;
+            transition: transform 0.3s ease;
         }
 
-        input:focus, textarea:focus, select:focus { 
-            border-color: var(--accent); 
-            box-shadow: var(--glow); 
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            padding: 12px 20px 20px;
+            z-index: 100;
+            justify-content: space-around;
         }
 
-        /* ========== Buttons ========== */
-        .btn-main { 
-            width: 100%; 
-            padding: 15px; 
-            border: 1px solid var(--accent); 
-            background: rgba(0, 210, 255, 0.1); 
-            color: var(--accent); 
-            font-family: 'Orbitron'; 
-            cursor: pointer; 
-            font-weight: bold; 
-            margin-top: 10px; 
-            position: relative; 
-            overflow: hidden; 
+        .main-content {
+            margin-left: 280px;
+            padding: 20px 24px 80px;
+            overflow-y: auto;
+            height: 100vh;
+            transition: margin-left 0.3s ease;
         }
 
-        .btn-main:hover { 
-            background: var(--accent); 
-            color: #000; 
-            box-shadow: var(--glow); 
+        /* МОБИЛЬНЫЙ РЕЖИМ */
+        body.mobile-mode .sidebar {
+            transform: translateX(-100%);
         }
 
-        .btn-main::after { 
-            content: ''; 
-            position: absolute; 
-            top: 50%; 
-            left: 50%; 
-            width: 0; 
-            height: 0; 
-            border-radius: 50%; 
-            background: rgba(255,255,255,0.5); 
-            transform: translate(-50%, -50%); 
-            transition: width 0.3s, height 0.3s; 
+        body.mobile-mode .main-content {
+            margin-left: 0;
+            padding: 60px 16px 80px;
         }
 
-        .btn-main:active::after { 
-            width: 300px; 
-            height: 300px; 
+        body.mobile-mode .bottom-nav {
+            display: flex;
         }
 
-        /* ========== Notifications ========== */
-        #notification-container {
-            position: fixed; 
-            top: 20px; 
-            right: 20px; 
-            z-index: 20000;
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px;
-            pointer-events: none;
-        }
-
-        .notification {
-            background: var(--card); 
-            border: 1px solid var(--accent); 
-            padding: 15px 25px;
-            box-shadow: var(--glow); 
-            color: var(--text); 
-            min-width: 250px;
-            animation: slideIn 0.3s ease; 
-            pointer-events: auto;
-            border-left: 4px solid var(--accent);
-        }
-
-        .notification.admin { 
-            border-color: var(--orange); 
-            box-shadow: var(--admin-glow); 
-        }
-
-        .notification .title { 
-            font-family: 'Orbitron'; 
-            color: var(--accent); 
-            font-size: 12px; 
-        }
-
-        .notification.admin .title { 
-            color: var(--orange); 
-        }
-
-        .notification .close { 
-            float: right; 
-            cursor: pointer; 
-            color: var(--border); 
-        }
-
-        /* ========== Main Layout ========== */
-        #app { 
-            display: none; 
-            height: 100vh; 
-            grid-template-columns: 280px 1fr; 
-        }
-
-        .sidebar { 
-            background: #090c10; 
-            border-right: 1px solid var(--border); 
-            display: flex; 
-            flex-direction: column; 
-        }
-
-        .nav-item { 
-            padding: 18px 25px; 
-            cursor: pointer; 
-            color: #8b949e; 
-            border-bottom: 1px solid #161b22; 
-            font-size: 12px; 
-            font-weight: bold; 
-            text-transform: uppercase; 
-            position: relative; 
-        }
-
-        .nav-item:hover, .nav-item.active { 
-            color: var(--accent); 
-            background: rgba(0, 210, 255, 0.05); 
-            border-left: 4px solid var(--accent); 
-        }
-
-        .nav-item[data-badge]::after { 
-            content: attr(data-badge); 
-            position: absolute; 
-            right: 15px; 
-            top: 50%; 
-            transform: translateY(-50%);
-            background: var(--accent); 
-            color: #000; 
-            padding: 2px 6px; 
-            border-radius: 10px; 
-            font-size: 10px;
-        }
-
-        .main { 
-            padding: 40px; 
-            overflow-y: auto; 
-        }
-
-        .view { 
-            display: none; 
-        }
-
-        .view.active { 
-            display: block; 
-            animation: fadeIn 0.4s ease; 
-        }
-
-        /* ========== Games Section ========== */
-        .section-tabs { 
-            display: flex; 
-            gap: 10px; 
-            margin-bottom: 30px; 
-            border-bottom: 1px solid var(--border); 
-            padding-bottom: 10px; 
-        }
-
-        .section-tab { 
-            padding: 10px 20px; 
-            cursor: pointer; 
-            color: var(--border); 
-            font-family: 'Orbitron'; 
-            font-size: 12px; 
-        }
-
-        .section-tab.active { 
-            color: var(--accent); 
-            border-bottom: 2px solid var(--accent); 
-        }
-
-        .games-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
-            gap: 20px; 
-        }
-
-        .game-card { 
-            background: var(--card); 
-            border: 1px solid var(--border); 
-            padding: 30px 20px; 
-            text-align: center; 
-            cursor: pointer; 
-        }
-
-        .game-card:hover { 
-            border-color: var(--accent); 
-            box-shadow: var(--glow); 
-            transform: translateY(-3px); 
-        }
-
-        .game-card i { 
-            font-size: 40px; 
-            display: block; 
-            margin-bottom: 15px; 
-            filter: drop-shadow(0 0 10px var(--accent)); 
-        }
-
-        .game-card b { 
-            font-family: 'Orbitron'; 
-            font-size: 11px; 
-            color: #fff; 
-        }
-
-        /* ========== Social Section ========== */
-        .post { 
-            background: #000; 
-            border: 1px solid var(--border); 
-            padding: 20px; 
-            margin-bottom: 15px; 
-            animation: fadeIn 0.3s; 
-        }
-
-        .post.admin-post { 
-            border-color: var(--orange); 
-            box-shadow: var(--admin-glow); 
-        }
-
-        .nick-orange { 
-            color: var(--orange) !important; 
-            font-weight: 900; 
-            text-shadow: var(--admin-glow); 
-        }
-
-        .chip { 
-            display: inline-block; 
-            padding: 5px 12px; 
-            border: 1px solid var(--border); 
-            margin: 5px; 
-            cursor: pointer; 
-            font-size: 11px; 
-        }
-
-        .chip.active { 
-            border-color: var(--accent); 
-            color: var(--accent); 
-            box-shadow: var(--glow); 
-        }
-
-        /* ========== Messenger ========== */
-        .messenger-container { 
-            display: grid; 
-            grid-template-columns: 280px 1fr; 
-            gap: 20px; 
-            height: 600px; 
-            background: rgba(0,0,0,0.3); 
-            border: 1px solid var(--border); 
-        }
-
-        .contacts-list { 
-            border-right: 1px solid var(--border); 
-            overflow-y: auto; 
-        }
-
-        .contact-item { 
-            padding: 15px; 
-            border-bottom: 1px solid var(--border); 
-            cursor: pointer; 
-        }
-
-        .contact-item:hover { 
-            background: rgba(0,210,255,0.05); 
-        }
-
-        .contact-item.active { 
-            background: rgba(0,210,255,0.1); 
-            border-left: 3px solid var(--accent); 
-        }
-
-        .contact-item .last-msg { 
-            font-size: 11px; 
-            color: var(--border); 
-            margin-top: 5px; 
-        }
-
-        .chat-area { 
-            display: flex; 
-            flex-direction: column; 
-            height: 100%; 
-        }
-
-        .messages-area { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 20px; 
-        }
-
-        .message { 
-            margin-bottom: 15px; 
-            padding: 10px; 
-            background: rgba(255,255,255,0.02); 
-        }
-
-        .message.own { 
-            background: rgba(0,210,255,0.05); 
-            border-left: 2px solid var(--accent); 
-        }
-
-        .message-input-area { 
-            display: flex; 
-            padding: 10px; 
-            gap: 10px; 
-        }
-
-        /* ========== Settings ========== */
-        .settings-group { 
-            background: var(--card); 
-            border: 1px solid var(--border); 
-            padding: 25px; 
-            margin-bottom: 20px; 
-        }
-
-        .settings-group h3 { 
-            color: var(--accent); 
-            font-family: 'Orbitron'; 
-            margin-top: 0; 
-        }
-
-        .identity-list { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 10px; 
-            margin: 15px 0; 
-        }
-
-        /* ========== Admin Panel ========== */
-        .user-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 15px; 
-            background: #000; 
-            border: 1px solid var(--border); 
-            margin-bottom: 10px; 
-        }
-
-        /* ========== Game Overlay ========== */
-        #game-overlay { 
-            position: fixed; 
-            inset: 0; 
-            background: #000; 
-            z-index: 15000; 
-            display: none; 
-            flex-direction: column; 
-        }
-
-        .game-bar { 
-            background: #0d1117; 
-            padding: 10px 25px; 
-            display: flex; 
-            justify-content: space-between; 
-            border-bottom: 1px solid var(--accent); 
-            align-items: center; 
-        }
-
-        .game-bar-left {
+        /* Кнопка переключения режима */
+        .mode-toggle-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1000;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
         }
 
-        .fullscreen-btn {
-            background: none;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 5px 15px;
+        /* Элементы сайдбара */
+        .sidebar .logo {
+            padding: 28px 24px;
+            font-size: 22px;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-item {
+            padding: 14px 24px;
             cursor: pointer;
-            font-family: 'Orbitron';
-            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .fullscreen-btn:hover {
-            background: var(--accent);
-            color: #000;
-            box-shadow: var(--glow);
+        .nav-item i { width: 24px; }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 71, 87, 0.1);
+            color: var(--accent);
+            border-left: 3px solid var(--accent);
         }
 
-        /* ========== Danger Zone ========== */
-        .danger-zone {
-            border-color: red !important;
+        /* Нижняя навигация для мобилок */
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            border-radius: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+        .bottom-nav-item i { font-size: 24px; }
+        .bottom-nav-item span { font-size: 11px; font-weight: 500; }
+        .bottom-nav-item.active { background: rgba(255, 71, 87, 0.15); color: var(--accent); }
+
+        .user-section {
+            margin-top: auto;
+            padding: 20px 24px;
+            border-top: 1px solid var(--border);
         }
 
-        .danger-zone h3 {
-            color: red !important;
+        /* Анимации */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .btn-danger {
-            border-color: red !important;
-            color: red !important;
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        .btn-danger:hover {
-            background: red !important;
-            color: #000 !important;
+        /* Авторизация */
+        #auth-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #0a0a0a, #141414);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
-        /* ========== Animations ========== */
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
+        .auth-card {
+            background: var(--bg-card);
+            border-radius: 32px;
+            padding: 40px 32px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid var(--border);
+            animation: fadeInUp 0.5s ease;
         }
 
-        @keyframes slideIn { 
-            from { transform: translateX(100%); opacity: 0; } 
-            to { transform: translateX(0); opacity: 1; } 
+        .auth-card h1 {
+            font-size: 36px;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
-        @keyframes pulse { 
-            0% { box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); } 
-            50% { box-shadow: 0 0 40px rgba(0, 210, 255, 0.6); } 
-            100% { box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); } 
+        input, textarea {
+            width: 100%;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px 18px;
+            margin: 8px 0;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            outline: none;
         }
 
-        /* ========== Utilities ========== */
+        input:focus, textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(255, 71, 87, 0.2);
+        }
+
+        .btn-main {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 16px;
+            background: var(--accent-gradient);
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: transform 0.2s;
+        }
+
+        .btn-main:active { transform: scale(0.98); }
+        .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+
+        #app {
+            display: none;
+            height: 100vh;
+            background: var(--bg);
+        }
+
+        .view { display: none; }
+        .view.active { display: block; animation: fadeInUp 0.3s ease; }
+
+        /* Игры */
+        .section-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .section-tab {
+            padding: 10px 20px;
+            border-radius: 40px;
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .section-tab.active {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .game-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .game-card:active { transform: scale(0.97); }
+        .game-card i { font-size: 48px; margin-bottom: 12px; display: block; }
+        .game-card b { font-size: 14px; font-weight: 600; }
+
+        /* Сообщества */
+        .post {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+        }
+        .post.admin-post { border-left: 4px solid var(--accent); }
+        .post-author { font-weight: 700; margin-bottom: 8px; }
+
+        /* Мессенджер */
+        .messenger-container {
+            display: flex;
+            height: calc(100vh - 160px);
+            background: var(--bg-card);
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        .contacts-list {
+            width: 280px;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+        }
+        .contact-item {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+        }
+        .contact-item.active { background: rgba(255, 71, 87, 0.15); border-left: 3px solid var(--accent); }
+        .chat-area { flex: 1; display: flex; flex-direction: column; }
+        .messages-area { flex: 1; overflow-y: auto; padding: 16px; }
+        .message {
+            margin-bottom: 12px;
+            padding: 10px 14px;
+            border-radius: 18px;
+            max-width: 70%;
+            background: var(--bg-elevated);
+        }
+        .message.own { background: var(--accent); margin-left: auto; color: white; }
+        .message-input-area { display: flex; gap: 12px; padding: 16px; border-top: 1px solid var(--border); }
+        .message-input-area input { flex: 1; margin: 0; }
+
+        /* Настройки */
+        .settings-group {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+        }
+        .settings-group h3 { margin-bottom: 16px; font-size: 18px; }
+        .identity-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+        .chip {
+            background: var(--bg-elevated);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .chip.active { background: var(--accent); color: white; }
+
+        /* Уведомления */
+        #notification-container {
+            position: fixed;
+            top: 70px;
+            right: 16px;
+            z-index: 20000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .notification {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 14px 20px;
+            border-left: 4px solid var(--accent);
+            animation: slideInRight 0.3s ease;
+        }
+
+        /* Игровой оверлей */
+        #game-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 15000;
+            display: none;
+            flex-direction: column;
+        }
+        .game-bar {
+            background: #1a1a1a;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        #game-frame {
+            flex: 1;
+            border: none;
+            background: #000;
+        }
+
         .hidden { display: none !important; }
-        
-        .badge { 
-            background: var(--accent); 
-            color: #000; 
-            padding: 2px 6px; 
-            border-radius: 10px; 
-            font-size: 10px; 
-            margin-left: 10px; 
+
+        @media (max-width: 768px) {
+            body:not(.desktop-force) .sidebar { transform: translateX(-100%); }
+            body:not(.desktop-force) .main-content { margin-left: 0; padding: 60px 16px 80px; }
+            body:not(.desktop-force) .bottom-nav { display: flex; }
         }
     </style>
 </head>
 <body>
-    <!-- ========== NOTIFICATION SYSTEM ========== -->
+
+    <div class="mode-toggle-btn" id="modeToggleBtn" onclick="toggleUIMode()">
+        <i class="fas fa-desktop"></i>
+        <span id="modeToggleText">💻 Компьютер</span>
+    </div>
+
     <div id="notification-container"></div>
 
-    <!-- ========== AUTH SCREEN ========== -->
+    <!-- АВТОРИЗАЦИЯ -->
     <div id="auth-screen">
         <div class="auth-card">
-            <h1>ELBERR_OS</h1>
-            <p style="font-size: 10px; color: var(--accent); opacity: 0.6; margin-bottom: 20px;">MARK-42 STUDIO ECOSYSTEM</p>
-            <input type="text" id="reg-nick" placeholder="NICKNAME" class="hidden">
-            <input type="email" id="reg-email" placeholder="EMAIL">
-            <input type="password" id="reg-pass" placeholder="PASSWORD">
-            <button class="btn-main" onclick="processAuth()" id="main-auth-btn">ENTER_SYSTEM</button>
-            <button class="btn-main" style="border-color:#555; color:#555" onclick="auth.signInAnonymously()">GUEST_ACCESS</button>
-            <p id="toggle-txt" style="margin-top:20px; cursor:pointer; font-size:11px; color:var(--accent)" onclick="toggleAuthMode()">Создать новый узел</p>
+            <h1>GamerFan</h1>
+            <div class="sub">Игровое сообщество</div>
+            <input type="text" id="reg-nick" placeholder="Никнейм" class="hidden">
+            <input type="email" id="reg-email" placeholder="Email">
+            <input type="password" id="reg-pass" placeholder="Пароль">
+            
+            <div style="margin: 16px 0; text-align: left;">
+                <small style="color: var(--text-secondary);">🎮 Режим:</small>
+                <div style="display: flex; gap: 12px; margin-top: 8px;">
+                    <button type="button" class="register-mode-btn" data-mode="desktop" onclick="selectRegisterMode('desktop', this)" style="flex:1; padding: 10px; border-radius: 12px; border: 2px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer;">💻 Компьютер</button>
+                    <button type="button" class="register-mode-btn" data-mode="mobile" onclick="selectRegisterMode('mobile', this)" style="flex:1; padding: 10px; border-radius: 12px; border: 2px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer;">📱 Телефон</button>
+                </div>
+            </div>
+            
+            <button class="btn-main" onclick="processAuth()" id="main-auth-btn">Войти</button>
+            <button class="btn-main btn-secondary" onclick="auth.signInAnonymously()">Гостевой вход</button>
+            <p style="margin-top:16px; font-size:13px; color:var(--text-secondary); cursor:pointer;" onclick="toggleAuthMode()">Создать аккаунт</p>
         </div>
     </div>
 
-    <!-- ========== MAIN APPLICATION ========== -->
+    <!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
     <div id="app">
-        <!-- Sidebar Navigation -->
+        <!-- САЙДБАР (для ПК) -->
         <aside class="sidebar">
-            <div style="padding: 35px 25px; border-bottom: 1px solid var(--border);">
-                <b style="font-family:'Orbitron'; color:var(--accent); font-size:18px;">MARK-42 PRO</b>
+            <div class="logo">🎮 GamerFan</div>
+            <div class="nav-item active" data-tab="games" onclick="switchTab('games')">
+                <i class="fas fa-gamepad"></i> Игры
             </div>
-            <div class="nav-item active" onclick="tab('games', this)">Библиотека</div>
-            <div class="nav-item" onclick="tab('social', this)" id="social-tab">Сообщество</div>
-            <div class="nav-item" onclick="tab('messenger', this)" id="messenger-tab">Мессенджер</div>
-            <div class="nav-item" onclick="tab('settings', this)">Настройки</div>
-            <div class="nav-item" onclick="tryAdminAccess(this)" style="color:var(--orange)">[ADMIN_ROOT]</div>
-            
-            <!-- User Status -->
-            <div style="margin-top: auto; padding: 25px; border-top: 1px solid var(--border);">
-                <div id="user-status" style="font-weight: bold; font-size: 11px;">Loading...</div>
-                <button onclick="auth.signOut()" style="background:none; border:none; color:red; cursor:pointer; font-size:10px; margin-top:10px;">ВЫЙТИ</button>
+            <div class="nav-item" data-tab="social" onclick="switchTab('social')">
+                <i class="fas fa-users"></i> Сообщество
+            </div>
+            <div class="nav-item" data-tab="messenger" onclick="switchTab('messenger')">
+                <i class="fas fa-comment"></i> Мессенджер
+            </div>
+            <div class="nav-item" data-tab="settings" onclick="switchTab('settings')">
+                <i class="fas fa-sliders-h"></i> Настройки
+            </div>
+            <div class="nav-item" data-tab="admin" id="adminNavBtn" onclick="switchTab('admin')" style="display: none;">
+                <i class="fas fa-crown"></i> Админ
+            </div>
+            <div class="user-section">
+                <div id="user-status" style="font-weight:600; margin-bottom:8px;">Загрузка...</div>
+                <button onclick="auth.signOut()" style="background:none; border:none; color:var(--text-secondary); cursor:pointer;">Выйти</button>
             </div>
         </aside>
 
-        <!-- Main Content Area -->
-        <main class="main">
-            <!-- GAMES SECTION -->
-            <div id="v-games" class="view active">
-                <h2 style="font-family:'Orbitron'; color:var(--accent)">> SOFTWARE_ARCHIVE</h2>
+        <!-- НИЖНЯЯ ПАНЕЛЬ (для телефона) -->
+        <div class="bottom-nav">
+            <div class="bottom-nav-item active" data-tab="games" onclick="switchTab('games')">
+                <i class="fas fa-gamepad"></i><span>Игры</span>
+            </div>
+            <div class="bottom-nav-item" data-tab="social" onclick="switchTab('social')">
+                <i class="fas fa-users"></i><span>Сообщество</span>
+            </div>
+            <div class="bottom-nav-item" data-tab="messenger" onclick="switchTab('messenger')">
+                <i class="fas fa-comment"></i><span>Чаты</span>
+            </div>
+            <div class="bottom-nav-item" data-tab="settings" onclick="switchTab('settings')">
+                <i class="fas fa-user"></i><span>Профиль</span>
+            </div>
+            <div class="bottom-nav-item" data-tab="admin" id="adminNavBtnBottom" onclick="switchTab('admin')" style="display: none;">
+                <i class="fas fa-crown"></i><span>Админ</span>
+            </div>
+        </div>
+
+        <main class="main-content">
+            <!-- ИГРЫ -->
+            <div id="tab-games" class="view active">
+                <h2 style="margin-bottom:20px;">🎮 Библиотека игр</h2>
                 <div class="section-tabs">
-                    <div class="section-tab active" onclick="filterGames('all', this)">ВСЕ</div>
-                    <div class="section-tab" onclick="filterGames('slime', this)">SLIME ИГРЫ</div>
-                    <div class="section-tab" onclick="filterGames('elberr_old', this)">ELBERR OS (СТАРЫЙ)</div>
-                    <div class="section-tab" onclick="filterGames('elberr_new', this)">ELBERR OS REMAKE</div>
+                    <div class="section-tab active" onclick="filterGames('all', this)">Все</div>
+                    <div class="section-tab" onclick="filterGames('slime', this)">Slime</div>
+                    <div class="section-tab" onclick="filterGames('elberr_old', this)">ELBERR OS</div>
+                    <div class="section-tab" onclick="filterGames('elberr_new', this)">Remake</div>
                 </div>
                 <div class="games-grid" id="games-container"></div>
             </div>
 
-            <!-- SOCIAL SECTION -->
-            <div id="v-social" class="view">
-                <h2 style="font-family:'Orbitron'; color:var(--accent)">> GF_NETWORK</h2>
-                <div class="id-box" style="border: 1px dashed var(--accent); padding:15px; margin-bottom:20px;">
-                    <small style="color:var(--accent)">IDENTITY:</small>
-                    <div id="chips-container"></div>
-                    <button onclick="addIdentity()" style="background:none; border:none; color:var(--accent); font-size:10px; cursor:pointer;">+ add personality</button>
+            <!-- СООБЩЕСТВО -->
+            <div id="tab-social" class="view">
+                <h2 style="margin-bottom:20px;">👥 Лента</h2>
+                <div class="settings-group">
+                    <div style="margin-bottom:12px;">
+                        <small>Личность:</small>
+                        <div id="chips-container" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;"></div>
+                        <button onclick="addIdentity()" style="background:none; border:none; color:var(--accent); margin-top:8px; cursor:pointer;">+ Добавить</button>
+                    </div>
+                    <textarea id="post-input" placeholder="Что нового?" rows="3"></textarea>
+                    <button class="btn-main" style="width:auto; padding:12px 24px;" onclick="sendPost()">Опубликовать</button>
                 </div>
-                <textarea id="post-input" placeholder="Введите сообщение..."></textarea>
-                <button class="btn-main" style="width:200px" onclick="sendPost()">ОТПРАВИТЬ</button>
-                <div id="feed" style="margin-top:30px"></div>
+                <div id="feed"></div>
             </div>
 
-            <!-- MESSENGER SECTION -->
-            <div id="v-messenger" class="view">
-                <h2 style="font-family:'Orbitron'; color:var(--accent)">> SECURE_MESSAGES</h2>
+            <!-- МЕССЕНДЖЕР -->
+            <div id="tab-messenger" class="view">
+                <h2 style="margin-bottom:20px;">💬 Сообщения</h2>
                 <div class="messenger-container">
                     <div class="contacts-list" id="contacts-list"></div>
                     <div class="chat-area">
                         <div class="messages-area" id="chat-messages"></div>
                         <div class="message-input-area">
-                            <input type="text" id="msg-input" placeholder="Напишите сообщение..." onkeydown="if(event.key==='Enter') sendMsg()" style="flex:1;">
-                            <button class="btn-main" style="width:100px;" onclick="sendMsg()">➤</button>
+                            <input type="text" id="msg-input" placeholder="Сообщение..." onkeydown="if(event.key==='Enter') sendMsg()">
+                            <button class="btn-main" style="width:auto; padding:12px 20px; margin:0;" onclick="sendMsg()">➤</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- SETTINGS SECTION -->
-            <div id="v-settings" class="view">
-                <h2 style="font-family:'Orbitron'; color:var(--accent)">> SYSTEM_CONFIG</h2>
-                
+            <!-- НАСТРОЙКИ -->
+            <div id="tab-settings" class="view">
+                <h2 style="margin-bottom:20px;">⚙️ Настройки</h2>
                 <div class="settings-group">
-                    <h3>ПРОФИЛЬ</h3>
-                    <input type="text" id="settings-nick" placeholder="НОВЫЙ НИКНЕЙМ">
-                    <button class="btn-main" style="width:200px;" onclick="updateNick()">СМЕНИТЬ НИК</button>
+                    <h3>Профиль</h3>
+                    <input type="text" id="settings-nick" placeholder="Новый ник">
+                    <button class="btn-main" onclick="updateNick()">Сменить ник</button>
                 </div>
-
                 <div class="settings-group">
-                    <h3>ИДЕНТИЧНОСТИ</h3>
+                    <h3>Личности</h3>
                     <div id="settings-identities" class="identity-list"></div>
-                    <button class="btn-main" style="width:200px;" onclick="addIdentity()">+ ДОБАВИТЬ</button>
                 </div>
-
                 <div class="settings-group">
-                    <h3>ОФОРМЛЕНИЕ</h3>
-                    <select id="theme-select" onchange="changeTheme(this.value)">
-                        <option value="default">КИБЕРПАНК (СИНИЙ)</option>
-                        <option value="orange">ОРАНЖЕВЫЙ</option>
-                        <option value="green">НЕОН</option>
-                        <option value="purple">ФИОЛЕТОВЫЙ</option>
-                    </select>
+                    <h3>Режим</h3>
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="setUIMode('desktop')" style="flex:1; padding: 12px; border-radius: 16px; border: 1px solid var(--border); background: var(--bg); cursor: pointer;">💻 Компьютер</button>
+                        <button onclick="setUIMode('mobile')" style="flex:1; padding: 12px; border-radius: 16px; border: 1px solid var(--border); background: var(--bg); cursor: pointer;">📱 Телефон</button>
+                    </div>
                 </div>
-
-                <div class="settings-group">
-                    <h3>УВЕДОМЛЕНИЯ</h3>
-                    <label style="display:flex; align-items:center; gap:10px;">
-                        <input type="checkbox" id="notify-messages" checked onchange="updateNotifySettings()"> Уведомления о сообщениях
-                    </label>
-                    <label style="display:flex; align-items:center; gap:10px;">
-                        <input type="checkbox" id="notify-posts" checked onchange="updateNotifySettings()"> Уведомления о постах
-                    </label>
-                </div>
-
-                <!-- DANGER ZONE -->
-                <div class="settings-group danger-zone">
-                    <h3>ОПАСНАЯ ЗОНА</h3>
-                    <button class="btn-main btn-danger" style="width:200px;" onclick="if(confirm('УДАЛИТЬ ВСЕ СООБЩЕНИЯ?\nЭто действие необратимо!')) clearAllData()">
-                        🗑️ ОЧИСТИТЬ ВСЕ СООБЩЕНИЯ
-                    </button>
+                <div class="settings-group" style="border-color: var(--accent);">
+                    <h3 style="color: var(--accent);">Опасная зона</h3>
+                    <button class="btn-main btn-secondary" style="border-color: var(--accent); color: var(--accent);" onclick="if(confirm('Удалить всё?')) clearAllData()">🗑️ Очистить всё</button>
                 </div>
             </div>
 
-            <!-- ADMIN SECTION -->
-            <div id="v-adm" class="view">
-                <h2 style="font-family:'Orbitron'; color:var(--orange)">> ROOT_ACCESS_GRANTED</h2>
+            <!-- АДМИН -->
+            <div id="tab-admin" class="view">
+                <h2 style="margin-bottom:20px;">👑 Админ панель</h2>
                 <div class="settings-group">
-                    <h3>АДМИН ПАНЕЛЬ</h3>
-                    <div style="margin-bottom:20px;">
-                        <textarea id="admin-post-input" placeholder="АДМИН СООБЩЕНИЕ (будет выделено оранжевым)"></textarea>
-                        <button class="btn-main" style="border-color:var(--orange); color:var(--orange);" onclick="sendAdminPost()">ОТПРАВИТЬ КАК АДМИН</button>
-                    </div>
+                    <h3>Сообщение как админ</h3>
+                    <textarea id="admin-post-input" rows="3"></textarea>
+                    <button class="btn-main" onclick="sendAdminPost()">Отправить</button>
+                </div>
+                <div class="settings-group">
+                    <h3>Пользователи</h3>
                     <div id="admin-users-list"></div>
-                    <hr style="border:0; border-top:1px solid var(--border); margin:20px 0;">
-                    <button class="btn-main" style="border-color:red; color:red;" onclick="if(confirm('WIPE FEED?')) db.ref('posts').remove()">ОЧИСТИТЬ ВСЕ ПОСТЫ</button>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- ========== GAME OVERLAY ========== -->
+    <!-- ОВЕРЛЕЙ ИГРЫ -->
     <div id="game-overlay">
         <div class="game-bar">
-            <div class="game-bar-left">
-                <b id="gtxt" style="font-family:'Orbitron'; color:var(--accent)">LOADING...</b>
-                <button class="fullscreen-btn" onclick="toggleFullscreen()" id="fullscreen-btn">⛶ ПОЛНЫЙ ЭКРАН</button>
-            </div>
-            <button onclick="closeGame()" style="background:none; border:1px solid red; color:red; padding:5px 15px; cursor:pointer;">CLOSE [X]</button>
+            <b id="game-title" style="color:var(--accent);">Игра</b>
+            <button onclick="closeGame()" style="background:none; border:none; color:red; font-size:20px; cursor:pointer;">✕</button>
         </div>
-        <iframe id="gframe" style="flex:1; border:none; background:#000;" title="Game Frame" allowfullscreen></iframe>
+        <iframe id="game-frame" allowfullscreen></iframe>
     </div>
 
-    <!-- ========== JAVASCRIPT ========== -->
     <script>
-        // ========== FIREBASE CONFIG ==========
+        // ========== FIREBASE ==========
         const firebaseConfig = {
             apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI",
             authDomain: "gamesfan-17986.firebaseapp.com",
             databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/",
             projectId: "gamesfan-17986"
         };
-        
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
 
-        // ========== GLOBAL VARIABLES ==========
+        // ========== ПЕРЕМЕННЫЕ ==========
         let isLogin = true;
-        let selectedNick = "";
-        let myData = { 
-            nick: "Гость", 
-            identities: ["Гость"],
-            theme: 'default',
-            notifySettings: { messages: true, posts: true }
-        };
-        let currentChat = "";
-        let unreadMessages = {};
-        let lastMessages = {};
-        let notificationSettings = { messages: true, posts: true };
-        let currentGameFilter = 'all';
+        let currentUserData = { nick: "Гость", identities: ["Гость"], uiMode: "desktop" };
+        let currentIdentity = "";
+        let currentChatId = "";
+        let currentGameFilter = "all";
+        let selectedRegisterMode = "desktop";
 
-        // ========== GAMES DATABASE ==========
-        // ПРАВИЛЬНЫЕ ЛОКАЛЬНЫЕ ПУТИ К ИГРАМ
-        const GAMES = [
-            // Slime игры
-            { n: "Slime Clicker 2D", p: "Slime_Clicker/index.html", i: "🧪", category: "slime" },
-            { n: "Slime Farm 2D", p: "Slime_Farm_2D/index.html", i: "🚜", category: "slime" },
-            { n: "Slime Farm 2", p: "Slime_Farm2/index.html", i: "🍄", category: "slime" },
-            
-            // ELBERR OS (Старый)
-            { n: "ELBERR OS: Ch 1", p: "ELBERR_OS/Chapter1/index.html", i: "💾", category: "elberr_old" },
-            { n: "ELBERR OS: Ch 2", p: "ELBERR_OS/Chapter2/index.html", i: "🔐", category: "elberr_old" },
-            { n: "ELBERR OS: Ch 3", p: "ELBERR_OS/Chapter3/index.html", i: "⚙️", category: "elberr_old" },
-            { n: "ELBERR OS: Ch 4", p: "ELBERR_OS/Chapter4/index.html", i: "💿", category: "elberr_old" },
-            { n: "ELBERR OS: Ch 5", p: "ELBERR_OS/Chapter5/index.html", i: "📡", category: "elberr_old" },
-            { n: "ELBERR OS: Ch 6", p: "ELBERR_OS/Chapter6/index.html", i: "🧠", category: "elberr_old" },
-            
-            // ELBERR OS Remake
-            { n: "ELBERR OS R: Ch 1", p: "ELBERR_OS_REMAKE/Chapter1/index.html", i: "🆕", category: "elberr_new" },
-            { n: "ELBERR OS R: Ch 2", p: "ELBERR_OS_REMAKE/Chapter2/index.html", i: "✨", category: "elberr_new" },
-            { n: "ELBERR OS R: Ch 3", p: "ELBERR_OS_REMAKE/Chapter3/index.html", i: "🚀", category: "elberr_new" },
-            { n: "ELBERR OS R: Ch 4", p: "ELBERR_OS_REMAKE/Chapter4/index.html", i: "💫", category: "elberr_new" },
-            { n: "ELBERR OS R: Ch 5", p: "ELBERR_OS_REMAKE/Chapter5/index.html", i: "⚡", category: "elberr_new" },
-            { n: "ELBERR OS R: Ch 6", p: "ELBERR_OS_REMAKE/Chapter6/index.html", i: "🔥", category: "elberr_new" }
+        // ========== ИГРЫ ==========
+        const GAMES_LIST = [
+            { name: "Slime Clicker 2D", path: "Slime_Clicker/index.html", icon: "🧪", category: "slime" },
+            { name: "Slime Farm 2D", path: "Slime_Farm_2D/index.html", icon: "🚜", category: "slime" },
+            { name: "Slime Farm 2", path: "Slime_Farm2/index.html", icon: "🍄", category: "slime" },
+            { name: "ELBERR OS: Ch 1", path: "ELBERR_OS/Chapter1/index.html", icon: "💾", category: "elberr_old" },
+            { name: "ELBERR OS: Ch 2", path: "ELBERR_OS/Chapter2/index.html", icon: "🔐", category: "elberr_old" },
+            { name: "ELBERR OS: Ch 3", path: "ELBERR_OS/Chapter3/index.html", icon: "⚙️", category: "elberr_old" },
+            { name: "ELBERR OS: Ch 4", path: "ELBERR_OS/Chapter4/index.html", icon: "💿", category: "elberr_old" },
+            { name: "ELBERR OS: Ch 5", path: "ELBERR_OS/Chapter5/index.html", icon: "📡", category: "elberr_old" },
+            { name: "ELBERR OS: Ch 6", path: "ELBERR_OS/Chapter6/index.html", icon: "🧠", category: "elberr_old" },
+            { name: "ELBERR OS R: Ch 1", path: "ELBERR_OS_REMAKE/Chapter1/index.html", icon: "🆕", category: "elberr_new" },
+            { name: "ELBERR OS R: Ch 2", path: "ELBERR_OS_REMAKE/Chapter2/index.html", icon: "✨", category: "elberr_new" },
+            { name: "ELBERR OS R: Ch 3", path: "ELBERR_OS_REMAKE/Chapter3/index.html", icon: "🚀", category: "elberr_new" },
+            { name: "ELBERR OS R: Ch 4", path: "ELBERR_OS_REMAKE/Chapter4/index.html", icon: "💫", category: "elberr_new" },
+            { name: "ELBERR OS R: Ch 5", path: "ELBERR_OS_REMAKE/Chapter5/index.html", icon: "⚡", category: "elberr_new" },
+            { name: "ELBERR OS R: Ch 6", path: "ELBERR_OS_REMAKE/Chapter6/index.html", icon: "🔥", category: "elberr_new" }
         ];
 
-        // ========== NOTIFICATION SYSTEM ==========
-        function showNotification(title, message, isAdmin = false) {
+        // ========== УВЕДОМЛЕНИЯ ==========
+        function showToast(title, message) {
             const container = document.getElementById('notification-container');
-            const notif = document.createElement('div');
-            notif.className = `notification ${isAdmin ? 'admin' : ''}`;
-            notif.innerHTML = `
-                <span class="close" onclick="this.parentElement.remove()">✕</span>
-                <div class="title">${title}</div>
-                <div style="margin-top:5px; font-size:12px;">${message}</div>
-            `;
-            container.appendChild(notif);
-            setTimeout(() => { 
-                if(notif.parentElement) notif.remove(); 
-            }, 5000);
+            const toast = document.createElement('div');
+            toast.className = 'notification';
+            toast.innerHTML = `<strong style="color:var(--accent);">${title}</strong><br>${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
         }
 
-        // ========== AUTH FUNCTIONS ==========
-        function toggleAuthMode() { 
-            isLogin = !isLogin; 
-            document.getElementById('reg-nick').classList.toggle('hidden', isLogin); 
-            document.getElementById('main-auth-btn').innerText = isLogin ? "ENTER_SYSTEM" : "CREATE_IDENTITY"; 
+        // ========== РЕЖИМ ==========
+        function setUIMode(mode) {
+            const body = document.body;
+            const toggleText = document.getElementById('modeToggleText');
+            const toggleIcon = document.querySelector('#modeToggleBtn i');
+            
+            if (mode === 'mobile') {
+                body.classList.add('mobile-mode');
+                if (toggleText) toggleText.innerHTML = '💻 Компьютер';
+                if (toggleIcon) toggleIcon.className = 'fas fa-desktop';
+                showToast("📱", "Телефонный режим");
+            } else {
+                body.classList.remove('mobile-mode');
+                if (toggleText) toggleText.innerHTML = '📱 Телефон';
+                if (toggleIcon) toggleIcon.className = 'fas fa-mobile-alt';
+                showToast("💻", "Компьютерный режим");
+            }
+            if (auth.currentUser) {
+                db.ref('users/' + auth.currentUser.uid).update({ uiMode: mode });
+            }
+        }
+
+        function toggleUIMode() {
+            const isMobile = document.body.classList.contains('mobile-mode');
+            setUIMode(isMobile ? 'desktop' : 'mobile');
+        }
+
+        function selectRegisterMode(mode, btn) {
+            selectedRegisterMode = mode;
+            document.querySelectorAll('.register-mode-btn').forEach(b => {
+                b.style.borderColor = 'var(--border)';
+                b.style.opacity = '0.6';
+            });
+            btn.style.borderColor = 'var(--accent)';
+            btn.style.opacity = '1';
+        }
+
+        // ========== АВТОРИЗАЦИЯ ==========
+        function toggleAuthMode() {
+            isLogin = !isLogin;
+            document.getElementById('reg-nick').classList.toggle('hidden', isLogin);
+            document.getElementById('main-auth-btn').innerText = isLogin ? "Войти" : "Создать";
         }
 
         async function processAuth() {
             const email = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-pass').value;
-            
-            if (!email || !password) {
-                showNotification('ERROR', 'Заполните все поля', true);
-                return;
-            }
-            
-            try { 
-                if(isLogin) {
-                    await auth.signInWithEmailAndPassword(email, password);
-                    showNotification('SYSTEM', 'Доступ разрешен');
-                } else { 
+            const pass = document.getElementById('reg-pass').value;
+            try {
+                if (isLogin) {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                } else {
                     const nick = document.getElementById('reg-nick').value;
-                    if (!nick) {
-                        showNotification('ERROR', 'Введите никнейм', true);
-                        return;
-                    }
-                    
-                    const result = await auth.createUserWithEmailAndPassword(email, password); 
-                    await db.ref('users/' + result.user.uid).set({
-                        nick: nick, 
-                        email: email, 
-                        identities: [nick],
-                        theme: 'default',
-                        notifySettings: { messages: true, posts: true }
+                    if (!nick) { showToast("Ошибка", "Введите ник!"); return; }
+                    const res = await auth.createUserWithEmailAndPassword(email, pass);
+                    await db.ref('users/' + res.user.uid).set({
+                        nick: nick, email: email, identities: [nick], uiMode: selectedRegisterMode
                     });
-                    showNotification('SYSTEM', 'Узел создан');
-                } 
-            } catch(err){
-                showNotification('ERROR', err.message, true);
-            }
+                    showToast("✅", "Аккаунт создан!");
+                }
+            } catch (err) { showToast("Ошибка", err.message); }
         }
 
-        // ========== AUTH STATE OBSERVER ==========
         auth.onAuthStateChanged(user => {
-            if(user) {
-                // User is signed in
+            if (user) {
                 document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('app').style.display = 'grid';
+                document.getElementById('app').style.display = 'block';
                 
-                // Load user data
-                db.ref('users/' + user.uid).on('value', snapshot => {
-                    myData = snapshot.val() || { 
-                        nick: "Гость", 
-                        identities: ["Гость"], 
-                        theme: 'default', 
-                        notifySettings: { messages: true, posts: true } 
-                    };
-                    
-                    document.getElementById('user-status').innerText = myData.nick;
-                    
-                    // Check if admin
-                    if(user.email === "vetrovlev1@gmail.com") {
-                        document.getElementById('user-status').className = 'nick-orange';
-                        myData.isAdmin = true;
-                    }
-                    
-                    renderIdentities();
+                // Показываем админ-кнопки
+                const isAdmin = user.email === "vetrovlev1@gmail.com";
+                document.getElementById('adminNavBtn').style.display = isAdmin ? 'flex' : 'none';
+                document.getElementById('adminNavBtnBottom').style.display = isAdmin ? 'flex' : 'none';
+                
+                db.ref('users/' + user.uid).on('value', snap => {
+                    currentUserData = snap.val() || { nick: "Гость", identities: ["Гость"], uiMode: "desktop" };
+                    document.getElementById('user-status').innerHTML = `<i class="fas fa-user"></i> ${currentUserData.nick}`;
+                    if (currentUserData.uiMode) setUIMode(currentUserData.uiMode);
+                    updateIdentitiesUI();
                     updateSettingsUI();
-                    
-                    // Apply theme
-                    if(myData.theme) changeTheme(myData.theme, true);
-                    if(myData.notifySettings) notificationSettings = myData.notifySettings;
-                    
-                    // Update checkboxes
-                    if (document.getElementById('notify-messages')) {
-                        document.getElementById('notify-messages').checked = notificationSettings.messages;
-                    }
-                    if (document.getElementById('notify-posts')) {
-                        document.getElementById('notify-posts').checked = notificationSettings.posts;
-                    }
                 });
-                
-                renderGames(); 
-                loadPosts(); 
+                renderGames();
+                loadPosts();
                 loadContacts();
-                loadMessagesListener();
-                
-                showNotification('WELCOME', `> ${myData.nick} подключен к сети`);
-            } else { 
-                // User is signed out
-                document.getElementById('auth-screen').style.display = 'flex'; 
-                document.getElementById('app').style.display = 'none'; 
+                showToast("👋", `Привет, ${currentUserData.nick}!`);
+            } else {
+                document.getElementById('auth-screen').style.display = 'flex';
+                document.getElementById('app').style.display = 'none';
             }
         });
 
-        // ========== GAMES SECTION ==========
-        function renderGames() {
-            const filtered = currentGameFilter === 'all' 
-                ? GAMES 
-                : GAMES.filter(g => g.category === currentGameFilter);
+        // ========== НАВИГАЦИЯ ==========
+        function switchTab(tabId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
             
-            const container = document.getElementById('games-container');
-            if (container) {
-                container.innerHTML = filtered.map(g => 
-                    `<div class="game-card" onclick="launch('${g.p}', '${g.n}')">
-                        <i>${g.i}</i>
-                        <b>${g.n}</b>
-                    </div>`
-                ).join('');
-            }
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.bottom-nav-item').forEach(btn => btn.classList.remove('active'));
+            
+            document.querySelector(`.nav-item[data-tab="${tabId}"]`)?.classList.add('active');
+            document.querySelector(`.bottom-nav-item[data-tab="${tabId}"]`)?.classList.add('active');
+            
+            if (tabId === 'admin') loadAdminPanel();
         }
 
-        function filterGames(category, element) {
-            currentGameFilter = category;
+        // ========== ИГРЫ ==========
+        function renderGames() {
+            const filtered = currentGameFilter === 'all' ? GAMES_LIST : GAMES_LIST.filter(g => g.category === currentGameFilter);
+            document.getElementById('games-container').innerHTML = filtered.map(g => `
+                <div class="game-card" onclick="launchGame('${g.path}', '${g.name}')">
+                    <i>${g.icon}</i><b>${g.name}</b>
+                </div>
+            `).join('');
+        }
+
+        function filterGames(cat, el) {
+            currentGameFilter = cat;
             document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
-            element.classList.add('active');
+            el.classList.add('active');
             renderGames();
         }
 
-        // ========== TAB NAVIGATION ==========
-        function tab(id, element) { 
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); 
-            document.getElementById('v-' + id).classList.add('active'); 
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); 
-            if(element) element.classList.add('active'); 
+        function launchGame(path, name) {
+            document.getElementById('game-overlay').style.display = 'flex';
+            document.getElementById('game-title').innerText = name;
+            document.getElementById('game-frame').src = path;
+            showToast("🎮", `Запуск: ${name}`);
         }
 
-        // ========== IDENTITY FUNCTIONS ==========
-        function renderIdentities() {
-            const ids = [...new Set([myData.nick, ...(myData.identities || [])])];
+        function closeGame() {
+            document.getElementById('game-overlay').style.display = 'none';
+            document.getElementById('game-frame').src = '';
+        }
+
+        // ========== ЛИЧНОСТИ ==========
+        function updateIdentitiesUI() {
+            const ids = [...new Set([currentUserData.nick, ...(currentUserData.identities || [])])];
             const container = document.getElementById('chips-container');
             if (container) {
-                container.innerHTML = ids.map(id => 
-                    `<div class="chip ${selectedNick === id ? 'active' : ''}" onclick="selectedNick='${id}';renderIdentities()">${id}</div>`
-                ).join('');
+                container.innerHTML = ids.map(id => `
+                    <div class="chip ${currentIdentity === id ? 'active' : ''}" onclick="selectIdentity('${id}')">${id}</div>
+                `).join('');
             }
-            if(!selectedNick) selectedNick = ids[0];
+            if (!currentIdentity) currentIdentity = ids[0];
         }
 
-        function addIdentity() { 
-            const newIdentity = prompt("Введите имя новой идентичности:"); 
-            if(newIdentity && newIdentity.trim()) { 
-                myData.identities = myData.identities || []; 
-                myData.identities.push(newIdentity.trim()); 
-                db.ref('users/' + auth.currentUser.uid + '/identities').set(myData.identities);
-                showNotification('SYSTEM', `Идентичность ${newIdentity} добавлена`);
-            } 
+        function selectIdentity(id) { currentIdentity = id; updateIdentitiesUI(); }
+
+        function addIdentity() {
+            const name = prompt("Новая личность:");
+            if (name) {
+                const ids = currentUserData.identities || [];
+                ids.push(name);
+                db.ref('users/' + auth.currentUser.uid).update({ identities: ids });
+                showToast("✅", `Добавлена личность: ${name}`);
+            }
         }
 
-        // ========== SOCIAL FUNCTIONS ==========
+        // ========== ПОСТЫ ==========
         function sendPost() {
-            const postText = document.getElementById('post-input').value; 
-            if(!postText.trim()) return;
-            
-            const isAdmin = auth.currentUser.email === "vetrovlev1@gmail.com";
-            
-            db.ref('posts').push({
-                author: selectedNick, 
-                text: postText, 
-                isAdmin: isAdmin,
-                time: Date.now()
-            });
-            
-            document.getElementById('post-input').value = "";
-            
-            if(isAdmin) {
-                showNotification('ADMIN', 'Сообщение отправлено как администратор', true);
-            }
+            const text = document.getElementById('post-input').value;
+            if (!text.trim()) return;
+            db.ref('posts').push({ author: currentIdentity, text: text, isAdmin: false, time: Date.now() })
+                .then(() => { document.getElementById('post-input').value = ''; showToast("✅", "Пост опубликован!"); });
         }
 
         function sendAdminPost() {
-            if(auth.currentUser.email !== "vetrovlev1@gmail.com") {
-                showNotification('ACCESS DENIED', 'Только для администратора', true);
-                return;
-            }
-            
-            const postText = document.getElementById('admin-post-input').value;
-            if(!postText.trim()) return;
-            
-            db.ref('posts').push({
-                author: myData.nick + " [ADMIN]", 
-                text: postText, 
-                isAdmin: true,
-                time: Date.now()
-            });
-            
-            document.getElementById('admin-post-input').value = "";
-            showNotification('ADMIN', 'Сообщение отправлено', true);
+            if (auth.currentUser.email !== "vetrovlev1@gmail.com") { showToast("⛔", "Только админ"); return; }
+            const text = document.getElementById('admin-post-input').value;
+            if (!text.trim()) return;
+            db.ref('posts').push({ author: currentUserData.nick + " [ADMIN]", text: text, isAdmin: true, time: Date.now() })
+                .then(() => { document.getElementById('admin-post-input').value = ''; showToast("✅", "Админ-пост отправлен"); });
         }
 
         function loadPosts() {
-            db.ref('posts').limitToLast(50).on('value', snapshot => {
-                const feed = document.getElementById('feed'); 
-                if (!feed) return;
-                
-                feed.innerHTML = "";
-                let posts = []; 
-                snapshot.forEach(child => posts.push(child.val()));
-                posts.reverse().forEach(post => { 
-                    feed.innerHTML += `
-                        <div class="post ${post.isAdmin ? 'admin-post' : ''}">
-                            <b class="${post.isAdmin ? 'nick-orange' : ''}">${post.author}:</b>
-                            <p>${post.text}</p>
-                        </div>
-                    `; 
+            db.ref('posts').limitToLast(50).on('value', snap => {
+                const feed = document.getElementById('feed');
+                feed.innerHTML = '';
+                const posts = [];
+                snap.forEach(p => posts.push(p.val()));
+                posts.reverse().forEach(p => {
+                    feed.innerHTML += `<div class="post ${p.isAdmin ? 'admin-post' : ''}"><div class="post-author"><i class="fas fa-user"></i> ${p.author}</div><p>${p.text}</p></div>`;
                 });
-                
-                // Notification for new post (except own)
-                if(posts.length > 0 && notificationSettings.posts) {
-                    const latest = posts[0];
-                    if(latest.author !== selectedNick) {
-                        showNotification('НОВЫЙ ПОСТ', `${latest.author}: ${latest.text.substring(0,50)}...`, latest.isAdmin);
-                    }
-                }
             });
         }
 
-        // ========== MESSENGER FUNCTIONS ==========
+        // ========== МЕССЕНДЖЕР ==========
         function loadContacts() {
-            db.ref('users').on('value', snapshot => {
-                const contactsList = document.getElementById('contacts-list'); 
-                if (!contactsList) return;
-                
-                contactsList.innerHTML = "";
-                
-                snapshot.forEach(user => {
-                    if(user.key !== auth.currentUser.uid) {
-                        const lastMsg = lastMessages[user.key] || 'Нет сообщений';
-                        const unread = unreadMessages[user.key] || 0;
-                        
-                        contactsList.innerHTML += `
-                            <div class="contact-item ${currentChat === user.key ? 'active' : ''}" onclick="startChat('${user.key}', '${user.val().nick}')">
-                                <b>${user.val().nick}</b>
-                                ${unread > 0 ? `<span class="badge">${unread}</span>` : ''}
-                                <div class="last-msg">${lastMsg}</div>
-                            </div>
-                        `;
+            db.ref('users').on('value', snap => {
+                const list = document.getElementById('contacts-list');
+                list.innerHTML = '';
+                snap.forEach(u => {
+                    if (u.key !== auth.currentUser.uid) {
+                        list.innerHTML += `<div class="contact-item" onclick="startChat('${u.key}', '${u.val().nick}')"><i class="fas fa-user"></i> ${u.val().nick}</div>`;
                     }
                 });
             });
         }
 
-        function startChat(uid, name) { 
-            currentChat = uid; 
-            unreadMessages[uid] = 0;
-            loadContacts();
+        function startChat(uid, name) {
+            currentChatId = uid;
             loadMessages();
-            document.getElementById('chat-messages').innerHTML = "Загрузка..."; 
+            document.querySelectorAll('.contact-item').forEach(c => c.classList.remove('active'));
+            event.target.closest('.contact-item').classList.add('active');
+            showToast("💬", `Чат с ${name}`);
         }
 
         function sendMsg() {
-            const msgText = document.getElementById('msg-input').value; 
-            if(!msgText.trim() || !currentChat) return;
-            
-            const chatID = [auth.currentUser.uid, currentChat].sort().join('_');
-            db.ref('chats/' + chatID).push({ 
-                sender: myData.nick, 
-                text: msgText, 
-                time: Date.now() 
-            });
-            
-            document.getElementById('msg-input').value = "";
+            const text = document.getElementById('msg-input').value;
+            if (!text.trim() || !currentChatId) return;
+            const chatId = [auth.currentUser.uid, currentChatId].sort().join('_');
+            db.ref('chats/' + chatId).push({ sender: currentUserData.nick, text: text, time: Date.now() })
+                .then(() => { document.getElementById('msg-input').value = ''; showToast("✅", "Сообщение отправлено"); });
         }
 
         function loadMessages() {
-            if(!currentChat) return;
-            
-            const chatID = [auth.currentUser.uid, currentChat].sort().join('_');
-            db.ref('chats/' + chatID).off(); // Remove old listener
-            db.ref('chats/' + chatID).on('value', snapshot => {
-                const messagesArea = document.getElementById('chat-messages'); 
-                if (!messagesArea) return;
-                
-                messagesArea.innerHTML = "";
-                let lastMsg = "";
-                
-                snapshot.forEach(message => {
-                    const isOwn = message.val().sender === myData.nick;
-                    messagesArea.innerHTML += `
-                        <div class="message ${isOwn ? 'own' : ''}">
-                            <b style="color:${isOwn ? 'var(--accent)' : '#fff'}">${message.val().sender}:</b>
-                            <div>${message.val().text}</div>
-                            <small style="color:var(--border); font-size:9px;">${new Date(message.val().time).toLocaleTimeString()}</small>
-                        </div>
-                    `;
-                    lastMsg = message.val().text;
+            if (!currentChatId) return;
+            const chatId = [auth.currentUser.uid, currentChatId].sort().join('_');
+            db.ref('chats/' + chatId).off();
+            db.ref('chats/' + chatId).on('value', snap => {
+                const box = document.getElementById('chat-messages');
+                box.innerHTML = '';
+                snap.forEach(m => {
+                    const isOwn = m.val().sender === currentUserData.nick;
+                    box.innerHTML += `<div class="message ${isOwn ? 'own' : ''}"><strong>${m.val().sender}:</strong> ${m.val().text}<br><small style="font-size:10px;">${new Date(m.val().time).toLocaleTimeString()}</small></div>`;
                 });
-                
-                lastMessages[currentChat] = lastMsg.substring(0,30) + (lastMsg.length > 30 ? '...' : '');
-                messagesArea.scrollTop = messagesArea.scrollHeight;
+                box.scrollTop = box.scrollHeight;
             });
         }
 
-        function loadMessagesListener() {
-            // Listen for all incoming messages for notifications
-            db.ref('chats').on('value', snapshot => {
-                snapshot.forEach(chat => {
-                    const participants = chat.key.split('_');
-                    if(participants.includes(auth.currentUser.uid)) {
-                        const otherUser = participants.find(p => p !== auth.currentUser.uid);
-                        chat.forEach(msg => {
-                            if(msg.val().sender !== myData.nick && notificationSettings.messages) {
-                                showNotification('НОВОЕ СООБЩЕНИЕ', `${msg.val().sender}: ${msg.val().text}`);
-                                if(otherUser && currentChat !== otherUser) {
-                                    unreadMessages[otherUser] = (unreadMessages[otherUser] || 0) + 1;
-                                    loadContacts();
-                                }
-                            }
-                        });
-                    }
-                });
-            });
-        }
-
-        // ========== SETTINGS FUNCTIONS ==========
+        // ========== НАСТРОЙКИ ==========
         function updateSettingsUI() {
-            const identitiesDiv = document.getElementById('settings-identities');
-            if(identitiesDiv) {
-                identitiesDiv.innerHTML = (myData.identities || []).map(id => 
-                    `<div class="chip">${id}</div>`
-                ).join('');
-            }
+            const div = document.getElementById('settings-identities');
+            if (div) div.innerHTML = (currentUserData.identities || []).map(id => `<div class="chip">${id}</div>`).join('');
         }
 
         function updateNick() {
             const newNick = document.getElementById('settings-nick').value;
-            if(!newNick) return;
-            
-            db.ref('users/' + auth.currentUser.uid).update({ nick: newNick });
-            document.getElementById('settings-nick').value = "";
-            showNotification('SYSTEM', 'Никнейм изменен');
-        }
-
-        function changeTheme(theme, skipSave = false) {
-            const root = document.documentElement;
-            switch(theme) {
-                case 'orange':
-                    root.style.setProperty('--accent', '#ff8c00');
-                    root.style.setProperty('--glow', '0 0 20px rgba(255,140,0,0.4)');
-                    break;
-                case 'green':
-                    root.style.setProperty('--accent', '#00ff88');
-                    root.style.setProperty('--glow', '0 0 20px rgba(0,255,136,0.4)');
-                    break;
-                case 'purple':
-                    root.style.setProperty('--accent', '#b300ff');
-                    root.style.setProperty('--glow', '0 0 20px rgba(179,0,255,0.4)');
-                    break;
-                default:
-                    root.style.setProperty('--accent', '#00d2ff');
-                    root.style.setProperty('--glow', '0 0 20px rgba(0,210,255,0.4)');
-            }
-            
-            if(!skipSave && auth.currentUser) {
-                db.ref('users/' + auth.currentUser.uid).update({ theme: theme });
+            if (newNick) {
+                db.ref('users/' + auth.currentUser.uid).update({ nick: newNick });
+                document.getElementById('settings-nick').value = '';
+                showToast("✅", "Ник изменён!");
             }
         }
 
-        function updateNotifySettings() {
-            notificationSettings = {
-                messages: document.getElementById('notify-messages').checked,
-                posts: document.getElementById('notify-posts').checked
-            };
-            db.ref('users/' + auth.currentUser.uid).update({ notifySettings: notificationSettings });
-        }
-
-        // ========== ADMIN FUNCTIONS ==========
-        function tryAdminAccess(element) {
-            if(auth.currentUser.email === "vetrovlev1@gmail.com") {
-                tab('adm', element); 
-                loadAdminPanel();
-                showNotification('ADMIN ACCESS', 'Добро пожаловать, администратор', true);
-            } else {
-                const pass = prompt("ROOT_ACCESS_PASSWORD:");
-                if (pass === "12.02.2014") { 
-                    tab('adm', element); 
-                    loadAdminPanel(); 
-                } else { 
-                    showNotification('ACCESS DENIED', 'Неверный пароль', true);
-                }
-            }
-        }
-
+        // ========== АДМИН ==========
         function loadAdminPanel() {
-            db.ref('users').on('value', snapshot => {
+            db.ref('users').on('value', snap => {
                 const list = document.getElementById('admin-users-list');
-                if (!list) return;
-                
-                list.innerHTML = "<h4>УПРАВЛЕНИЕ УЗЛАМИ:</h4><br>";
-                snapshot.forEach(user => {
-                    list.innerHTML += `
-                        <div class="user-row">
-                            <span><b>${user.val().nick}</b> (${user.val().email || 'Guest'})</span>
-                            <button onclick="db.ref('users/${user.key}').remove(); showNotification('ADMIN', 'Пользователь удален', true)" 
-                                    style="color:red; background:none; border:1px solid red; cursor:pointer; padding:5px;">
-                                [DELETE]
-                            </button>
-                        </div>
-                    `;
+                list.innerHTML = '';
+                snap.forEach(u => {
+                    list.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--border);">
+                        <span><i class="fas fa-user"></i> ${u.val().nick}</span>
+                        <button onclick="db.ref('users/${u.key}').remove()" style="background:none; border:1px solid red; color:red; border-radius:8px; padding:6px 12px; cursor:pointer;">Удалить</button>
+                    </div>`;
                 });
             });
         }
 
-        // ========== DATA CLEAR FUNCTIONS ==========
         function clearAllData() {
-            if(auth.currentUser.email !== "vetrovlev1@gmail.com") {
-                showNotification('ACCESS DENIED', 'Только для админа', true);
-                return;
-            }
-            
-            db.ref('posts').remove()
-                .then(() => showNotification('СИСТЕМА', 'Все посты удалены', true))
-                .catch(err => showNotification('ОШИБКА', err.message, true));
-            
-            db.ref('chats').remove()
-                .then(() => showNotification('СИСТЕМА', 'Все чаты удалены', true))
-                .catch(err => showNotification('ОШИБКА', err.message, true));
-        }
-
-        // ========== GAME LAUNCHER ==========
-        function launch(gamePath, gameName) { 
-            document.getElementById('game-overlay').style.display = 'flex'; 
-            document.getElementById('gtxt').innerText = "> " + gameName; 
-            document.getElementById('gframe').src = gamePath; 
-            showNotification('LAUNCHER', `Запуск: ${gameName}`);
-        }
-        
-        function closeGame() { 
-            document.getElementById('game-overlay').style.display = 'none'; 
-            document.getElementById('gframe').src = ""; 
-        }
-
-        // ========== FULLSCREEN FUNCTION ==========
-        function toggleFullscreen() {
-            const iframe = document.getElementById('gframe');
-            const btn = document.getElementById('fullscreen-btn');
-            
-            if (!document.fullscreenElement) {
-                // Enter fullscreen
-                if (iframe.requestFullscreen) {
-                    iframe.requestFullscreen();
-                } else if (iframe.webkitRequestFullscreen) { /* Safari */
-                    iframe.webkitRequestFullscreen();
-                } else if (iframe.msRequestFullscreen) { /* IE/Edge */
-                    iframe.msRequestFullscreen();
-                }
-                btn.textContent = '✕ ВЫЙТИ ИЗ ПОЛНОГО ЭКРАНА';
-            } else {
-                // Exit fullscreen
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) { /* Safari */
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) { /* IE/Edge */
-                    document.msExitFullscreen();
-                }
-                btn.textContent = '⛶ ПОЛНЫЙ ЭКРАН';
-            }
-        }
-
-        // Listen for fullscreen change events
-        document.addEventListener('fullscreenchange', updateFullscreenButton);
-        document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
-        document.addEventListener('msfullscreenchange', updateFullscreenButton);
-
-        function updateFullscreenButton() {
-            const btn = document.getElementById('fullscreen-btn');
-            if (btn) {
-                btn.textContent = document.fullscreenElement ? '✕ ВЫЙТИ ИЗ ПОЛНОГО ЭКРАНА' : '⛶ ПОЛНЫЙ ЭКРАН';
-            }
+            if (auth.currentUser.email !== "vetrovlev1@gmail.com") { showToast("⛔", "Только админ"); return; }
+            db.ref('posts').remove();
+            db.ref('chats').remove();
+            showToast("🗑️", "Все данные очищены");
         }
     </script>
 </body>
