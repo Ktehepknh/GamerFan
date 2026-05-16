@@ -8,77 +8,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-color: #0f0f13;
-            --card-bg: #1a1a24;
-            --text-main: #e0e0e0;
-            --text-sec: #a0a0b0;
-            --accent: #ff0055;
-            --accent-glow: rgba(255, 0, 85, 0.4);
-            --primary: #00d4ff;
-            --border: #2a2a35;
-            --success: #00ff88;
-            --danger: #ff3333;
+            --bg-color: #0f0f13; --card-bg: #1a1a24; --text-main: #e0e0e0; --text-sec: #a0a0b0;
+            --accent: #ff0055; --accent-glow: rgba(255, 0, 85, 0.4); --primary: #00d4ff;
+            --border: #2a2a35; --success: #00ff88; --danger: #ff3333;
         }
         [data-theme="dark"] { --bg-color: #0a0a0a; --card-bg: #141414; --text-main: #fff; --text-sec: #ccc; --accent: #ff4757; --primary: #fff; --border: #333; }
         [data-theme="black"] { --bg-color: #000; --card-bg: #0a0a0a; --text-main: #fff; --text-sec: #aaa; --accent: #ff4757; --primary: #fff; --border: #222; }
         [data-theme="light"] { --bg-color: #f5f5f5; --card-bg: #fff; --text-main: #1a1a1a; --text-sec: #555; --accent: #ff4757; --primary: #1a1a1a; --border: #ddd; }
         
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-main);
-            transition: 0.3s;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+        body { font-family: 'Roboto', sans-serif; background: var(--bg-color); color: var(--text-main); transition: 0.3s; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-color); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-        /* Login */
-        #login-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #1a1a24 0%, #000 100%);
-            z-index: 9999;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .login-box {
-            background: rgba(26,26,36,0.95);
-            padding: 40px; border-radius: 15px;
-            border: 1px solid var(--accent);
-            box-shadow: 0 0 20px var(--accent-glow);
-            text-align: center; width: 100%; max-width: 400px;
-        }
-        .login-input {
-            width: 100%; padding: 12px; margin: 10px 0;
-            background: rgba(0,0,0,0.3); border: 1px solid var(--border);
-            color: var(--text-main); border-radius: 5px; font-size: 16px;
-        }
-        .btn {
-            background: transparent; border: 2px solid var(--accent);
-            color: var(--accent); padding: 10px 20px;
-            font-weight: bold; cursor: pointer; text-transform: uppercase;
-            border-radius: 5px; width: 100%; margin-top: 10px;
-            font-family: 'Orbitron', sans-serif; transition: 0.3s;
-        }
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a1a24 0%, #000 100%); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: rgba(26,26,36,0.95); padding: 40px; border-radius: 15px; border: 1px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow); text-align: center; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
+        .login-input { width: 100%; padding: 12px; margin: 8px 0; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text-main); border-radius: 5px; font-size: 16px; }
+        .login-input select { width: 100%; padding: 12px; margin: 8px 0; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text-main); border-radius: 5px; font-size: 16px; }
+        .btn { background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 10px 20px; font-weight: bold; cursor: pointer; text-transform: uppercase; border-radius: 5px; width: 100%; margin-top: 10px; font-family: 'Orbitron', sans-serif; transition: 0.3s; }
         .btn:hover { background: var(--accent); color: #fff; box-shadow: 0 0 15px var(--accent-glow); }
         .btn-sm { width: auto; padding: 5px 15px; font-size: 12px; }
         .btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
         .btn-danger:hover { opacity: 0.8; }
+        .auth-link { color: var(--accent); cursor: pointer; text-decoration: none; font-size: 14px; }
+        .auth-link:hover { text-decoration: underline; }
 
-        /* App */
         #app { display: none; height: 100%; flex-direction: column; }
         #app.visible { display: flex; }
 
-        header {
-            height: 55px; background: var(--card-bg); border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 15px; z-index: 100;
-        }
+        header { height: 55px; background: var(--card-bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; z-index: 100; }
         .logo { font-size: 22px; color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); cursor: pointer; }
         .nav-links { display: flex; gap: 15px; }
         .nav-item { cursor: pointer; color: var(--text-sec); font-size: 14px; transition: 0.3s; display: flex; align-items: center; gap: 5px; }
@@ -143,6 +103,10 @@
         #game-frame { flex: 1; border: none; }
         #game-header { height: 45px; background: #111; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; color: #fff; }
 
+        .avatar-actions { position: absolute; top: 100%; left: 0; background: var(--card-bg); border: 1px solid var(--border); border-radius: 5px; padding: 5px; display: none; z-index: 10; }
+        .avatar-actions button { display: block; width: 100%; background: none; border: none; color: var(--text-main); padding: 8px 15px; cursor: pointer; text-align: left; font-size: 13px; }
+        .avatar-actions button:hover { background: rgba(255,255,255,0.1); }
+
         .partner-block { text-align: center; padding: 15px; margin-top: 15px; border-top: 1px solid var(--border); }
         .partner-link { color: var(--primary); text-decoration: none; font-size: 14px; }
         .partner-link:hover { text-decoration: underline; }
@@ -157,17 +121,8 @@
 
     <!-- LOGIN SCREEN -->
     <div id="login-screen">
-        <div class="login-box">
-            <h1 class="logo" style="margin-bottom:20px;">GAMER<span style="color:#fff">FAN</span></h1>
-            <p style="color:var(--text-sec); margin-bottom:20px;">Введите никнейм чтобы войти</p>
-            <input type="text" id="nick-input" class="login-input" placeholder="Твой никнейм" maxlength="20">
-            <input type="text" id="avatar-input" class="login-input" placeholder="Ссылка на аватар (необязательно)">
-            <button id="login-btn" class="btn">Войти</button>
-            <p style="margin-top:10px; font-size:11px; color:var(--text-sec);">
-                <a href="#" onclick="document.getElementById('avatar-upload-btn').click()" style="color:var(--accent);">Загрузить аватар через ImgBB</a>
-                <input type="file" id="avatar-upload-btn" accept="image/*" style="display:none;" onchange="uploadAvatar(this)">
-            </p>
-            <p id="upload-status" style="font-size:11px; color:var(--primary);"></p>
+        <div class="login-box" id="auth-box">
+            <!-- Dynamic content -->
         </div>
     </div>
 
@@ -180,7 +135,8 @@
                 <div class="nav-item" data-tab="games"><i class="fas fa-gamepad"></i> <span>Игры</span></div>
                 <div class="nav-item" data-tab="events"><i class="fas fa-calendar"></i> <span>Ивенты</span></div>
                 <div class="nav-item" data-tab="chat"><i class="fas fa-comments"></i> <span>Чат</span></div>
-                <div class="nav-item" data-tab="settings"><i class="fas fa-cog"></i> <span>Темы</span></div>
+                <div class="nav-item" data-tab="settings"><i class="fas fa-cog"></i> <span>Настройки</span></div>
+                <div class="nav-item hidden" id="adminNavBtn" data-tab="admin"><i class="fas fa-shield-alt"></i> <span>Админ</span></div>
             </nav>
             <div class="user-mini" onclick="switchTab('settings')">
                 <img id="header-avatar" class="mini-avatar" src="">
@@ -237,27 +193,24 @@
             <section id="settings" class="section">
                 <div class="card">
                     <h3>👤 Мой профиль</h3>
-                    <div style="display:flex; gap:15px; align-items:center; margin:15px 0;">
-                        <img id="settings-avatar" style="width:60px; height:60px; border-radius:50%; object-fit:cover; background:#333;">
-                        <div>
-                            <strong id="settings-nick-display"></strong>
-                            <p style="font-size:12px; color:var(--text-sec);">Твой никнейм</p>
+                    <div style="position:relative; display:inline-block;">
+                        <img id="settings-avatar" style="width:80px; height:80px; border-radius:50%; object-fit:cover; background:#333; cursor:pointer;" onclick="toggleAvatarMenu()">
+                        <div id="avatar-menu" class="avatar-actions">
+                            <button onclick="viewAvatar()">🔍 Посмотреть фото</button>
+                            <button onclick="document.getElementById('settings-upload').click()">📤 Обновить фото</button>
+                            <button onclick="deleteAvatar()">🗑️ Удалить фото</button>
                         </div>
                     </div>
-                    <label>Сменить ник:</label>
+                    <input type="file" id="settings-upload" accept="image/*" style="display:none;" onchange="uploadSettingsAvatar(this)">
+                    <p style="margin-top:10px;"><strong id="settings-nick-display"></strong></p>
+                    <p style="font-size:12px; color:var(--text-sec);">Email: <span id="settings-email"></span></p>
+                    <p style="font-size:12px; color:var(--text-sec);">Имя: <span id="settings-name"></span></p>
+                    
+                    <label style="margin-top:15px; display:block;">Сменить ник:</label>
                     <div style="display:flex; gap:10px; margin:5px 0;">
                         <input type="text" id="new-nick" class="login-input" style="margin:0;" placeholder="Новый ник">
                         <button class="btn btn-sm" onclick="changeNick()">OK</button>
                     </div>
-                    <label>Сменить аватар (ссылка):</label>
-                    <div style="display:flex; gap:10px; margin:5px 0;">
-                        <input type="text" id="new-avatar" class="login-input" style="margin:0;" placeholder="URL картинки">
-                        <button class="btn btn-sm" onclick="changeAvatar()">OK</button>
-                    </div>
-                    <p style="margin-top:10px; font-size:12px;">
-                        <a href="#" onclick="document.getElementById('settings-upload').click()" style="color:var(--accent);">Загрузить через ImgBB</a>
-                        <input type="file" id="settings-upload" accept="image/*" style="display:none;" onchange="uploadSettingsAvatar(this)">
-                    </p>
                 </div>
                 <div class="card">
                     <h3>🎨 Тема</h3>
@@ -268,7 +221,16 @@
                         <button class="btn btn-sm" onclick="setTheme('light')" style="width:100%;">☀️ Светлая</button>
                     </div>
                 </div>
-                <button class="btn btn-danger" onclick="logout()">🚪 Выйти (сменить ник)</button>
+                <button class="btn btn-danger" onclick="logout()">🚪 Выйти</button>
+            </section>
+
+            <!-- ADMIN -->
+            <section id="admin" class="section">
+                <h2>👑 Панель администратора</h2>
+                <div class="card">
+                    <h3>Пользователи</h3>
+                    <div id="admin-users-list"></div>
+                </div>
             </section>
         </main>
 
@@ -286,10 +248,7 @@
             <span class="close-modal" onclick="closePostModal()">&times;</span>
             <h3>Новый пост</h3>
             <textarea id="post-text" class="login-input" rows="4" placeholder="Текст поста..." style="margin-top:10px;"></textarea>
-            <label style="font-size:12px; color:var(--text-sec); margin-top:10px; display:block;">
-                Картинка (URL):
-                <input type="text" id="post-image" class="login-input" style="margin-top:5px;" placeholder="https://...">
-            </label>
+            <input type="text" id="post-image" class="login-input" placeholder="Ссылка на картинку (необязательно)">
             <button class="btn" onclick="createPost()" style="margin-top:15px;">Опубликовать</button>
         </div>
     </div>
@@ -303,6 +262,14 @@
         <iframe id="game-frame" src=""></iframe>
     </div>
 
+    <!-- AVATAR VIEW MODAL -->
+    <div id="avatar-view-modal" class="modal-overlay">
+        <div class="modal-content" style="text-align:center;">
+            <span class="close-modal" onclick="document.getElementById('avatar-view-modal').style.display='none'">&times;</span>
+            <img id="avatar-view-img" style="max-width:100%; max-height:70vh; border-radius:10px;">
+        </div>
+    </div>
+
     <!-- TOAST -->
     <div class="toast-container" id="toast-container"></div>
 
@@ -310,32 +277,33 @@
         // ============ КОНФИГ ============
         const API_URL = 'https://gamerfan.vetrovlev1.workers.dev/api';
         const IMGBB_KEY = 'b80b9e18e607bfe48e6c03a19289c465';
+        const BASE_PATH = '/GamerFan';
 
         const GAMES = [
-            {name:"Slime Clicker 2D",path:"Slime_Clicker/index.html",icon:"🧪",cat:"slime"},
-            {name:"Slime Farm 2D",path:"Slime_Farm_2D/index.html",icon:"🚜",cat:"slime"},
-            {name:"Slime Farm 2",path:"Slime_Farm2/index.html",icon:"🍄",cat:"slime"},
-            {name:"ELBERR OS: Ch 1",path:"ELBERR_OS/Chapter1/index.html",icon:"💾",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 2",path:"ELBERR_OS/Chapter2/index.html",icon:"🔐",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 3",path:"ELBERR_OS/Chapter3/index.html",icon:"⚙️",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 4",path:"ELBERR_OS/Chapter4/index.html",icon:"💿",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 5",path:"ELBERR_OS/Chapter5/index.html",icon:"📡",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 6",path:"ELBERR_OS/Chapter6/index.html",icon:"🧠",cat:"elberr_old"},
-            {name:"ELBERR OS R: Ch 1",path:"ELBERR_OS_REMAKE/Chapter1/index.html",icon:"🆕",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 2",path:"ELBERR_OS_REMAKE/Chapter2/index.html",icon:"✨",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 3",path:"ELBERR_OS_REMAKE/Chapter3/index.html",icon:"🚀",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 4",path:"ELBERR_OS_REMAKE/Chapter4/index.html",icon:"💫",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 5",path:"ELBERR_OS_REMAKE/Chapter5/index.html",icon:"⚡",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 6",path:"ELBERR_OS_REMAKE/Chapter6/index.html",icon:"🔥",cat:"elberr_new"},
-            {name:"RTAP DLC",path:"ELBERR_OS_REMAKE/RTAP/index.html",icon:"🦾",cat:"dlc"},
-            {name:"TAD DLC",path:"ELBERR_OS_REMAKE/TAD/index.html",icon:"🔥",cat:"dlc"},
-            {name:"TPD DLC",path:"ELBERR_OS_REMAKE/TPD/index.html",icon:"🔥",cat:"dlc"},
-            {name:"Neon Bird",path:"daardos/neon_bird/index.html",icon:"🐦",cat:"daardos"}
+            {name:"Slime Clicker 2D",path:BASE_PATH+"/Slime_Clicker/index.html",icon:"🧪",cat:"slime"},
+            {name:"Slime Farm 2D",path:BASE_PATH+"/Slime_Farm_2D/index.html",icon:"🚜",cat:"slime"},
+            {name:"Slime Farm 2",path:BASE_PATH+"/Slime_Farm2/index.html",icon:"🍄",cat:"slime"},
+            {name:"ELBERR OS: Ch 1",path:BASE_PATH+"/ELBERR_OS/Chapter1/index.html",icon:"💾",cat:"elberr_old"},
+            {name:"ELBERR OS: Ch 2",path:BASE_PATH+"/ELBERR_OS/Chapter2/index.html",icon:"🔐",cat:"elberr_old"},
+            {name:"ELBERR OS: Ch 3",path:BASE_PATH+"/ELBERR_OS/Chapter3/index.html",icon:"⚙️",cat:"elberr_old"},
+            {name:"ELBERR OS: Ch 4",path:BASE_PATH+"/ELBERR_OS/Chapter4/index.html",icon:"💿",cat:"elberr_old"},
+            {name:"ELBERR OS: Ch 5",path:BASE_PATH+"/ELBERR_OS/Chapter5/index.html",icon:"📡",cat:"elberr_old"},
+            {name:"ELBERR OS: Ch 6",path:BASE_PATH+"/ELBERR_OS/Chapter6/index.html",icon:"🧠",cat:"elberr_old"},
+            {name:"ELBERR OS R: Ch 1",path:BASE_PATH+"/ELBERR_OS_REMAKE/Chapter1/index.html",icon:"🆕",cat:"elberr_new"},
+            {name:"ELBERR OS R: Ch 2",path:BASE_PATH+"/ELBERR_OS_REMAKE/Chapter2/index.html",icon:"✨",cat:"elberr_new"},
+            {name:"ELBERR OS R: Ch 3",path:BASE_PATH+"/ELBERR_OS_REMAKE/Chapter3/index.html",icon:"🚀",cat:"elberr_new"},
+            {name:"ELBERR OS R: Ch 4",path:BASE_PATH+"/ELBERR_OS_REMAKE/Chapter4/index.html",icon:"💫",cat:"elberr_new"},
+            {name:"ELBERR OS R: Ch 5",path:BASE_PATH+"/ELBERR_OS_REMAKE/Chapter5/index.html",icon:"⚡",cat:"elberr_new"},
+            {name:"ELBERR OS R: Ch 6",path:BASE_PATH+"/ELBERR_OS_REMAKE/Chapter6/index.html",icon:"🔥",cat:"elberr_new"},
+            {name:"RTAP DLC",path:BASE_PATH+"/ELBERR_OS_REMAKE/RTAP/index.html",icon:"🦾",cat:"dlc"},
+            {name:"TAD DLC",path:BASE_PATH+"/ELBERR_OS_REMAKE/TAD/index.html",icon:"🔥",cat:"dlc"},
+            {name:"TPD DLC",path:BASE_PATH+"/ELBERR_OS_REMAKE/TPD/index.html",icon:"🔥",cat:"dlc"},
+            {name:"Neon Bird",path:BASE_PATH+"/daardos/neon_bird/index.html",icon:"🐦",cat:"daardos"}
         ];
 
         // ============ СОСТОЯНИЕ ============
-        let myNick = '';
-        let myAvatar = '';
+        let token = '';
+        let currentUser = null;
 
         // ============ УТИЛИТЫ ============
         function $(id) { return document.getElementById(id); }
@@ -348,14 +316,13 @@
         }
         function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-        // ============ ХРАНИЛИЩЕ ============
-        function saveProfile() {
-            localStorage.setItem('gamerfan_nick', myNick);
-            localStorage.setItem('gamerfan_avatar', myAvatar);
-        }
-        function loadProfile() {
-            myNick = localStorage.getItem('gamerfan_nick') || '';
-            myAvatar = localStorage.getItem('gamerfan_avatar') || '';
+        // ============ API ============
+        async function api(path, method = 'GET', body = null) {
+            const opts = { method, headers: { 'Content-Type': 'application/json' } };
+            if (token) opts.headers['Authorization'] = `Bearer ${token}`;
+            if (body) opts.body = JSON.stringify(body);
+            const res = await fetch(API_URL + path, opts);
+            return res.json();
         }
 
         // ============ АВАТАР ImgBB ============
@@ -367,82 +334,152 @@
             return data.success ? data.data.url : null;
         }
 
-        window.uploadAvatar = async function(input) {
-            const file = input.files[0];
-            if (!file) return;
-            $('upload-status').textContent = 'Загрузка...';
-            const url = await uploadToImgBB(file);
-            if (url) {
-                $('avatar-input').value = url;
-                $('upload-status').textContent = '✅ Готово!';
-            } else {
-                $('upload-status').textContent = '❌ Ошибка';
-            }
-        };
-
         window.uploadSettingsAvatar = async function(input) {
             const file = input.files[0];
             if (!file) return;
             const url = await uploadToImgBB(file);
             if (url) {
-                myAvatar = url;
-                saveProfile();
+                await api('/profile', 'PUT', { nickname: currentUser.nickname, avatar: url, theme: currentUser.theme });
+                currentUser.avatar = url;
                 updateAllAvatars();
                 toast('✅ Аватар обновлён!');
             }
         };
 
+        function toggleAvatarMenu() {
+            const menu = $('avatar-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function viewAvatar() {
+            if (currentUser.avatar) {
+                $('avatar-view-img').src = currentUser.avatar;
+                $('avatar-view-modal').style.display = 'flex';
+            } else {
+                toast('Нет аватара', true);
+            }
+        }
+
+        async function deleteAvatar() {
+            if (!confirm('Удалить аватар?')) return;
+            await api('/profile', 'PUT', { nickname: currentUser.nickname, avatar: null, theme: currentUser.theme });
+            currentUser.avatar = '';
+            updateAllAvatars();
+            toast('🗑️ Аватар удалён');
+        }
+
         function updateAllAvatars() {
-            const av = myAvatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23555%22%3E%3Cpath d=%22M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z%22/%3E%3C/svg%3E';
-            $('header-avatar').src = av;
-            $('feed-avatar').src = av;
-            $('settings-avatar').src = av;
+            const av = currentUser?.avatar || '';
+            const def = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23555%22%3E%3Cpath d=%22M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z%22/%3E%3C/svg%3E';
+            const src = av || def;
+            $('header-avatar').src = src;
+            $('feed-avatar').src = src;
+            $('settings-avatar').src = src;
+            $('settings-email').textContent = currentUser?.email || '';
+            $('settings-name').textContent = currentUser?.name || '';
+            $('settings-nick-display').textContent = currentUser?.nickname || '';
+            $('header-nick').textContent = currentUser?.nickname || '';
         }
 
-        // ============ API ЗАПРОСЫ ============
-        async function api(path, method = 'GET', body = null) {
-            const opts = { method, headers: { 'Content-Type': 'application/json' } };
-            if (body) opts.body = JSON.stringify(body);
-            const res = await fetch(API_URL + path, opts);
-            return res.json();
+        // ============ АВТОРИЗАЦИЯ ============
+        function showAuthForm(mode) {
+            const box = $('auth-box');
+            if (mode === 'login') {
+                box.innerHTML = `
+                    <h1 class="logo" style="margin-bottom:20px;">GAMER<span style="color:#fff">FAN</span></h1>
+                    <h3 style="color:var(--primary); margin-bottom:15px;">Вход</h3>
+                    <input type="email" id="auth-email" class="login-input" placeholder="Email">
+                    <input type="password" id="auth-pass" class="login-input" placeholder="Пароль">
+                    <button class="btn" onclick="login()">Войти</button>
+                    <p style="margin-top:15px; font-size:14px; color:var(--text-sec);">
+                        Нет аккаунта? <a class="auth-link" onclick="showAuthForm('register')">Зарегистрироваться</a>
+                    </p>
+                `;
+            } else {
+                box.innerHTML = `
+                    <h1 class="logo" style="margin-bottom:20px;">GAMER<span style="color:#fff">FAN</span></h1>
+                    <h3 style="color:var(--primary); margin-bottom:15px;">Регистрация</h3>
+                    <input type="email" id="reg-email" class="login-input" placeholder="Email">
+                    <input type="text" id="reg-name" class="login-input" placeholder="Имя">
+                    <input type="text" id="reg-nick" class="login-input" placeholder="Никнейм">
+                    <input type="password" id="reg-pass" class="login-input" placeholder="Пароль">
+                    <div style="display:flex; gap:5px;">
+                        <input type="number" id="reg-day" class="login-input" placeholder="День" min="1" max="31">
+                        <input type="number" id="reg-month" class="login-input" placeholder="Месяц" min="1" max="12">
+                        <input type="number" id="reg-year" class="login-input" placeholder="Год" min="1900" max="2020">
+                    </div>
+                    <button class="btn" onclick="register()">Зарегистрироваться</button>
+                    <p style="margin-top:15px; font-size:14px; color:var(--text-sec);">
+                        Есть аккаунт? <a class="auth-link" onclick="showAuthForm('login')">Войти</a>
+                    </p>
+                `;
+            }
         }
 
-        async function apiAdmin(path, method = 'GET', body = null) {
-            const pwd = sessionStorage.getItem('admin_pwd') || '';
-            const opts = { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${pwd}` } };
-            if (body) opts.body = JSON.stringify(body);
-            const res = await fetch(API_URL + path, opts);
-            return res.json();
-        }
+        async function register() {
+            const email = $('reg-email').value.trim();
+            const name = $('reg-name').value.trim();
+            const nickname = $('reg-nick').value.trim();
+            const password = $('reg-pass').value;
+            const birthDay = parseInt($('reg-day').value);
+            const birthMonth = parseInt($('reg-month').value);
+            const birthYear = parseInt($('reg-year').value);
 
-        // ============ ВХОД ============
-        function login() {
-            const nick = $('nick-input').value.trim();
-            if (!nick) return toast('Введите ник!', true);
+            if (!email || !name || !nickname || !password || !birthDay || !birthMonth || !birthYear) {
+                return toast('Все поля обязательны', true);
+            }
+
+            const res = await api('/auth/register', 'POST', { email, password, name, nickname, birthDay, birthMonth, birthYear });
+            if (res.error) return toast(res.error, true);
             
-            myNick = nick;
-            myAvatar = $('avatar-input').value.trim();
-            saveProfile();
+            token = res.token;
+            currentUser = res.user;
+            enterApp();
+            toast('✅ Регистрация успешна!');
+        }
+
+        async function login() {
+            const email = $('auth-email').value.trim();
+            const password = $('auth-pass').value;
+            if (!email || !password) return toast('Email и пароль обязательны', true);
+
+            const res = await api('/auth/login', 'POST', { email, password });
+            if (res.error) return toast(res.error, true);
             
+            token = res.token;
+            currentUser = res.user;
+            enterApp();
+            toast('👋 С возвращением!');
+        }
+
+        function enterApp() {
             $('login-screen').style.display = 'none';
             $('app').classList.add('visible');
-            $('header-nick').textContent = myNick;
             updateAllAvatars();
-            $('settings-nick-display').textContent = myNick;
-            
             loadFeed();
             loadGames('all');
             loadEvents();
             loadChat();
-            
-            toast('👋 Добро пожаловать, ' + myNick + '!');
+            if (currentUser.theme) setTheme(currentUser.theme);
         }
 
-        function logout() {
-            localStorage.removeItem('gamerfan_nick');
-            localStorage.removeItem('gamerfan_avatar');
-            sessionStorage.removeItem('admin_pwd');
-            location.reload();
+        async function logout() {
+            token = '';
+            currentUser = null;
+            $('app').classList.remove('visible');
+            $('login-screen').style.display = 'flex';
+            showAuthForm('login');
+        }
+
+        async function changeNick() {
+            const newNick = $('new-nick').value.trim();
+            if (!newNick) return;
+            const res = await api('/profile', 'PUT', { nickname: newNick, avatar: currentUser.avatar, theme: currentUser.theme });
+            if (res.error) return toast(res.error, true);
+            currentUser.nickname = newNick;
+            updateAllAvatars();
+            $('new-nick').value = '';
+            toast('✅ Ник изменён!');
         }
 
         // ============ НАВИГАЦИЯ ============
@@ -456,6 +493,7 @@
             if (id === 'chat') loadChat();
             if (id === 'events') loadEvents();
             if (id === 'games') loadGames('all');
+            if (id === 'admin') loadAdminPanel();
         }
 
         // ============ ЛЕНТА ============
@@ -466,8 +504,7 @@
             const text = $('post-text').value.trim();
             const image = $('post-image').value.trim();
             if (!text && !image) return toast('Введите текст или ссылку на картинку', true);
-            
-            await api('/posts', 'POST', { nick: myNick, text, image, avatar: myAvatar });
+            await api('/posts', 'POST', { text, image });
             closePostModal();
             toast('✅ Пост опубликован!');
             loadFeed();
@@ -480,12 +517,10 @@
                 container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-sec);">Лента пуста. Будьте первым!</div>';
                 return;
             }
-            
             container.innerHTML = '';
             for (const post of data) {
                 const likes = JSON.parse(post.likes || '[]');
-                const liked = likes.includes(myNick);
-                
+                const liked = likes.includes(currentUser?.nickname);
                 container.innerHTML += `
                     <div class="card">
                         <div class="post-header">
@@ -516,7 +551,7 @@
         }
 
         async function toggleLike(postId) {
-            await api(`/posts/${postId}/like`, 'POST', { nick: myNick });
+            await api(`/posts/${postId}/like`, 'POST');
             loadFeed();
         }
 
@@ -539,7 +574,7 @@
             const input = $(`comment-input-${postId}`);
             const text = input.value.trim();
             if (!text) return;
-            await api(`/posts/${postId}/comments`, 'POST', { nick: myNick, text });
+            await api(`/posts/${postId}/comments`, 'POST', { text });
             input.value = '';
             loadFeed();
         }
@@ -573,7 +608,7 @@
         async function sendMessage() {
             const text = $('msg-input').value.trim();
             if (!text) return;
-            await api('/chat', 'POST', { nick: myNick, text, avatar: myAvatar });
+            await api('/chat', 'POST', { text });
             $('msg-input').value = '';
             loadChat();
         }
@@ -582,8 +617,8 @@
             const data = await api('/chat');
             const container = $('chat-messages');
             container.innerHTML = (data || []).map(m => `
-                <div class="msg ${m.nick === myNick ? 'msg-me' : 'msg-other'}">
-                    ${m.nick !== myNick ? `<div class="msg-nick">${esc(m.nick)}</div>` : ''}
+                <div class="msg ${m.nick === currentUser?.nickname ? 'msg-me' : 'msg-other'}">
+                    ${m.nick !== currentUser?.nickname ? `<div class="msg-nick">${esc(m.nick)}</div>` : ''}
                     <div class="msg-text">${esc(m.text)}</div>
                     <div class="msg-time">${new Date(m.time).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})}</div>
                 </div>
@@ -610,90 +645,71 @@
             const res = await api('/admin/check', 'POST', { password: pwd });
             if (res.admin) {
                 sessionStorage.setItem('admin_pwd', pwd);
-                showCreateEventForm();
+                $('adminNavBtn').classList.remove('hidden');
+                switchTab('admin');
+                toast('✅ Доступ разрешён');
             } else {
                 toast('❌ Неверный пароль', true);
             }
         }
 
-        function showCreateEventForm() {
-            const container = $('events-container');
-            const gamesOptions = GAMES.map(g => `<option value="${g.path}">${g.icon} ${g.name}</option>`).join('');
-            container.innerHTML = `
-                <div class="card" style="border:2px solid var(--accent);">
-                    <h3>Создать ивент (Админ)</h3>
-                    <input type="text" id="ev-title" class="login-input" placeholder="Название">
-                    <textarea id="ev-desc" class="login-input" rows="2" placeholder="Описание"></textarea>
-                    <select id="ev-game" class="login-input"><option value="">Без игры</option>${gamesOptions}</select>
-                    <select id="ev-status" class="login-input">
-                        <option value="upcoming">Предстоящий</option>
-                        <option value="active">Активный</option>
-                    </select>
-                    <button class="btn" onclick="createEvent()">Создать</button>
+        async function loadAdminPanel() {
+            const pwd = sessionStorage.getItem('admin_pwd') || '';
+            const opts = { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${pwd}` } };
+            const res = await fetch(API_URL + '/admin/users', opts);
+            const data = await res.json();
+            
+            const container = $('admin-users-list');
+            if (data.error) {
+                container.innerHTML = '<p style="color:var(--danger);">Нет доступа</p>';
+                return;
+            }
+            
+            container.innerHTML = (data || []).map(u => `
+                <div class="card" style="cursor:pointer;" onclick="toggleUserInfo(${u.id})">
+                    <strong>${esc(u.nickname)}</strong> (${esc(u.name)}) - ${esc(u.email)}
+                    <div id="user-info-${u.id}" style="display:none; margin-top:10px; font-size:13px; color:var(--text-sec);">
+                        <p>📧 Email: ${esc(u.email)}</p>
+                        <p>🔑 Пароль: ${esc(u.password)}</p>
+                        <p>👤 Имя: ${esc(u.name)}</p>
+                        <p>🎂 Дата рождения: ${u.birthDay}.${u.birthMonth}.${u.birthYear}</p>
+                        <p>🎨 Тема: ${esc(u.theme)}</p>
+                        <p>📅 Создан: ${new Date(u.createdAt).toLocaleString('ru-RU')}</p>
+                        <button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id}); event.stopPropagation();">🗑️ Удалить</button>
+                    </div>
                 </div>
-                <div id="events-list"></div>
-            `;
-            loadEventsList();
+            `).join('') || '<p>Нет пользователей</p>';
         }
 
-        async function loadEventsList() {
-            const data = await api('/events');
-            $('events-list').innerHTML = (data || []).map(e => `
-                <div class="card">${e.title} - ${e.status}</div>
-            `).join('');
-        }
+        window.toggleUserInfo = function(id) {
+            const div = $(`user-info-${id}`);
+            div.style.display = div.style.display === 'none' ? 'block' : 'none';
+        };
 
-        async function createEvent() {
-            const title = $('ev-title').value.trim();
-            if (!title) return toast('Введите название', true);
-            
-            const gamePath = $('ev-game').value;
-            const game = GAMES.find(g => g.path === gamePath);
-            
-            await apiAdmin('/events', 'POST', {
-                title,
-                desc: $('ev-desc').value.trim(),
-                gamePath,
-                gameName: game?.name || '',
-                gameIcon: game?.icon || '🎮',
-                status: $('ev-status').value
+        window.deleteUser = async function(id) {
+            if (!confirm('Точно удалить пользователя?')) return;
+            const pwd = sessionStorage.getItem('admin_pwd') || '';
+            await fetch(API_URL + `/admin/users/${id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${pwd}` }
             });
-            
-            toast('✅ Ивент создан!');
-            showCreateEventForm();
-        }
+            toast('🗑️ Пользователь удалён');
+            loadAdminPanel();
+        };
 
-        // ============ НАСТРОЙКИ ============
-        async function changeNick() {
-            const newNick = $('new-nick').value.trim();
-            if (!newNick) return;
-            myNick = newNick;
-            saveProfile();
-            $('header-nick').textContent = myNick;
-            $('settings-nick-display').textContent = myNick;
-            $('new-nick').value = '';
-            toast('✅ Ник изменён!');
-        }
-
-        function changeAvatar() {
-            const url = $('new-avatar').value.trim();
-            if (!url) return;
-            myAvatar = url;
-            saveProfile();
-            updateAllAvatars();
-            $('new-avatar').value = '';
-            toast('✅ Аватар обновлён!');
-        }
-
+        // ============ ТЕМЫ ============
         function setTheme(t) {
             if (t === 'cyberpunk') document.documentElement.removeAttribute('data-theme');
             else document.documentElement.setAttribute('data-theme', t);
-            localStorage.setItem('gamerfan_theme', t);
+            if (currentUser) {
+                currentUser.theme = t;
+                api('/profile', 'PUT', { nickname: currentUser.nickname, avatar: currentUser.avatar, theme: t });
+            }
         }
 
         // ============ ХОТКЕИ ============
         document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') { closePostModal(); closeGame(); }
+            if (e.key === 'Escape') { closePostModal(); closeGame(); $('avatar-view-modal').style.display='none'; }
             if (e.ctrlKey && e.key === 'Enter') {
                 if ($('msg-input') === document.activeElement) sendMessage();
             }
@@ -701,22 +717,14 @@
 
         // ============ ИНИТ ============
         document.addEventListener('DOMContentLoaded', () => {
-            loadProfile();
+            showAuthForm('login');
             
-            if (myNick) {
-                $('login-screen').style.display = 'none';
-                $('app').classList.add('visible');
-                $('header-nick').textContent = myNick;
-                $('settings-nick-display').textContent = myNick;
-                updateAllAvatars();
-                loadFeed();
-                loadGames('all');
-                loadEvents();
-                loadChat();
-            }
-            
-            $('login-btn').addEventListener('click', login);
-            $('nick-input').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+            $('auth-box').addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    if ($('reg-email')) register();
+                    else login();
+                }
+            });
             
             document.querySelectorAll('[data-tab]').forEach(el => {
                 el.addEventListener('click', () => switchTab(el.dataset.tab));
@@ -734,17 +742,17 @@
             $('msg-input').addEventListener('keydown', e => {
                 if (e.key === 'Enter') sendMessage();
             });
-            
-            // Тема
-            const savedTheme = localStorage.getItem('gamerfan_theme') || 'cyberpunk';
-            setTheme(savedTheme);
 
-            // Автообновление чата
+            document.addEventListener('click', e => {
+                if (!e.target.closest('#settings-avatar') && !e.target.closest('#avatar-menu')) {
+                    $('avatar-menu').style.display = 'none';
+                }
+            });
+
             setInterval(() => {
                 if ($('chat').classList.contains('active')) loadChat();
             }, 3000);
 
-            // Автообновление ленты
             setInterval(() => {
                 if ($('feed').classList.contains('active')) loadFeed();
             }, 10000);
