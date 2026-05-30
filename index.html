@@ -4,462 +4,356 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GamerFan | Социальная сеть для геймеров</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg-color: #0f0f13; --card-bg: #1a1a24; --text-main: #e0e0e0; --text-sec: #a0a0b0;
-            --accent: #ff0055; --accent-glow: rgba(255, 0, 85, 0.4); --primary: #00d4ff;
-            --border: #2a2a35; --success: #00ff88; --danger: #ff3333;
-        }
-        [data-theme="dark"] { --bg-color: #0a0a0a; --card-bg: #141414; --text-main: #fff; --text-sec: #ccc; --accent: #ff4757; --primary: #fff; --border: #333; }
-        [data-theme="black"] { --bg-color: #000; --card-bg: #0a0a0a; --text-main: #fff; --text-sec: #aaa; --accent: #ff4757; --primary: #fff; --border: #222; }
-        [data-theme="light"] { --bg-color: #f5f5f5; --card-bg: #fff; --text-main: #1a1a1a; --text-sec: #555; --accent: #ff4757; --primary: #1a1a1a; --border: #ddd; }
-        
+        :root { --bg: #0f0f13; --card: #1a1a24; --text: #e0e0e0; --sec: #a0a0b0; --acc: #ff0055; --pri: #00d4ff; --border: #2a2a35; }
+        [data-theme="dark"] { --bg: #0a0a0a; --card: #141414; --text: #fff; --sec: #ccc; --acc: #ff4757; --pri: #fff; --border: #333; }
+        [data-theme="black"] { --bg: #000; --card: #0a0a0a; --text: #fff; --sec: #aaa; --acc: #ff4757; --pri: #fff; --border: #222; }
+        [data-theme="light"] { --bg: #f5f5f5; --card: #fff; --text: #1a1a1a; --sec: #555; --acc: #ff4757; --pri: #1a1a1a; --border: #ddd; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Roboto', sans-serif; background: var(--bg-color); color: var(--text-main); transition: 0.3s; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; }
+        body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        h1,h2,h3,.logo { font-family: 'Orbitron', sans-serif; }
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a1a24 0%, #000 100%); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: rgba(26,26,36,0.95); padding: 40px; border-radius: 15px; border: 1px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow); text-align: center; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
-        .login-input { width: 100%; padding: 12px; margin: 8px 0; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text-main); border-radius: 5px; font-size: 16px; }
-        .btn { background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 10px 20px; font-weight: bold; cursor: pointer; text-transform: uppercase; border-radius: 5px; width: 100%; margin-top: 10px; font-family: 'Orbitron', sans-serif; transition: 0.3s; }
-        .btn:hover { background: var(--accent); color: #fff; box-shadow: 0 0 15px var(--accent-glow); }
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a1a24 0%, #000 100%); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .auth-box { background: rgba(26,26,36,0.95); padding: 30px; border-radius: 15px; border: 1px solid var(--acc); box-shadow: 0 0 20px rgba(255,0,85,0.4); text-align: center; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
+        .inp { width: 100%; padding: 12px; margin: 6px 0; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text); border-radius: 8px; font-size: 15px; }
+        .btn { background: transparent; border: 2px solid var(--acc); color: var(--acc); padding: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; border-radius: 8px; width: 100%; margin-top: 10px; font-family: 'Orbitron', sans-serif; }
+        .btn:hover { background: var(--acc); color: #fff; }
         .btn-sm { width: auto; padding: 5px 15px; font-size: 12px; }
-        .btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
-        .auth-link { color: var(--accent); cursor: pointer; text-decoration: none; font-size: 14px; }
-        .auth-link:hover { text-decoration: underline; }
+        .btn-danger { background: #ff3333; border-color: #ff3333; color: #fff; }
+        .link { color: var(--acc); cursor: pointer; font-size: 14px; }
+        .link:hover { text-decoration: underline; }
 
         #app { display: none; height: 100%; flex-direction: column; }
-        #app.visible { display: flex; }
-
-        header { height: 55px; background: var(--card-bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; z-index: 100; }
-        .logo { font-size: 22px; color: var(--accent); cursor: pointer; }
-        .nav-links { display: flex; gap: 15px; }
-        .nav-item { cursor: pointer; color: var(--text-sec); font-size: 14px; transition: 0.3s; display: flex; align-items: center; gap: 5px; }
-        .nav-item:hover, .nav-item.active { color: var(--primary); }
+        #app.on { display: flex; }
+        header { height: 55px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; }
+        .logo { font-size: 22px; color: var(--acc); cursor: pointer; }
+        nav { display: flex; gap: 15px; }
+        .nav-i { cursor: pointer; color: var(--sec); font-size: 14px; display: flex; align-items: center; gap: 5px; }
+        .nav-i:hover, .nav-i.active { color: var(--pri); }
         .user-mini { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .mini-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; background: #333; }
+        .mini-av { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--acc); object-fit: cover; background: #333; }
 
         main { flex: 1; overflow-y: auto; padding: 15px; max-width: 1000px; margin: 0 auto; width: 100%; }
-        .section { display: none; animation: fadeIn 0.3s; }
+        .section { display: none; }
         .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .card { background: var(--card-bg); border-radius: 10px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .post-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #333; }
-        .post-nick { font-weight: bold; color: var(--primary); }
-        .post-time { font-size: 11px; color: var(--text-sec); }
-        .post-text { margin: 10px 0; white-space: pre-wrap; line-height: 1.5; }
+        .card { background: var(--card); border-radius: 10px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .post-nick { font-weight: bold; color: var(--pri); }
+        .post-time { font-size: 11px; color: var(--sec); }
+        .post-text { margin: 10px 0; white-space: pre-wrap; }
         .post-image { width: 100%; border-radius: 5px; max-height: 300px; object-fit: contain; margin: 10px 0; }
         .post-actions { display: flex; gap: 15px; border-top: 1px solid var(--border); padding-top: 10px; }
-        .action-btn { background: none; border: none; color: var(--text-sec); cursor: pointer; font-size: 14px; }
-        .action-btn:hover { color: var(--primary); }
-        .action-btn.liked { color: var(--accent); }
+        .act-btn { background: none; border: none; color: var(--sec); cursor: pointer; font-size: 14px; }
+        .act-btn:hover { color: var(--pri); }
+        .act-btn.liked { color: var(--acc); }
 
         .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-        .game-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; }
-        .game-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+        .game-card { background: var(--card); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; }
+        .game-card:hover { transform: translateY(-3px); border-color: var(--pri); }
         .game-icon { height: 80px; display: flex; align-items: center; justify-content: center; font-size: 35px; background: #000; }
         .game-info { padding: 10px; }
         .game-title { font-weight: bold; font-size: 13px; }
-        .game-cat { font-size: 11px; color: var(--accent); text-transform: uppercase; }
+        .game-cat { font-size: 11px; color: var(--acc); text-transform: uppercase; }
 
         .games-tabs { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-        .section-tab { padding: 6px 14px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; cursor: pointer; font-size: 13px; color: var(--text-sec); transition: 0.3s; }
-        .section-tab.active, .section-tab:hover { background: var(--accent); color: #fff; }
-
-        .chat-container { display: flex; flex-direction: column; height: calc(100vh - 130px); }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
-        .msg { max-width: 75%; padding: 8px 14px; border-radius: 15px; }
-        .msg-other { align-self: flex-start; background: var(--card-bg); border: 1px solid var(--border); }
-        .msg-me { align-self: flex-end; background: var(--accent); color: #fff; }
-        .msg-nick { font-weight: bold; font-size: 12px; margin-bottom: 3px; }
-        .msg-text { font-size: 14px; word-wrap: break-word; }
-        .msg-time { font-size: 10px; opacity: 0.7; text-align: right; margin-top: 3px; }
-        .chat-input-area { display: flex; gap: 10px; padding: 15px; border-top: 1px solid var(--border); }
-        .chat-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 10px 15px; border-radius: 20px; color: var(--text-main); }
-
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: none; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-bg); padding: 25px; border-radius: 10px; width: 90%; max-width: 500px; border: 1px solid var(--accent); position: relative; max-height: 90vh; overflow-y: auto; }
-        .close-modal { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: var(--text-sec); }
-
-        .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
-        .toast { background: var(--card-bg); border-left: 4px solid var(--primary); padding: 12px 18px; border-radius: 5px; animation: slideIn 0.3s; font-size: 14px; }
-        .toast.error { border-color: var(--danger); }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .tab { padding: 6px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; cursor: pointer; font-size: 13px; color: var(--sec); }
+        .tab.active, .tab:hover { background: var(--acc); color: #fff; }
 
         #game-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 4000; display: none; flex-direction: column; }
         #game-frame { flex: 1; border: none; }
         #game-header { height: 45px; background: #111; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; color: #fff; }
 
-        .partner-block { text-align: center; padding: 15px; margin-top: 15px; border-top: 1px solid var(--border); }
-        .partner-link { color: var(--primary); text-decoration: none; font-size: 14px; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal-box { background: var(--card); padding: 25px; border-radius: 10px; width: 90%; max-width: 500px; border: 1px solid var(--acc); position: relative; }
+        .modal-close { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: var(--sec); }
 
-        @media (max-width: 768px) {
-            .nav-links span { display: none; }
-            .games-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
-        }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: var(--card); border-left: 4px solid var(--pri); padding: 12px 18px; border-radius: 5px; z-index: 3000; }
+        footer { text-align: center; padding: 15px; color: var(--sec); font-size: 12px; border-top: 1px solid var(--border); }
     </style>
 </head>
 <body>
 
-    <!-- LOGIN SCREEN -->
-    <div id="login-screen">
-        <div class="login-box" id="auth-box"></div>
-    </div>
+    <div id="auth-screen"><div class="auth-box" id="auth-box"></div></div>
 
-    <!-- APP -->
     <div id="app">
         <header>
             <div class="logo" onclick="switchTab('feed')">GAMER<span style="color:#fff">FAN</span></div>
-            <nav class="nav-links">
-                <div class="nav-item active" data-tab="feed"><i class="fas fa-home"></i> <span>Лента</span></div>
-                <div class="nav-item" data-tab="games"><i class="fas fa-gamepad"></i> <span>Игры</span></div>
-                <div class="nav-item" data-tab="chat"><i class="fas fa-comments"></i> <span>Чат</span></div>
-                <div class="nav-item" data-tab="settings"><i class="fas fa-cog"></i> <span>Настройки</span></div>
+            <nav>
+                <div class="nav-i active" data-tab="feed"><i class="fas fa-home"></i> Лента</div>
+                <div class="nav-i" data-tab="games"><i class="fas fa-gamepad"></i> Игры</div>
+                <div class="nav-i" data-tab="settings"><i class="fas fa-cog"></i> Настройки</div>
             </nav>
             <div class="user-mini" onclick="switchTab('settings')">
-                <img id="header-avatar" class="mini-avatar" src="">
-                <span id="header-nick" style="font-weight:bold;"></span>
+                <img id="header-av" class="mini-av" src="">
+                <span id="header-nick"></span>
             </div>
         </header>
-
         <main>
             <section id="feed" class="section active">
                 <div class="card" style="display:flex; gap:10px; align-items:center;">
-                    <img id="feed-avatar" class="mini-avatar" style="width:45px; height:45px;" src="">
-                    <div style="flex:1; color:var(--text-sec); cursor:pointer;" onclick="openPostModal()">О чем думаешь, геймер?</div>
+                    <div style="flex:1; color:var(--sec); cursor:pointer;" onclick="openPostModal()">О чем думаешь, геймер?</div>
                     <button class="btn btn-sm" onclick="openPostModal()">Пост</button>
                 </div>
-                <div id="feed-container"></div>
+                <div id="feed-box"></div>
             </section>
-
             <section id="games" class="section">
-                <h2 style="margin-bottom:15px;">🎮 Библиотека игр</h2>
+                <h2>🎮 Игры</h2>
                 <div class="games-tabs" id="games-tabs">
-                    <div class="section-tab active" data-cat="all">Все</div>
-                    <div class="section-tab" data-cat="slime">Slime</div>
-                    <div class="section-tab" data-cat="elberr_old">ELBERR OS</div>
-                    <div class="section-tab" data-cat="elberr_new">Remake</div>
-                    <div class="section-tab" data-cat="dlc">DLC</div>
-                    <div class="section-tab" data-cat="daardos">Daardos</div>
+                    <div class="tab active" data-cat="all">Все</div>
+                    <div class="tab" data-cat="slime">Slime</div>
+                    <div class="tab" data-cat="elberr_old">ELBERR OS</div>
+                    <div class="tab" data-cat="elberr_new">Remake</div>
+                    <div class="tab" data-cat="dlc">DLC</div>
+                    <div class="tab" data-cat="daardos">Daardos</div>
                 </div>
-                <div class="games-grid" id="games-container"></div>
+                <div class="games-grid" id="games-box"></div>
             </section>
-
-            <section id="chat" class="section">
-                <div class="chat-container">
-                    <div class="chat-messages" id="chat-messages"></div>
-                    <div class="chat-input-area">
-                        <input type="text" id="msg-input" class="chat-input" placeholder="Сообщение...">
-                        <button class="btn btn-sm" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
-                    </div>
-                </div>
-            </section>
-
             <section id="settings" class="section">
                 <div class="card">
                     <h3>👤 Профиль</h3>
-                    <p><strong id="settings-nick-display"></strong></p>
-                    <p style="font-size:12px; color:var(--text-sec);">Имя: <span id="settings-name"></span></p>
-                    <p style="font-size:12px; color:var(--text-sec);">Возраст: <span id="settings-age"></span> лет</p>
-                    
-                    <label style="margin-top:15px; display:block;">Сменить ник:</label>
+                    <p><strong id="set-nick"></strong></p>
+                    <p style="color:var(--sec);">Имя: <span id="set-name"></span></p>
+                    <p style="color:var(--sec);">Возраст: <span id="set-age"></span></p>
+                    <label>Сменить ник:</label>
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="new-nick" class="login-input" placeholder="Новый ник">
+                        <input type="text" id="new-nick" class="inp" placeholder="Новый ник">
                         <button class="btn btn-sm" onclick="changeNick()">OK</button>
+                    </div>
+                    <label>Сменить аватар (URL):</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="new-av" class="inp" placeholder="Ссылка на картинку">
+                        <button class="btn btn-sm" onclick="changeAv()">OK</button>
                     </div>
                 </div>
                 <div class="card">
                     <h3>🎨 Тема</h3>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                        <button class="btn btn-sm" onclick="setTheme('cyberpunk')">🎮 Киберпанк</button>
-                        <button class="btn btn-sm" onclick="setTheme('dark')">🌙 Тёмная</button>
-                        <button class="btn btn-sm" onclick="setTheme('black')">🖤 Чёрная</button>
-                        <button class="btn btn-sm" onclick="setTheme('light')">☀️ Светлая</button>
-                    </div>
+                    <button class="btn btn-sm" onclick="setTheme('cyberpunk')">Киберпанк</button>
+                    <button class="btn btn-sm" onclick="setTheme('dark')">Тёмная</button>
+                    <button class="btn btn-sm" onclick="setTheme('black')">Чёрная</button>
+                    <button class="btn btn-sm" onclick="setTheme('light')">Светлая</button>
                 </div>
                 <button class="btn btn-danger" onclick="logout()">🚪 Выйти</button>
             </section>
         </main>
-
-        <footer class="partner-block">
-            <a href="https://daardos.github.io/the_daardos/" target="_blank" class="partner-link">The Daardos Project</a>
-        </footer>
+        <footer>GamerFan &copy; 2026 | <a onclick="alert('Политика: сохраняем ник, имя, возраст. Пароли хешируются.')" style="color:var(--pri);cursor:pointer;">Политика</a></footer>
     </div>
 
-    <div id="post-modal" class="modal-overlay">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closePostModal()">&times;</span>
+    <div id="post-modal" class="modal">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closePostModal()">&times;</span>
             <h3>Новый пост</h3>
-            <textarea id="post-text" class="login-input" rows="4"></textarea>
-            <input type="text" id="post-image" class="login-input" placeholder="Ссылка на картинку">
+            <textarea id="post-text" class="inp" rows="4"></textarea>
+            <input type="text" id="post-img" class="inp" placeholder="Ссылка на картинку (необяз.)">
             <button class="btn" onclick="createPost()">Опубликовать</button>
         </div>
     </div>
 
     <div id="game-overlay">
-        <div id="game-header">
-            <span id="game-title-display">Game</span>
-            <button class="btn btn-sm" onclick="closeGame()">Закрыть</button>
-        </div>
-        <iframe id="game-frame" src=""></iframe>
+        <div id="game-header"><span id="game-title"></span><button class="btn btn-sm" onclick="closeGame()">Закрыть</button></div>
+        <iframe id="game-frame"></iframe>
     </div>
 
-    <div class="toast-container" id="toast-container"></div>
-
     <script>
-        const SUPABASE_URL = 'https://mmkaf34-ls5ms7wkn4jjw.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_MMkaF34-Ls5mS7wKnA4JJw_bcp7GWLx';
-        const { createClient } = supabase;
-        const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        const BASE_PATH = '/GamerfanGames';
+        const NEON_URL = 'https://ep-summer-union-ab3fgtra.eu-west-2.aws.neon.tech/neondb';
+        const NEON_KEY = 'neondb_owner:npg_2owpCrhvUs5k';
+        const BASE = '/GamerFan';
         const GAMES = [
-            {name:"Slime Clicker 2D",path:BASE_PATH+"/Slime_Clicker/index.html",icon:"🧪",cat:"slime"},
-            {name:"Slime Farm 2D",path:BASE_PATH+"/Slime_Farm_2D/index.html",icon:"🚜",cat:"slime"},
-            {name:"Slime Farm 2",path:BASE_PATH+"/Slime_Farm2/index.html",icon:"🍄",cat:"slime"},
-            {name:"ELBERR OS: Ch 1",path:BASE_PATH+"/ELBERR_OS/Chapter1/index.html",icon:"💾",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 2",path:BASE_PATH+"/ELBERR_OS/Chapter2/index.html",icon:"🔐",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 3",path:BASE_PATH+"/ELBERR_OS/Chapter3/index.html",icon:"⚙️",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 4",path:BASE_PATH+"/ELBERR_OS/Chapter4/index.html",icon:"💿",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 5",path:BASE_PATH+"/ELBERR_OS/Chapter5/index.html",icon:"📡",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 6",path:BASE_PATH+"/ELBERR_OS/Chapter6/index.html",icon:"🧠",cat:"elberr_old"},
-            {name:"ELBERR OS R: Ch 1",path:BASE_PATH+"/ELBERR_OS_REMAKE/Chapter1/index.html",icon:"🆕",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 2",path:BASE_PATH+"/ELBERR_OS_REMAKE/Chapter2/index.html",icon:"✨",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 3",path:BASE_PATH+"/ELBERR_OS_REMAKE/Chapter3/index.html",icon:"🚀",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 4",path:BASE_PATH+"/ELBERR_OS_REMAKE/Chapter4/index.html",icon:"💫",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 5",path:BASE_PATH+"/ELBERR_OS_REMAKE/Chapter5/index.html",icon:"⚡",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 6",path:BASE_PATH+"/ELBERR_OS_REMAKE/Chapter6/index.html",icon:"🔥",cat:"elberr_new"},
-            {name:"RTAP DLC",path:BASE_PATH+"/ELBERR_OS_REMAKE/RTAP/index.html",icon:"🦾",cat:"dlc"},
-            {name:"TAD DLC",path:BASE_PATH+"/ELBERR_OS_REMAKE/TAD/index.html",icon:"🔥",cat:"dlc"},
-            {name:"TPD DLC",path:BASE_PATH+"/ELBERR_OS_REMAKE/TPD/index.html",icon:"🔥",cat:"dlc"},
-            {name:"Neon Bird",path:BASE_PATH+"/daardos/neon_bird/index.html",icon:"🐦",cat:"daardos"}
+            {n:"Slime Clicker 2D",p:BASE+"/Slime_Clicker/index.html",i:"🧪",c:"slime"},
+            {n:"Slime Farm 2D",p:BASE+"/Slime_Farm_2D/index.html",i:"🚜",c:"slime"},
+            {n:"Slime Farm 2",p:BASE+"/Slime_Farm2/index.html",i:"🍄",c:"slime"},
+            {n:"ELBERR OS: Ch 1",p:BASE+"/ELBERR_OS/Chapter1/index.html",i:"💾",c:"elberr_old"},
+            {n:"ELBERR OS: Ch 2",p:BASE+"/ELBERR_OS/Chapter2/index.html",i:"🔐",c:"elberr_old"},
+            {n:"ELBERR OS: Ch 3",p:BASE+"/ELBERR_OS/Chapter3/index.html",i:"⚙️",c:"elberr_old"},
+            {n:"ELBERR OS: Ch 4",p:BASE+"/ELBERR_OS/Chapter4/index.html",i:"💿",c:"elberr_old"},
+            {n:"ELBERR OS: Ch 5",p:BASE+"/ELBERR_OS/Chapter5/index.html",i:"📡",c:"elberr_old"},
+            {n:"ELBERR OS: Ch 6",p:BASE+"/ELBERR_OS/Chapter6/index.html",i:"🧠",c:"elberr_old"},
+            {n:"ELBERR OS R: Ch 1",p:BASE+"/ELBERR_OS_REMAKE/Chapter1/index.html",i:"🆕",c:"elberr_new"},
+            {n:"ELBERR OS R: Ch 2",p:BASE+"/ELBERR_OS_REMAKE/Chapter2/index.html",i:"✨",c:"elberr_new"},
+            {n:"ELBERR OS R: Ch 3",p:BASE+"/ELBERR_OS_REMAKE/Chapter3/index.html",i:"🚀",c:"elberr_new"},
+            {n:"ELBERR OS R: Ch 4",p:BASE+"/ELBERR_OS_REMAKE/Chapter4/index.html",i:"💫",c:"elberr_new"},
+            {n:"ELBERR OS R: Ch 5",p:BASE+"/ELBERR_OS_REMAKE/Chapter5/index.html",i:"⚡",c:"elberr_new"},
+            {n:"ELBERR OS R: Ch 6",p:BASE+"/ELBERR_OS_REMAKE/Chapter6/index.html",i:"🔥",c:"elberr_new"},
+            {n:"RTAP DLC",p:BASE+"/ELBERR_OS_REMAKE/RTAP/index.html",i:"🦾",c:"dlc"},
+            {n:"TAD DLC",p:BASE+"/ELBERR_OS_REMAKE/TAD/index.html",i:"🔥",c:"dlc"},
+            {n:"TPD DLC",p:BASE+"/ELBERR_OS_REMAKE/TPD/index.html",i:"🔥",c:"dlc"},
+            {n:"Neon Bird",p:BASE+"/daardos/neon_bird/index.html",i:"🐦",c:"daardos"}
         ];
 
-        let currentUser = null;
+        let me = null;
 
         function $(id) { return document.getElementById(id); }
-        function toast(msg, err) {
-            const t = document.createElement('div');
-            t.className = 'toast' + (err ? ' error' : '');
-            t.textContent = msg;
-            $('toast-container').appendChild(t);
-            setTimeout(() => t.remove(), 3000);
-        }
+        function toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2500); }
         function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-        // ============ AUTH ============
-        function showAuthForm(mode) {
-            if (mode === 'login') {
-                $('auth-box').innerHTML = `
-                    <h1 class="logo">GAMER<span style="color:#fff">FAN</span></h1>
-                    <h3 style="color:var(--primary); margin:15px 0;">Вход</h3>
-                    <input type="text" id="login-cred" class="login-input" placeholder="Имя или Никнейм">
-                    <input type="password" id="login-pass" class="login-input" placeholder="Пароль">
-                    <button class="btn" onclick="login()">Войти</button>
-                    <p style="margin-top:15px;"><a class="auth-link" onclick="showAuthForm('register')">Создать аккаунт</a></p>
-                `;
+        async function sql(query) {
+            const r = await fetch(NEON_URL + '/sql', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Basic ' + btoa(NEON_KEY) },
+                body: JSON.stringify({ query })
+            });
+            return r.json();
+        }
+
+        function showAuth(m) {
+            if (m === 'login') {
+                $('auth-box').innerHTML = `<h1 class="logo">GAMER<span style="color:#fff">FAN</span></h1>
+                <h3>Вход</h3><input id="l-nick" class="inp" placeholder="Никнейм">
+                <input id="l-pass" class="inp" type="password" placeholder="Пароль">
+                <button class="btn" onclick="login()">Войти</button>
+                <p style="margin-top:10px;"><span class="link" onclick="showAuth('reg')">Регистрация</span></p>`;
             } else {
-                $('auth-box').innerHTML = `
-                    <h1 class="logo">GAMER<span style="color:#fff">FAN</span></h1>
-                    <h3 style="color:var(--primary); margin:15px 0;">Регистрация</h3>
-                    <input type="text" id="reg-name" class="login-input" placeholder="Имя">
-                    <input type="text" id="reg-nick" class="login-input" placeholder="Никнейм">
-                    <input type="number" id="reg-age" class="login-input" placeholder="Возраст" min="8" max="99">
-                    <input type="password" id="reg-pass" class="login-input" placeholder="Пароль">
-                    <button class="btn" onclick="register()">Зарегистрироваться</button>
-                    <p style="margin-top:15px;"><a class="auth-link" onclick="showAuthForm('login')">Уже есть аккаунт</a></p>
-                `;
+                $('auth-box').innerHTML = `<h1 class="logo">GAMER<span style="color:#fff">FAN</span></h1>
+                <h3>Регистрация</h3><input id="r-name" class="inp" placeholder="Имя">
+                <input id="r-nick" class="inp" placeholder="Никнейм">
+                <input id="r-age" class="inp" type="number" placeholder="Возраст" min="8" max="99">
+                <input id="r-pass" class="inp" type="password" placeholder="Пароль">
+                <button class="btn" onclick="reg()">Создать</button>
+                <p style="margin-top:10px;"><span class="link" onclick="showAuth('login')">Войти</span></p>`;
             }
         }
 
-        async function register() {
-            const name = $('reg-name').value.trim();
-            const nickname = $('reg-nick').value.trim();
-            const age = parseInt($('reg-age').value);
-            const password = $('reg-pass').value;
-
-            if (!name || !nickname || !age || !password) return toast('Все поля обязательны', true);
-            if (age < 8) return toast('Минимальный возраст: 8 лет', true);
-
-            const { data: exist } = await sb.from('users').select('id').eq('nickname', nickname).limit(1);
-            if (exist && exist.length > 0) return toast('Никнейм занят', true);
-
-            const { data, error } = await sb.from('users').insert([{
-                name, nickname, age, password,
-                avatar: '', theme: 'cyberpunk'
-            }]).select().single();
-
-            if (error) return toast(error.message, true);
-            
-            currentUser = data;
-            enterApp();
-            toast('✅ Аккаунт создан!');
+        async function reg() {
+            const name = $('r-name').value.trim(), nick = $('r-nick').value.trim(), age = +$('r-age').value, pass = $('r-pass').value;
+            if (!name || !nick || !age || !pass) return toast('Все поля обязательны!');
+            if (age < 8) return toast('Минимум 8 лет!');
+            const hash = btoa(pass);
+            const { rows } = await sql(`INSERT INTO users (name, nickname, age, password) VALUES ('${name}', '${nick}', ${age}, '${hash}') RETURNING *`);
+            if (!rows || rows.length === 0) return toast('Никнейм занят!');
+            me = rows[0];
+            localStorage.setItem('gf_user', JSON.stringify(me));
+            enter();
         }
 
         async function login() {
-            const cred = $('login-cred').value.trim();
-            const password = $('login-pass').value;
-            if (!cred || !password) return toast('Заполните поля', true);
-
-            const { data, error } = await sb.from('users').select('*')
-                .or(`name.eq.${cred},nickname.eq.${cred}`)
-                .eq('password', password).single();
-
-            if (error || !data) return toast('Неверные данные', true);
-            
-            currentUser = data;
-            enterApp();
-            toast('👋 Привет, ' + data.nickname + '!');
+            const nick = $('l-nick').value.trim(), pass = $('l-pass').value;
+            if (!nick || !pass) return toast('Заполните поля!');
+            const hash = btoa(pass);
+            const { rows } = await sql(`SELECT * FROM users WHERE nickname='${nick}' AND password='${hash}'`);
+            if (!rows || rows.length === 0) return toast('Неверные данные!');
+            me = rows[0];
+            localStorage.setItem('gf_user', JSON.stringify(me));
+            enter();
         }
 
-        function enterApp() {
-            $('login-screen').style.display = 'none';
-            $('app').classList.add('visible');
+        function enter() {
+            $('auth-screen').style.display = 'none';
+            $('app').classList.add('on');
             updateUI();
             loadFeed();
             loadGames('all');
-            loadChat();
         }
 
         function logout() {
-            currentUser = null;
-            $('app').classList.remove('visible');
-            $('login-screen').style.display = 'flex';
-            showAuthForm('login');
+            me = null;
+            localStorage.removeItem('gf_user');
+            $('app').classList.remove('on');
+            $('auth-screen').style.display = 'flex';
+            showAuth('login');
         }
 
         function updateUI() {
-            if (!currentUser) return;
-            $('header-nick').textContent = currentUser.nickname;
-            $('settings-nick-display').textContent = currentUser.nickname;
-            $('settings-name').textContent = currentUser.name;
-            $('settings-age').textContent = currentUser.age;
+            if (!me) return;
+            $('header-nick').textContent = me.nickname;
+            $('set-nick').textContent = me.nickname;
+            $('set-name').textContent = me.name;
+            $('set-age').textContent = me.age;
+            $('header-av').src = me.avatar || '';
         }
 
-        // ============ POSTS ============
         async function createPost() {
-            const text = $('post-text').value.trim();
-            const image = $('post-image').value.trim();
-            if (!text && !image) return toast('Введите текст или ссылку', true);
-            await sb.from('posts').insert([{
-                user_id: currentUser.id, nick: currentUser.nickname,
-                text, image, avatar: currentUser.avatar || '',
-                time: Date.now(), likes: '[]', comments_count: 0
-            }]);
+            const text = $('post-text').value.trim(), img = $('post-img').value.trim();
+            if (!text && !img) return toast('Введите текст или ссылку!');
+            await sql(`INSERT INTO posts (user_id, nick, text, image, avatar) VALUES (${me.id}, '${me.nickname}', '${text}', '${img}', '${me.avatar || ''}')`);
             closePostModal();
             loadFeed();
-            toast('✅ Пост опубликован!');
+            toast('✅ Опубликовано!');
         }
 
         async function loadFeed() {
-            const { data } = await sb.from('posts').select('*').order('time', { ascending: false }).limit(30);
-            const c = $('feed-container');
-            if (!data || !data.length) { c.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-sec);">Лента пуста</div>'; return; }
-            c.innerHTML = data.map(p => {
+            const { rows } = await sql(`SELECT * FROM posts ORDER BY created_at DESC LIMIT 30`);
+            const box = $('feed-box');
+            if (!rows || rows.length === 0) { box.innerHTML = '<div style="text-align:center;padding:30px;color:var(--sec);">Лента пуста</div>'; return; }
+            box.innerHTML = rows.map(p => {
                 const likes = JSON.parse(p.likes || '[]');
-                const liked = currentUser && likes.includes(currentUser.nickname);
+                const liked = me && likes.includes(me.nickname);
                 return `<div class="card">
-                    <div class="post-header"><div class="post-nick">${esc(p.nick)}</div><div class="post-time">${new Date(p.time).toLocaleString('ru-RU')}</div></div>
+                    <div class="post-nick">${esc(p.nick)} <span class="post-time">${new Date(p.created_at).toLocaleString('ru')}</span></div>
                     ${p.text ? `<div class="post-text">${esc(p.text)}</div>` : ''}
                     ${p.image ? `<img src="${p.image}" class="post-image">` : ''}
                     <div class="post-actions">
-                        <button class="action-btn ${liked?'liked':''}" onclick="toggleLike(${p.id})"><i class="fas fa-heart"></i> ${likes.length}</button>
+                        <button class="act-btn ${liked?'liked':''}" onclick="toggleLike(${p.id})">❤️ ${likes.length}</button>
                     </div></div>`;
             }).join('');
         }
 
         async function toggleLike(id) {
-            if (!currentUser) return;
-            const { data } = await sb.from('posts').select('likes').eq('id', id).single();
-            let likes = JSON.parse(data.likes || '[]');
-            likes = likes.includes(currentUser.nickname) ? likes.filter(n => n !== currentUser.nickname) : [...likes, currentUser.nickname];
-            await sb.from('posts').update({ likes: JSON.stringify(likes) }).eq('id', id);
+            if (!me) return;
+            const { rows } = await sql(`SELECT likes FROM posts WHERE id=${id}`);
+            let likes = JSON.parse(rows[0].likes || '[]');
+            likes = likes.includes(me.nickname) ? likes.filter(n => n !== me.nickname) : [...likes, me.nickname];
+            await sql(`UPDATE posts SET likes='${JSON.stringify(likes)}' WHERE id=${id}`);
             loadFeed();
         }
 
         function openPostModal() { $('post-modal').style.display = 'flex'; }
-        function closePostModal() { $('post-modal').style.display = 'none'; $('post-text').value = ''; $('post-image').value = ''; }
+        function closePostModal() { $('post-modal').style.display = 'none'; $('post-text').value = ''; $('post-img').value = ''; }
 
-        // ============ CHAT ============
-        async function sendMessage() {
-            const text = $('msg-input').value.trim();
-            if (!text || !currentUser) return;
-            await sb.from('messages').insert([{
-                user_id: currentUser.id, nick: currentUser.nickname,
-                text, avatar: currentUser.avatar || '', time: Date.now()
-            }]);
-            $('msg-input').value = '';
-            loadChat();
-        }
-
-        async function loadChat() {
-            const { data } = await sb.from('messages').select('*').order('time', { ascending: true }).limit(50);
-            $('chat-messages').innerHTML = (data || []).map(m => `<div class="msg ${m.nick===currentUser?.nickname?'msg-me':'msg-other'}">
-                ${m.nick!==currentUser?.nickname?`<div class="msg-nick">${esc(m.nick)}</div>`:''}
-                <div class="msg-text">${esc(m.text)}</div>
-                <div class="msg-time">${new Date(m.time).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}</div>
-            </div>`).join('');
-            $('chat-messages').scrollTop = $('chat-messages').scrollHeight;
-        }
-
-        // ============ GAMES ============
         function loadGames(cat) {
-            const filtered = cat === 'all' ? GAMES : GAMES.filter(g => g.cat === cat);
-            $('games-container').innerHTML = filtered.map(g => `<div class="game-card" onclick="launchGame('${g.path}','${g.name}')">
-                <div class="game-icon">${g.icon}</div><div class="game-info"><div class="game-title">${g.name}</div><div class="game-cat">${g.cat}</div></div></div>`).join('');
+            const f = cat === 'all' ? GAMES : GAMES.filter(g => g.c === cat);
+            $('games-box').innerHTML = f.map(g => `<div class="game-card" onclick="launchGame('${g.p}','${g.n}')"><div class="game-icon">${g.i}</div><div class="game-info"><div class="game-title">${g.n}</div><div class="game-cat">${g.c}</div></div></div>`).join('');
         }
-
-        function launchGame(path, name) { $('game-title-display').textContent = name; $('game-frame').src = path; $('game-overlay').style.display = 'flex'; }
+        function launchGame(p, n) { $('game-title').textContent = n; $('game-frame').src = p; $('game-overlay').style.display = 'flex'; }
         function closeGame() { $('game-overlay').style.display = 'none'; $('game-frame').src = ''; }
 
-        // ============ NAV ============
+        async function changeNick() {
+            const nick = $('new-nick').value.trim();
+            if (!nick || !me) return;
+            await sql(`UPDATE users SET nickname='${nick}' WHERE id=${me.id}`);
+            me.nickname = nick;
+            localStorage.setItem('gf_user', JSON.stringify(me));
+            updateUI();
+            toast('✅ Ник изменён!');
+        }
+        async function changeAv() {
+            const av = $('new-av').value.trim();
+            if (!av || !me) return;
+            await sql(`UPDATE users SET avatar='${av}' WHERE id=${me.id}`);
+            me.avatar = av;
+            localStorage.setItem('gf_user', JSON.stringify(me));
+            updateUI();
+            toast('✅ Аватар обновлён!');
+        }
+        function setTheme(t) {
+            if (t === 'cyberpunk') document.documentElement.removeAttribute('data-theme');
+            else document.documentElement.setAttribute('data-theme', t);
+            localStorage.setItem('gf_theme', t);
+        }
+
         function switchTab(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active'));
             $(id).classList.add('active');
             document.querySelector(`[data-tab="${id}"]`)?.classList.add('active');
             if (id === 'feed') loadFeed();
-            if (id === 'chat') loadChat();
             if (id === 'games') loadGames('all');
         }
 
-        // ============ SETTINGS ============
-        async function changeNick() {
-            const nick = $('new-nick').value.trim();
-            if (!nick || !currentUser) return;
-            const { data: exist } = await sb.from('users').select('id').eq('nickname', nick).limit(1);
-            if (exist && exist.length > 0) return toast('Ник занят', true);
-            await sb.from('users').update({ nickname: nick }).eq('id', currentUser.id);
-            currentUser.nickname = nick;
-            updateUI();
-            $('new-nick').value = '';
-            toast('✅ Ник изменён!');
-        }
-
-        function setTheme(t) {
-            document.documentElement.setAttribute('data-theme', t === 'cyberpunk' ? '' : t);
-            if (t === 'cyberpunk') document.documentElement.removeAttribute('data-theme');
-            localStorage.setItem('theme', t);
-        }
-
-        // ============ INIT ============
         document.addEventListener('DOMContentLoaded', () => {
-            showAuthForm('login');
+            const saved = localStorage.getItem('gf_user');
+            if (saved) { me = JSON.parse(saved); enter(); }
+            else showAuth('login');
+
             document.querySelectorAll('[data-tab]').forEach(el => el.addEventListener('click', () => switchTab(el.dataset.tab)));
             $('games-tabs').addEventListener('click', e => {
-                const tab = e.target.closest('.section-tab');
-                if (tab) { document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active')); tab.classList.add('active'); loadGames(tab.dataset.cat); }
+                const t = e.target.closest('.tab');
+                if (t) { document.querySelectorAll('.tab').forEach(x => x.classList.remove('active')); t.classList.add('active'); loadGames(t.dataset.cat); }
             });
-            $('msg-input').addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
-            setInterval(() => { if ($('chat').classList.contains('active')) loadChat(); }, 3000);
+            const theme = localStorage.getItem('gf_theme') || 'cyberpunk';
+            setTheme(theme);
         });
     </script>
 </body>
