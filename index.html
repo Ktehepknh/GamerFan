@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GamerFan | Социальная сеть для геймеров</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -26,12 +27,10 @@
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a1a24 0%, #000 100%); z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .login-box { background: rgba(26,26,36,0.95); padding: 40px; border-radius: 15px; border: 1px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow); text-align: center; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
         .login-input { width: 100%; padding: 12px; margin: 8px 0; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text-main); border-radius: 5px; font-size: 16px; }
-        .login-input select { width: 100%; padding: 12px; margin: 8px 0; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text-main); border-radius: 5px; font-size: 16px; }
         .btn { background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 10px 20px; font-weight: bold; cursor: pointer; text-transform: uppercase; border-radius: 5px; width: 100%; margin-top: 10px; font-family: 'Orbitron', sans-serif; transition: 0.3s; }
         .btn:hover { background: var(--accent); color: #fff; box-shadow: 0 0 15px var(--accent-glow); }
         .btn-sm { width: auto; padding: 5px 15px; font-size: 12px; }
         .btn-danger { background: var(--danger); border-color: var(--danger); color: #fff; }
-        .btn-danger:hover { opacity: 0.8; }
         .auth-link { color: var(--accent); cursor: pointer; text-decoration: none; font-size: 14px; }
         .auth-link:hover { text-decoration: underline; }
 
@@ -39,7 +38,7 @@
         #app.visible { display: flex; }
 
         header { height: 55px; background: var(--card-bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; z-index: 100; }
-        .logo { font-size: 22px; color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); cursor: pointer; }
+        .logo { font-size: 22px; color: var(--accent); cursor: pointer; }
         .nav-links { display: flex; gap: 15px; }
         .nav-item { cursor: pointer; color: var(--text-sec); font-size: 14px; transition: 0.3s; display: flex; align-items: center; gap: 5px; }
         .nav-item:hover, .nav-item.active { color: var(--primary); }
@@ -59,7 +58,7 @@
         .post-text { margin: 10px 0; white-space: pre-wrap; line-height: 1.5; }
         .post-image { width: 100%; border-radius: 5px; max-height: 300px; object-fit: contain; margin: 10px 0; }
         .post-actions { display: flex; gap: 15px; border-top: 1px solid var(--border); padding-top: 10px; }
-        .action-btn { background: none; border: none; color: var(--text-sec); cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .action-btn { background: none; border: none; color: var(--text-sec); cursor: pointer; font-size: 14px; }
         .action-btn:hover { color: var(--primary); }
         .action-btn.liked { color: var(--accent); }
 
@@ -121,9 +120,7 @@
 
     <!-- LOGIN SCREEN -->
     <div id="login-screen">
-        <div class="login-box" id="auth-box">
-            <!-- Dynamic content -->
-        </div>
+        <div class="login-box" id="auth-box"></div>
     </div>
 
     <!-- APP -->
@@ -133,10 +130,8 @@
             <nav class="nav-links">
                 <div class="nav-item active" data-tab="feed"><i class="fas fa-home"></i> <span>Лента</span></div>
                 <div class="nav-item" data-tab="games"><i class="fas fa-gamepad"></i> <span>Игры</span></div>
-                <div class="nav-item" data-tab="events"><i class="fas fa-calendar"></i> <span>Ивенты</span></div>
                 <div class="nav-item" data-tab="chat"><i class="fas fa-comments"></i> <span>Чат</span></div>
                 <div class="nav-item" data-tab="settings"><i class="fas fa-cog"></i> <span>Настройки</span></div>
-                <div class="nav-item hidden" id="adminNavBtn" data-tab="admin"><i class="fas fa-shield-alt"></i> <span>Админ</span></div>
             </nav>
             <div class="user-mini" onclick="switchTab('settings')">
                 <img id="header-avatar" class="mini-avatar" src="">
@@ -167,13 +162,6 @@
                     <div class="section-tab" data-cat="daardos">Daardos</div>
                 </div>
                 <div class="games-grid" id="games-container"></div>
-            </section>
-
-            <!-- EVENTS -->
-            <section id="events" class="section">
-                <h2 style="margin-bottom:15px;">📅 Ивенты</h2>
-                <button class="btn btn-sm" onclick="checkAdmin()" style="margin-bottom:10px;">🔑 Админ (создать ивент)</button>
-                <div id="events-container"></div>
             </section>
 
             <!-- CHAT -->
@@ -223,37 +211,30 @@
                 </div>
                 <button class="btn btn-danger" onclick="logout()">🚪 Выйти</button>
             </section>
-
-            <!-- ADMIN -->
-            <section id="admin" class="section">
-                <h2>👑 Панель администратора</h2>
-                <div class="card">
-                    <h3>Пользователи</h3>
-                    <div id="admin-users-list"></div>
-                </div>
-            </section>
         </main>
 
         <footer class="partner-block">
             <p style="font-size:11px; opacity:0.7;">НАШ ПАРТНЕР</p>
-            <a href="https://daardos.github.io/DevFolio/" target="_blank" class="partner-link">
+            <a href="https://daardos.github.io/the_daardos/" target="_blank" class="partner-link">
                 <i class="fas fa-external-link-alt"></i> The Daardos Project
             </a>
+            <p style="margin-top:5px;">
+                <a onclick="openPrivacy()" style="color:var(--primary); cursor:pointer;">📜 Политика конфиденциальности</a>
+            </p>
         </footer>
     </div>
 
-    <!-- POST MODAL -->
+    <!-- MODALS -->
     <div id="post-modal" class="modal-overlay">
         <div class="modal-content">
             <span class="close-modal" onclick="closePostModal()">&times;</span>
             <h3>Новый пост</h3>
-            <textarea id="post-text" class="login-input" rows="4" placeholder="Текст поста..." style="margin-top:10px;"></textarea>
-            <input type="text" id="post-image" class="login-input" placeholder="Ссылка на картинку (необязательно)">
-            <button class="btn" onclick="createPost()" style="margin-top:15px;">Опубликовать</button>
+            <textarea id="post-text" class="login-input" rows="4" placeholder="Текст поста..."></textarea>
+            <input type="text" id="post-image" class="login-input" placeholder="Ссылка на картинку">
+            <button class="btn" onclick="createPost()">Опубликовать</button>
         </div>
     </div>
 
-    <!-- GAME OVERLAY -->
     <div id="game-overlay">
         <div id="game-header">
             <span id="game-title-display">Game</span>
@@ -262,7 +243,6 @@
         <iframe id="game-frame" src=""></iframe>
     </div>
 
-    <!-- AVATAR VIEW MODAL -->
     <div id="avatar-view-modal" class="modal-overlay">
         <div class="modal-content" style="text-align:center;">
             <span class="close-modal" onclick="document.getElementById('avatar-view-modal').style.display='none'">&times;</span>
@@ -270,14 +250,29 @@
         </div>
     </div>
 
-    <!-- TOAST -->
+    <div id="privacy-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="document.getElementById('privacy-modal').style.display='none'">&times;</span>
+            <h2 style="color:var(--accent);">Политика конфиденциальности</h2>
+            <p style="font-size:12px; color:var(--text-sec);">Дата обновления: 30 мая 2026 г.</p>
+            <div style="margin-top:15px; font-size:14px; line-height:1.6; color:var(--text-sec);">
+                <p>Сайт использует куки для сохранения темы оформления. Данные аккаунтов хранятся в Supabase. Связь по email: vetrovlev1@gmail.com</p>
+            </div>
+        </div>
+    </div>
+
     <div class="toast-container" id="toast-container"></div>
 
     <script>
-        // ============ КОНФИГ ============
-        const API_URL = 'https://gamerfan.vetrovlev1.workers.dev/api';
+        // ============ SUPABASE CONFIG ============
+        const SUPABASE_URL = 'https://mmkaf34-ls5ms7wkn4jjw.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_MMkaF34-Ls5mS7wKnA4JJw_bcp7GWLx';
+        
+        const { createClient } = supabase;
+        const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
         const IMGBB_KEY = 'b80b9e18e607bfe48e6c03a19289c465';
-        const BASE_PATH = '/GamerFan';
+        const BASE_PATH = '/GamerfanGames';
 
         const GAMES = [
             {name:"Slime Clicker 2D",path:BASE_PATH+"/Slime_Clicker/index.html",icon:"🧪",cat:"slime"},
@@ -301,11 +296,8 @@
             {name:"Neon Bird",path:BASE_PATH+"/daardos/neon_bird/index.html",icon:"🐦",cat:"daardos"}
         ];
 
-        // ============ СОСТОЯНИЕ ============
-        let token = '';
         let currentUser = null;
 
-        // ============ УТИЛИТЫ ============
         function $(id) { return document.getElementById(id); }
         function toast(msg, err) {
             const t = document.createElement('div');
@@ -316,89 +308,24 @@
         }
         function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-        // ============ API ============
-        async function api(path, method = 'GET', body = null) {
-            const opts = { method, headers: { 'Content-Type': 'application/json' } };
-            if (token) opts.headers['Authorization'] = `Bearer ${token}`;
-            if (body) opts.body = JSON.stringify(body);
-            const res = await fetch(API_URL + path, opts);
-            return res.json();
-        }
-
-        // ============ АВАТАР ImgBB ============
-        async function uploadToImgBB(file) {
-            const fd = new FormData();
-            fd.append('image', file);
-            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {method:'POST', body:fd});
-            const data = await res.json();
-            return data.success ? data.data.url : null;
-        }
-
-        window.uploadSettingsAvatar = async function(input) {
-            const file = input.files[0];
-            if (!file) return;
-            const url = await uploadToImgBB(file);
-            if (url) {
-                await api('/profile', 'PUT', { nickname: currentUser.nickname, avatar: url, theme: currentUser.theme });
-                currentUser.avatar = url;
-                updateAllAvatars();
-                toast('✅ Аватар обновлён!');
-            }
-        };
-
-        function toggleAvatarMenu() {
-            const menu = $('avatar-menu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function viewAvatar() {
-            if (currentUser.avatar) {
-                $('avatar-view-img').src = currentUser.avatar;
-                $('avatar-view-modal').style.display = 'flex';
-            } else {
-                toast('Нет аватара', true);
-            }
-        }
-
-        async function deleteAvatar() {
-            if (!confirm('Удалить аватар?')) return;
-            await api('/profile', 'PUT', { nickname: currentUser.nickname, avatar: null, theme: currentUser.theme });
-            currentUser.avatar = '';
-            updateAllAvatars();
-            toast('🗑️ Аватар удалён');
-        }
-
-        function updateAllAvatars() {
-            const av = currentUser?.avatar || '';
-            const def = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23555%22%3E%3Cpath d=%22M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z%22/%3E%3C/svg%3E';
-            const src = av || def;
-            $('header-avatar').src = src;
-            $('feed-avatar').src = src;
-            $('settings-avatar').src = src;
-            $('settings-email').textContent = currentUser?.email || '';
-            $('settings-name').textContent = currentUser?.name || '';
-            $('settings-nick-display').textContent = currentUser?.nickname || '';
-            $('header-nick').textContent = currentUser?.nickname || '';
-        }
-
-        // ============ АВТОРИЗАЦИЯ ============
+        // ============ AUTH ============
         function showAuthForm(mode) {
             const box = $('auth-box');
             if (mode === 'login') {
                 box.innerHTML = `
-                    <h1 class="logo" style="margin-bottom:20px;">GAMER<span style="color:#fff">FAN</span></h1>
-                    <h3 style="color:var(--primary); margin-bottom:15px;">Вход</h3>
+                    <h1 class="logo">GAMER<span style="color:#fff">FAN</span></h1>
+                    <h3 style="color:var(--primary); margin:15px 0;">Вход</h3>
                     <input type="email" id="auth-email" class="login-input" placeholder="Email">
                     <input type="password" id="auth-pass" class="login-input" placeholder="Пароль">
                     <button class="btn" onclick="login()">Войти</button>
                     <p style="margin-top:15px; font-size:14px; color:var(--text-sec);">
-                        Нет аккаунта? <a class="auth-link" onclick="showAuthForm('register')">Зарегистрироваться</a>
+                        Нет аккаунта? <a class="auth-link" onclick="showAuthForm('register')">Регистрация</a>
                     </p>
                 `;
             } else {
                 box.innerHTML = `
-                    <h1 class="logo" style="margin-bottom:20px;">GAMER<span style="color:#fff">FAN</span></h1>
-                    <h3 style="color:var(--primary); margin-bottom:15px;">Регистрация</h3>
+                    <h1 class="logo">GAMER<span style="color:#fff">FAN</span></h1>
+                    <h3 style="color:var(--primary); margin:15px 0;">Регистрация</h3>
                     <input type="email" id="reg-email" class="login-input" placeholder="Email">
                     <input type="text" id="reg-name" class="login-input" placeholder="Имя">
                     <input type="text" id="reg-nick" class="login-input" placeholder="Никнейм">
@@ -406,7 +333,7 @@
                     <div style="display:flex; gap:5px;">
                         <input type="number" id="reg-day" class="login-input" placeholder="День" min="1" max="31">
                         <input type="number" id="reg-month" class="login-input" placeholder="Месяц" min="1" max="12">
-                        <input type="number" id="reg-year" class="login-input" placeholder="Год" min="1900" max="2020">
+                        <input type="number" id="reg-year" class="login-input" placeholder="Год" min="1900" max="2018">
                     </div>
                     <button class="btn" onclick="register()">Зарегистрироваться</button>
                     <p style="margin-top:15px; font-size:14px; color:var(--text-sec);">
@@ -429,11 +356,20 @@
                 return toast('Все поля обязательны', true);
             }
 
-            const res = await api('/auth/register', 'POST', { email, password, name, nickname, birthDay, birthMonth, birthYear });
-            if (res.error) return toast(res.error, true);
+            const { data: existing } = await sb.from('users').select('id').or(`email.eq.${email},nickname.eq.${nickname}`).limit(1);
+            if (existing && existing.length > 0) {
+                return toast('Почта или никнейм уже заняты', true);
+            }
+
+            const { data, error } = await sb.from('users').insert([{
+                email, password, name, nickname,
+                birth_day: birthDay, birth_month: birthMonth, birth_year: birthYear,
+                avatar: '', theme: 'cyberpunk'
+            }]).select().single();
+
+            if (error) return toast(error.message, true);
             
-            token = res.token;
-            currentUser = res.user;
+            currentUser = data;
             enterApp();
             toast('✅ Регистрация успешна!');
         }
@@ -443,11 +379,10 @@
             const password = $('auth-pass').value;
             if (!email || !password) return toast('Email и пароль обязательны', true);
 
-            const res = await api('/auth/login', 'POST', { email, password });
-            if (res.error) return toast(res.error, true);
+            const { data, error } = await sb.from('users').select('*').eq('email', email).eq('password', password).single();
+            if (error || !data) return toast('Неверный email или пароль', true);
             
-            token = res.token;
-            currentUser = res.user;
+            currentUser = data;
             enterApp();
             toast('👋 С возвращением!');
         }
@@ -455,73 +390,63 @@
         function enterApp() {
             $('login-screen').style.display = 'none';
             $('app').classList.add('visible');
-            updateAllAvatars();
+            updateUI();
             loadFeed();
             loadGames('all');
-            loadEvents();
             loadChat();
-            if (currentUser.theme) setTheme(currentUser.theme);
         }
 
-        async function logout() {
-            token = '';
+        function logout() {
             currentUser = null;
             $('app').classList.remove('visible');
             $('login-screen').style.display = 'flex';
             showAuthForm('login');
         }
 
-        async function changeNick() {
-            const newNick = $('new-nick').value.trim();
-            if (!newNick) return;
-            const res = await api('/profile', 'PUT', { nickname: newNick, avatar: currentUser.avatar, theme: currentUser.theme });
-            if (res.error) return toast(res.error, true);
-            currentUser.nickname = newNick;
-            updateAllAvatars();
-            $('new-nick').value = '';
-            toast('✅ Ник изменён!');
+        function updateUI() {
+            if (!currentUser) return;
+            const av = currentUser.avatar || '';
+            $('header-avatar').src = av;
+            $('feed-avatar').src = av;
+            $('settings-avatar').src = av;
+            $('header-nick').textContent = currentUser.nickname;
+            $('settings-nick-display').textContent = currentUser.nickname;
+            $('settings-email').textContent = currentUser.email;
+            $('settings-name').textContent = currentUser.name;
         }
 
-        // ============ НАВИГАЦИЯ ============
-        function switchTab(id) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            $(id).classList.add('active');
-            const nav = document.querySelector(`[data-tab="${id}"]`);
-            if (nav) nav.classList.add('active');
-            if (id === 'feed') loadFeed();
-            if (id === 'chat') loadChat();
-            if (id === 'events') loadEvents();
-            if (id === 'games') loadGames('all');
-            if (id === 'admin') loadAdminPanel();
-        }
-
-        // ============ ЛЕНТА ============
-        function openPostModal() { $('post-modal').style.display = 'flex'; }
-        function closePostModal() { $('post-modal').style.display = 'none'; $('post-text').value = ''; $('post-image').value = ''; }
-
+        // ============ POSTS ============
         async function createPost() {
             const text = $('post-text').value.trim();
             const image = $('post-image').value.trim();
-            if (!text && !image) return toast('Введите текст или ссылку на картинку', true);
-            await api('/posts', 'POST', { text, image });
+            if (!text && !image) return toast('Введите текст или ссылку', true);
+            
+            await sb.from('posts').insert([{
+                user_id: currentUser.id,
+                nick: currentUser.nickname,
+                text, image,
+                avatar: currentUser.avatar || '',
+                time: Date.now(),
+                likes: '[]',
+                comments_count: 0
+            }]);
+            
             closePostModal();
             toast('✅ Пост опубликован!');
             loadFeed();
         }
 
         async function loadFeed() {
-            const data = await api('/posts');
+            const { data } = await sb.from('posts').select('*').order('time', { ascending: false }).limit(30);
             const container = $('feed-container');
-            if (!data || !data.length) {
-                container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-sec);">Лента пуста. Будьте первым!</div>';
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-sec);">Лента пуста</div>';
                 return;
             }
-            container.innerHTML = '';
-            for (const post of data) {
+            container.innerHTML = data.map(post => {
                 const likes = JSON.parse(post.likes || '[]');
-                const liked = likes.includes(currentUser?.nickname);
-                container.innerHTML += `
+                const liked = currentUser && likes.includes(currentUser.nickname);
+                return `
                     <div class="card">
                         <div class="post-header">
                             <img src="${post.avatar || ''}" class="post-avatar" onerror="this.style.display='none'">
@@ -536,50 +461,57 @@
                             <button class="action-btn ${liked ? 'liked' : ''}" onclick="toggleLike(${post.id})">
                                 <i class="fas fa-heart"></i> ${likes.length}
                             </button>
-                            <button class="action-btn" onclick="toggleComments(${post.id})">
-                                <i class="fas fa-comment"></i> ${post.commentsCount || 0}
-                            </button>
-                        </div>
-                        <div id="comments-${post.id}" class="comments" style="display:none;"></div>
-                        <div style="display:flex; gap:10px; margin-top:10px;">
-                            <input type="text" id="comment-input-${post.id}" class="login-input" style="margin:0; font-size:13px; padding:6px;" placeholder="Комментарий...">
-                            <button class="btn btn-sm" onclick="addComment(${post.id})">OK</button>
                         </div>
                     </div>
                 `;
-            }
+            }).join('');
         }
 
         async function toggleLike(postId) {
-            await api(`/posts/${postId}/like`, 'POST');
-            loadFeed();
-        }
-
-        async function toggleComments(postId) {
-            const div = $(`comments-${postId}`);
-            if (div.style.display === 'none') {
-                const data = await api(`/posts/${postId}/comments`);
-                div.innerHTML = (data || []).map(c => `
-                    <div class="comment">
-                        <span class="comment-nick">${esc(c.nick)}</span>: ${esc(c.text)}
-                    </div>
-                `).join('') || '<div style="color:var(--text-sec);">Нет комментариев</div>';
-                div.style.display = 'block';
+            if (!currentUser) return;
+            const { data: post } = await sb.from('posts').select('likes').eq('id', postId).single();
+            let likes = JSON.parse(post.likes || '[]');
+            if (likes.includes(currentUser.nickname)) {
+                likes = likes.filter(n => n !== currentUser.nickname);
             } else {
-                div.style.display = 'none';
+                likes.push(currentUser.nickname);
             }
-        }
-
-        async function addComment(postId) {
-            const input = $(`comment-input-${postId}`);
-            const text = input.value.trim();
-            if (!text) return;
-            await api(`/posts/${postId}/comments`, 'POST', { text });
-            input.value = '';
+            await sb.from('posts').update({ likes: JSON.stringify(likes) }).eq('id', postId);
             loadFeed();
         }
 
-        // ============ ИГРЫ ============
+        function openPostModal() { $('post-modal').style.display = 'flex'; }
+        function closePostModal() { $('post-modal').style.display = 'none'; $('post-text').value = ''; $('post-image').value = ''; }
+
+        // ============ CHAT ============
+        async function sendMessage() {
+            const text = $('msg-input').value.trim();
+            if (!text || !currentUser) return;
+            await sb.from('messages').insert([{
+                user_id: currentUser.id,
+                nick: currentUser.nickname,
+                text,
+                avatar: currentUser.avatar || '',
+                time: Date.now()
+            }]);
+            $('msg-input').value = '';
+            loadChat();
+        }
+
+        async function loadChat() {
+            const { data } = await sb.from('messages').select('*').order('time', { ascending: true }).limit(50);
+            const container = $('chat-messages');
+            container.innerHTML = (data || []).map(m => `
+                <div class="msg ${m.nick === (currentUser?.nickname || '') ? 'msg-me' : 'msg-other'}">
+                    ${m.nick !== currentUser?.nickname ? `<div class="msg-nick">${esc(m.nick)}</div>` : ''}
+                    <div class="msg-text">${esc(m.text)}</div>
+                    <div class="msg-time">${new Date(m.time).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})}</div>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // ============ GAMES ============
         function loadGames(cat) {
             const filtered = cat === 'all' ? GAMES : GAMES.filter(g => g.cat === cat);
             $('games-container').innerHTML = filtered.map(g => `
@@ -604,127 +536,39 @@
             $('game-frame').src = '';
         }
 
-        // ============ ЧАТ ============
-        async function sendMessage() {
-            const text = $('msg-input').value.trim();
-            if (!text) return;
-            await api('/chat', 'POST', { text });
-            $('msg-input').value = '';
-            loadChat();
+        // ============ NAVIGATION ============
+        function switchTab(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            $(id).classList.add('active');
+            document.querySelector(`[data-tab="${id}"]`)?.classList.add('active');
+            if (id === 'feed') loadFeed();
+            if (id === 'chat') loadChat();
+            if (id === 'games') loadGames('all');
         }
 
-        async function loadChat() {
-            const data = await api('/chat');
-            const container = $('chat-messages');
-            container.innerHTML = (data || []).map(m => `
-                <div class="msg ${m.nick === currentUser?.nickname ? 'msg-me' : 'msg-other'}">
-                    ${m.nick !== currentUser?.nickname ? `<div class="msg-nick">${esc(m.nick)}</div>` : ''}
-                    <div class="msg-text">${esc(m.text)}</div>
-                    <div class="msg-time">${new Date(m.time).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})}</div>
-                </div>
-            `).join('');
-            container.scrollTop = container.scrollHeight;
+        // ============ SETTINGS ============
+        async function changeNick() {
+            const newNick = $('new-nick').value.trim();
+            if (!newNick || !currentUser) return;
+            await sb.from('users').update({ nickname: newNick }).eq('id', currentUser.id);
+            currentUser.nickname = newNick;
+            updateUI();
+            $('new-nick').value = '';
+            toast('✅ Ник изменён!');
         }
 
-        // ============ ИВЕНТЫ ============
-        async function loadEvents() {
-            const data = await api('/events');
-            $('events-container').innerHTML = (data || []).map(e => `
-                <div class="card" style="border-left:4px solid ${e.status==='active'?'var(--success)':'var(--border)'}">
-                    <div style="font-size:12px; color:var(--accent);">${e.status==='active'?'🟢 Активен':'🔜 Предстоящий'}</div>
-                    <h3>${esc(e.title)}</h3>
-                    ${e.desc ? `<p style="color:var(--text-sec); margin:5px 0;">${esc(e.desc)}</p>` : ''}
-                    ${e.gameName ? `<div style="margin-top:10px;">${e.gameIcon || '🎮'} ${esc(e.gameName)}</div>` : ''}
-                </div>
-            `).join('') || '<div style="text-align:center; color:var(--text-sec);">Нет активных ивентов</div>';
-        }
-
-        async function checkAdmin() {
-            const pwd = prompt('Введите админ-пароль:');
-            if (!pwd) return;
-            const res = await api('/admin/check', 'POST', { password: pwd });
-            if (res.admin) {
-                sessionStorage.setItem('admin_pwd', pwd);
-                $('adminNavBtn').classList.remove('hidden');
-                switchTab('admin');
-                toast('✅ Доступ разрешён');
-            } else {
-                toast('❌ Неверный пароль', true);
-            }
-        }
-
-        async function loadAdminPanel() {
-            const pwd = sessionStorage.getItem('admin_pwd') || '';
-            const opts = { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${pwd}` } };
-            const res = await fetch(API_URL + '/admin/users', opts);
-            const data = await res.json();
-            
-            const container = $('admin-users-list');
-            if (data.error) {
-                container.innerHTML = '<p style="color:var(--danger);">Нет доступа</p>';
-                return;
-            }
-            
-            container.innerHTML = (data || []).map(u => `
-                <div class="card" style="cursor:pointer;" onclick="toggleUserInfo(${u.id})">
-                    <strong>${esc(u.nickname)}</strong> (${esc(u.name)}) - ${esc(u.email)}
-                    <div id="user-info-${u.id}" style="display:none; margin-top:10px; font-size:13px; color:var(--text-sec);">
-                        <p>📧 Email: ${esc(u.email)}</p>
-                        <p>🔑 Пароль: ${esc(u.password)}</p>
-                        <p>👤 Имя: ${esc(u.name)}</p>
-                        <p>🎂 Дата рождения: ${u.birthDay}.${u.birthMonth}.${u.birthYear}</p>
-                        <p>🎨 Тема: ${esc(u.theme)}</p>
-                        <p>📅 Создан: ${new Date(u.createdAt).toLocaleString('ru-RU')}</p>
-                        <button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id}); event.stopPropagation();">🗑️ Удалить</button>
-                    </div>
-                </div>
-            `).join('') || '<p>Нет пользователей</p>';
-        }
-
-        window.toggleUserInfo = function(id) {
-            const div = $(`user-info-${id}`);
-            div.style.display = div.style.display === 'none' ? 'block' : 'none';
-        };
-
-        window.deleteUser = async function(id) {
-            if (!confirm('Точно удалить пользователя?')) return;
-            const pwd = sessionStorage.getItem('admin_pwd') || '';
-            await fetch(API_URL + `/admin/users/${id}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${pwd}` }
-            });
-            toast('🗑️ Пользователь удалён');
-            loadAdminPanel();
-        };
-
-        // ============ ТЕМЫ ============
         function setTheme(t) {
             if (t === 'cyberpunk') document.documentElement.removeAttribute('data-theme');
             else document.documentElement.setAttribute('data-theme', t);
-            if (currentUser) {
-                currentUser.theme = t;
-                api('/profile', 'PUT', { nickname: currentUser.nickname, avatar: currentUser.avatar, theme: t });
-            }
+            localStorage.setItem('gamerfan_theme', t);
         }
 
-        // ============ ХОТКЕИ ============
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') { closePostModal(); closeGame(); $('avatar-view-modal').style.display='none'; }
-            if (e.ctrlKey && e.key === 'Enter') {
-                if ($('msg-input') === document.activeElement) sendMessage();
-            }
-        });
+        function openPrivacy() { $('privacy-modal').style.display = 'flex'; }
 
-        // ============ ИНИТ ============
+        // ============ INIT ============
         document.addEventListener('DOMContentLoaded', () => {
             showAuthForm('login');
-            
-            $('auth-box').addEventListener('keydown', e => {
-                if (e.key === 'Enter') {
-                    if ($('reg-email')) register();
-                    else login();
-                }
-            });
             
             document.querySelectorAll('[data-tab]').forEach(el => {
                 el.addEventListener('click', () => switchTab(el.dataset.tab));
@@ -744,18 +588,15 @@
             });
 
             document.addEventListener('click', e => {
-                if (!e.target.closest('#settings-avatar') && !e.target.closest('#avatar-menu')) {
-                    $('avatar-menu').style.display = 'none';
+                if (!e.target.closest('#settings-avatar')) {
+                    const menu = $('avatar-menu');
+                    if (menu) menu.style.display = 'none';
                 }
             });
 
             setInterval(() => {
                 if ($('chat').classList.contains('active')) loadChat();
             }, 3000);
-
-            setInterval(() => {
-                if ($('feed').classList.contains('active')) loadFeed();
-            }, 10000);
         });
     </script>
 </body>
