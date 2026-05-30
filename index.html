@@ -62,10 +62,6 @@
         .action-btn:hover { color: var(--primary); }
         .action-btn.liked { color: var(--accent); }
 
-        .comments { margin-top: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px; max-height: 200px; overflow-y: auto; }
-        .comment { font-size: 13px; margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
-        .comment-nick { font-weight: bold; color: var(--primary); }
-
         .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
         .game-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; }
         .game-card:hover { transform: translateY(-3px); border-color: var(--primary); }
@@ -102,13 +98,8 @@
         #game-frame { flex: 1; border: none; }
         #game-header { height: 45px; background: #111; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; color: #fff; }
 
-        .avatar-actions { position: absolute; top: 100%; left: 0; background: var(--card-bg); border: 1px solid var(--border); border-radius: 5px; padding: 5px; display: none; z-index: 10; }
-        .avatar-actions button { display: block; width: 100%; background: none; border: none; color: var(--text-main); padding: 8px 15px; cursor: pointer; text-align: left; font-size: 13px; }
-        .avatar-actions button:hover { background: rgba(255,255,255,0.1); }
-
         .partner-block { text-align: center; padding: 15px; margin-top: 15px; border-top: 1px solid var(--border); }
         .partner-link { color: var(--primary); text-decoration: none; font-size: 14px; }
-        .partner-link:hover { text-decoration: underline; }
 
         @media (max-width: 768px) {
             .nav-links span { display: none; }
@@ -140,7 +131,6 @@
         </header>
 
         <main>
-            <!-- FEED -->
             <section id="feed" class="section active">
                 <div class="card" style="display:flex; gap:10px; align-items:center;">
                     <img id="feed-avatar" class="mini-avatar" style="width:45px; height:45px;" src="">
@@ -150,7 +140,6 @@
                 <div id="feed-container"></div>
             </section>
 
-            <!-- GAMES -->
             <section id="games" class="section">
                 <h2 style="margin-bottom:15px;">🎮 Библиотека игр</h2>
                 <div class="games-tabs" id="games-tabs">
@@ -164,49 +153,36 @@
                 <div class="games-grid" id="games-container"></div>
             </section>
 
-            <!-- CHAT -->
             <section id="chat" class="section">
                 <div class="chat-container">
-                    <div class="chat-messages" id="chat-messages">
-                        <div style="text-align:center; color:var(--text-sec);">💬 Чат загружается...</div>
-                    </div>
+                    <div class="chat-messages" id="chat-messages"></div>
                     <div class="chat-input-area">
-                        <input type="text" id="msg-input" class="chat-input" placeholder="Напишите сообщение...">
+                        <input type="text" id="msg-input" class="chat-input" placeholder="Сообщение...">
                         <button class="btn btn-sm" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
             </section>
 
-            <!-- SETTINGS -->
             <section id="settings" class="section">
                 <div class="card">
-                    <h3>👤 Мой профиль</h3>
-                    <div style="position:relative; display:inline-block;">
-                        <img id="settings-avatar" style="width:80px; height:80px; border-radius:50%; object-fit:cover; background:#333; cursor:pointer;" onclick="toggleAvatarMenu()">
-                        <div id="avatar-menu" class="avatar-actions">
-                            <button onclick="viewAvatar()">🔍 Посмотреть фото</button>
-                            <button onclick="document.getElementById('settings-upload').click()">📤 Обновить фото</button>
-                            <button onclick="deleteAvatar()">🗑️ Удалить фото</button>
-                        </div>
-                    </div>
-                    <input type="file" id="settings-upload" accept="image/*" style="display:none;" onchange="uploadSettingsAvatar(this)">
-                    <p style="margin-top:10px;"><strong id="settings-nick-display"></strong></p>
-                    <p style="font-size:12px; color:var(--text-sec);">Email: <span id="settings-email"></span></p>
+                    <h3>👤 Профиль</h3>
+                    <p><strong id="settings-nick-display"></strong></p>
                     <p style="font-size:12px; color:var(--text-sec);">Имя: <span id="settings-name"></span></p>
+                    <p style="font-size:12px; color:var(--text-sec);">Возраст: <span id="settings-age"></span> лет</p>
                     
                     <label style="margin-top:15px; display:block;">Сменить ник:</label>
-                    <div style="display:flex; gap:10px; margin:5px 0;">
-                        <input type="text" id="new-nick" class="login-input" style="margin:0;" placeholder="Новый ник">
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="new-nick" class="login-input" placeholder="Новый ник">
                         <button class="btn btn-sm" onclick="changeNick()">OK</button>
                     </div>
                 </div>
                 <div class="card">
                     <h3>🎨 Тема</h3>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-                        <button class="btn btn-sm" onclick="setTheme('cyberpunk')" style="width:100%;">🎮 Киберпанк</button>
-                        <button class="btn btn-sm" onclick="setTheme('dark')" style="width:100%;">🌙 Тёмная</button>
-                        <button class="btn btn-sm" onclick="setTheme('black')" style="width:100%;">🖤 Чёрная</button>
-                        <button class="btn btn-sm" onclick="setTheme('light')" style="width:100%;">☀️ Светлая</button>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <button class="btn btn-sm" onclick="setTheme('cyberpunk')">🎮 Киберпанк</button>
+                        <button class="btn btn-sm" onclick="setTheme('dark')">🌙 Тёмная</button>
+                        <button class="btn btn-sm" onclick="setTheme('black')">🖤 Чёрная</button>
+                        <button class="btn btn-sm" onclick="setTheme('light')">☀️ Светлая</button>
                     </div>
                 </div>
                 <button class="btn btn-danger" onclick="logout()">🚪 Выйти</button>
@@ -214,22 +190,15 @@
         </main>
 
         <footer class="partner-block">
-            <p style="font-size:11px; opacity:0.7;">НАШ ПАРТНЕР</p>
-            <a href="https://daardos.github.io/the_daardos/" target="_blank" class="partner-link">
-                <i class="fas fa-external-link-alt"></i> The Daardos Project
-            </a>
-            <p style="margin-top:5px;">
-                <a onclick="openPrivacy()" style="color:var(--primary); cursor:pointer;">📜 Политика конфиденциальности</a>
-            </p>
+            <a href="https://daardos.github.io/the_daardos/" target="_blank" class="partner-link">The Daardos Project</a>
         </footer>
     </div>
 
-    <!-- MODALS -->
     <div id="post-modal" class="modal-overlay">
         <div class="modal-content">
             <span class="close-modal" onclick="closePostModal()">&times;</span>
             <h3>Новый пост</h3>
-            <textarea id="post-text" class="login-input" rows="4" placeholder="Текст поста..."></textarea>
+            <textarea id="post-text" class="login-input" rows="4"></textarea>
             <input type="text" id="post-image" class="login-input" placeholder="Ссылка на картинку">
             <button class="btn" onclick="createPost()">Опубликовать</button>
         </div>
@@ -243,37 +212,15 @@
         <iframe id="game-frame" src=""></iframe>
     </div>
 
-    <div id="avatar-view-modal" class="modal-overlay">
-        <div class="modal-content" style="text-align:center;">
-            <span class="close-modal" onclick="document.getElementById('avatar-view-modal').style.display='none'">&times;</span>
-            <img id="avatar-view-img" style="max-width:100%; max-height:70vh; border-radius:10px;">
-        </div>
-    </div>
-
-    <div id="privacy-modal" class="modal-overlay">
-        <div class="modal-content">
-            <span class="close-modal" onclick="document.getElementById('privacy-modal').style.display='none'">&times;</span>
-            <h2 style="color:var(--accent);">Политика конфиденциальности</h2>
-            <p style="font-size:12px; color:var(--text-sec);">Дата обновления: 30 мая 2026 г.</p>
-            <div style="margin-top:15px; font-size:14px; line-height:1.6; color:var(--text-sec);">
-                <p>Сайт использует куки для сохранения темы оформления. Данные аккаунтов хранятся в Supabase. Связь по email: vetrovlev1@gmail.com</p>
-            </div>
-        </div>
-    </div>
-
     <div class="toast-container" id="toast-container"></div>
 
     <script>
-        // ============ SUPABASE CONFIG ============
         const SUPABASE_URL = 'https://mmkaf34-ls5ms7wkn4jjw.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_MMkaF34-Ls5mS7wKnA4JJw_bcp7GWLx';
-        
         const { createClient } = supabase;
         const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const IMGBB_KEY = 'b80b9e18e607bfe48e6c03a19289c465';
         const BASE_PATH = '/GamerfanGames';
-
         const GAMES = [
             {name:"Slime Clicker 2D",path:BASE_PATH+"/Slime_Clicker/index.html",icon:"🧪",cat:"slime"},
             {name:"Slime Farm 2D",path:BASE_PATH+"/Slime_Farm_2D/index.html",icon:"🚜",cat:"slime"},
@@ -306,64 +253,47 @@
             $('toast-container').appendChild(t);
             setTimeout(() => t.remove(), 3000);
         }
-        function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+        function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
         // ============ AUTH ============
         function showAuthForm(mode) {
-            const box = $('auth-box');
             if (mode === 'login') {
-                box.innerHTML = `
+                $('auth-box').innerHTML = `
                     <h1 class="logo">GAMER<span style="color:#fff">FAN</span></h1>
                     <h3 style="color:var(--primary); margin:15px 0;">Вход</h3>
-                    <input type="email" id="auth-email" class="login-input" placeholder="Email">
-                    <input type="password" id="auth-pass" class="login-input" placeholder="Пароль">
+                    <input type="text" id="login-cred" class="login-input" placeholder="Имя или Никнейм">
+                    <input type="password" id="login-pass" class="login-input" placeholder="Пароль">
                     <button class="btn" onclick="login()">Войти</button>
-                    <p style="margin-top:15px; font-size:14px; color:var(--text-sec);">
-                        Нет аккаунта? <a class="auth-link" onclick="showAuthForm('register')">Регистрация</a>
-                    </p>
+                    <p style="margin-top:15px;"><a class="auth-link" onclick="showAuthForm('register')">Создать аккаунт</a></p>
                 `;
             } else {
-                box.innerHTML = `
+                $('auth-box').innerHTML = `
                     <h1 class="logo">GAMER<span style="color:#fff">FAN</span></h1>
                     <h3 style="color:var(--primary); margin:15px 0;">Регистрация</h3>
-                    <input type="email" id="reg-email" class="login-input" placeholder="Email">
                     <input type="text" id="reg-name" class="login-input" placeholder="Имя">
                     <input type="text" id="reg-nick" class="login-input" placeholder="Никнейм">
+                    <input type="number" id="reg-age" class="login-input" placeholder="Возраст" min="8" max="99">
                     <input type="password" id="reg-pass" class="login-input" placeholder="Пароль">
-                    <div style="display:flex; gap:5px;">
-                        <input type="number" id="reg-day" class="login-input" placeholder="День" min="1" max="31">
-                        <input type="number" id="reg-month" class="login-input" placeholder="Месяц" min="1" max="12">
-                        <input type="number" id="reg-year" class="login-input" placeholder="Год" min="1900" max="2018">
-                    </div>
                     <button class="btn" onclick="register()">Зарегистрироваться</button>
-                    <p style="margin-top:15px; font-size:14px; color:var(--text-sec);">
-                        Есть аккаунт? <a class="auth-link" onclick="showAuthForm('login')">Войти</a>
-                    </p>
+                    <p style="margin-top:15px;"><a class="auth-link" onclick="showAuthForm('login')">Уже есть аккаунт</a></p>
                 `;
             }
         }
 
         async function register() {
-            const email = $('reg-email').value.trim();
             const name = $('reg-name').value.trim();
             const nickname = $('reg-nick').value.trim();
+            const age = parseInt($('reg-age').value);
             const password = $('reg-pass').value;
-            const birthDay = parseInt($('reg-day').value);
-            const birthMonth = parseInt($('reg-month').value);
-            const birthYear = parseInt($('reg-year').value);
 
-            if (!email || !name || !nickname || !password || !birthDay || !birthMonth || !birthYear) {
-                return toast('Все поля обязательны', true);
-            }
+            if (!name || !nickname || !age || !password) return toast('Все поля обязательны', true);
+            if (age < 8) return toast('Минимальный возраст: 8 лет', true);
 
-            const { data: existing } = await sb.from('users').select('id').or(`email.eq.${email},nickname.eq.${nickname}`).limit(1);
-            if (existing && existing.length > 0) {
-                return toast('Почта или никнейм уже заняты', true);
-            }
+            const { data: exist } = await sb.from('users').select('id').eq('nickname', nickname).limit(1);
+            if (exist && exist.length > 0) return toast('Никнейм занят', true);
 
             const { data, error } = await sb.from('users').insert([{
-                email, password, name, nickname,
-                birth_day: birthDay, birth_month: birthMonth, birth_year: birthYear,
+                name, nickname, age, password,
                 avatar: '', theme: 'cyberpunk'
             }]).select().single();
 
@@ -371,20 +301,23 @@
             
             currentUser = data;
             enterApp();
-            toast('✅ Регистрация успешна!');
+            toast('✅ Аккаунт создан!');
         }
 
         async function login() {
-            const email = $('auth-email').value.trim();
-            const password = $('auth-pass').value;
-            if (!email || !password) return toast('Email и пароль обязательны', true);
+            const cred = $('login-cred').value.trim();
+            const password = $('login-pass').value;
+            if (!cred || !password) return toast('Заполните поля', true);
 
-            const { data, error } = await sb.from('users').select('*').eq('email', email).eq('password', password).single();
-            if (error || !data) return toast('Неверный email или пароль', true);
+            const { data, error } = await sb.from('users').select('*')
+                .or(`name.eq.${cred},nickname.eq.${cred}`)
+                .eq('password', password).single();
+
+            if (error || !data) return toast('Неверные данные', true);
             
             currentUser = data;
             enterApp();
-            toast('👋 С возвращением!');
+            toast('👋 Привет, ' + data.nickname + '!');
         }
 
         function enterApp() {
@@ -405,14 +338,10 @@
 
         function updateUI() {
             if (!currentUser) return;
-            const av = currentUser.avatar || '';
-            $('header-avatar').src = av;
-            $('feed-avatar').src = av;
-            $('settings-avatar').src = av;
             $('header-nick').textContent = currentUser.nickname;
             $('settings-nick-display').textContent = currentUser.nickname;
-            $('settings-email').textContent = currentUser.email;
             $('settings-name').textContent = currentUser.name;
+            $('settings-age').textContent = currentUser.age;
         }
 
         // ============ POSTS ============
@@ -420,63 +349,39 @@
             const text = $('post-text').value.trim();
             const image = $('post-image').value.trim();
             if (!text && !image) return toast('Введите текст или ссылку', true);
-            
             await sb.from('posts').insert([{
-                user_id: currentUser.id,
-                nick: currentUser.nickname,
-                text, image,
-                avatar: currentUser.avatar || '',
-                time: Date.now(),
-                likes: '[]',
-                comments_count: 0
+                user_id: currentUser.id, nick: currentUser.nickname,
+                text, image, avatar: currentUser.avatar || '',
+                time: Date.now(), likes: '[]', comments_count: 0
             }]);
-            
             closePostModal();
-            toast('✅ Пост опубликован!');
             loadFeed();
+            toast('✅ Пост опубликован!');
         }
 
         async function loadFeed() {
             const { data } = await sb.from('posts').select('*').order('time', { ascending: false }).limit(30);
-            const container = $('feed-container');
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-sec);">Лента пуста</div>';
-                return;
-            }
-            container.innerHTML = data.map(post => {
-                const likes = JSON.parse(post.likes || '[]');
+            const c = $('feed-container');
+            if (!data || !data.length) { c.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-sec);">Лента пуста</div>'; return; }
+            c.innerHTML = data.map(p => {
+                const likes = JSON.parse(p.likes || '[]');
                 const liked = currentUser && likes.includes(currentUser.nickname);
-                return `
-                    <div class="card">
-                        <div class="post-header">
-                            <img src="${post.avatar || ''}" class="post-avatar" onerror="this.style.display='none'">
-                            <div>
-                                <div class="post-nick">${esc(post.nick)}</div>
-                                <div class="post-time">${new Date(post.time).toLocaleString('ru-RU')}</div>
-                            </div>
-                        </div>
-                        ${post.text ? `<div class="post-text">${esc(post.text)}</div>` : ''}
-                        ${post.image ? `<img src="${post.image}" class="post-image">` : ''}
-                        <div class="post-actions">
-                            <button class="action-btn ${liked ? 'liked' : ''}" onclick="toggleLike(${post.id})">
-                                <i class="fas fa-heart"></i> ${likes.length}
-                            </button>
-                        </div>
-                    </div>
-                `;
+                return `<div class="card">
+                    <div class="post-header"><div class="post-nick">${esc(p.nick)}</div><div class="post-time">${new Date(p.time).toLocaleString('ru-RU')}</div></div>
+                    ${p.text ? `<div class="post-text">${esc(p.text)}</div>` : ''}
+                    ${p.image ? `<img src="${p.image}" class="post-image">` : ''}
+                    <div class="post-actions">
+                        <button class="action-btn ${liked?'liked':''}" onclick="toggleLike(${p.id})"><i class="fas fa-heart"></i> ${likes.length}</button>
+                    </div></div>`;
             }).join('');
         }
 
-        async function toggleLike(postId) {
+        async function toggleLike(id) {
             if (!currentUser) return;
-            const { data: post } = await sb.from('posts').select('likes').eq('id', postId).single();
-            let likes = JSON.parse(post.likes || '[]');
-            if (likes.includes(currentUser.nickname)) {
-                likes = likes.filter(n => n !== currentUser.nickname);
-            } else {
-                likes.push(currentUser.nickname);
-            }
-            await sb.from('posts').update({ likes: JSON.stringify(likes) }).eq('id', postId);
+            const { data } = await sb.from('posts').select('likes').eq('id', id).single();
+            let likes = JSON.parse(data.likes || '[]');
+            likes = likes.includes(currentUser.nickname) ? likes.filter(n => n !== currentUser.nickname) : [...likes, currentUser.nickname];
+            await sb.from('posts').update({ likes: JSON.stringify(likes) }).eq('id', id);
             loadFeed();
         }
 
@@ -488,11 +393,8 @@
             const text = $('msg-input').value.trim();
             if (!text || !currentUser) return;
             await sb.from('messages').insert([{
-                user_id: currentUser.id,
-                nick: currentUser.nickname,
-                text,
-                avatar: currentUser.avatar || '',
-                time: Date.now()
+                user_id: currentUser.id, nick: currentUser.nickname,
+                text, avatar: currentUser.avatar || '', time: Date.now()
             }]);
             $('msg-input').value = '';
             loadChat();
@@ -500,43 +402,25 @@
 
         async function loadChat() {
             const { data } = await sb.from('messages').select('*').order('time', { ascending: true }).limit(50);
-            const container = $('chat-messages');
-            container.innerHTML = (data || []).map(m => `
-                <div class="msg ${m.nick === (currentUser?.nickname || '') ? 'msg-me' : 'msg-other'}">
-                    ${m.nick !== currentUser?.nickname ? `<div class="msg-nick">${esc(m.nick)}</div>` : ''}
-                    <div class="msg-text">${esc(m.text)}</div>
-                    <div class="msg-time">${new Date(m.time).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})}</div>
-                </div>
-            `).join('');
-            container.scrollTop = container.scrollHeight;
+            $('chat-messages').innerHTML = (data || []).map(m => `<div class="msg ${m.nick===currentUser?.nickname?'msg-me':'msg-other'}">
+                ${m.nick!==currentUser?.nickname?`<div class="msg-nick">${esc(m.nick)}</div>`:''}
+                <div class="msg-text">${esc(m.text)}</div>
+                <div class="msg-time">${new Date(m.time).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}</div>
+            </div>`).join('');
+            $('chat-messages').scrollTop = $('chat-messages').scrollHeight;
         }
 
         // ============ GAMES ============
         function loadGames(cat) {
             const filtered = cat === 'all' ? GAMES : GAMES.filter(g => g.cat === cat);
-            $('games-container').innerHTML = filtered.map(g => `
-                <div class="game-card" onclick="launchGame('${g.path}','${g.name}')">
-                    <div class="game-icon">${g.icon}</div>
-                    <div class="game-info">
-                        <div class="game-title">${g.name}</div>
-                        <div class="game-cat">${g.cat}</div>
-                    </div>
-                </div>
-            `).join('');
+            $('games-container').innerHTML = filtered.map(g => `<div class="game-card" onclick="launchGame('${g.path}','${g.name}')">
+                <div class="game-icon">${g.icon}</div><div class="game-info"><div class="game-title">${g.name}</div><div class="game-cat">${g.cat}</div></div></div>`).join('');
         }
 
-        function launchGame(path, name) {
-            $('game-title-display').textContent = name;
-            $('game-frame').src = path;
-            $('game-overlay').style.display = 'flex';
-        }
+        function launchGame(path, name) { $('game-title-display').textContent = name; $('game-frame').src = path; $('game-overlay').style.display = 'flex'; }
+        function closeGame() { $('game-overlay').style.display = 'none'; $('game-frame').src = ''; }
 
-        function closeGame() {
-            $('game-overlay').style.display = 'none';
-            $('game-frame').src = '';
-        }
-
-        // ============ NAVIGATION ============
+        // ============ NAV ============
         function switchTab(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -549,54 +433,33 @@
 
         // ============ SETTINGS ============
         async function changeNick() {
-            const newNick = $('new-nick').value.trim();
-            if (!newNick || !currentUser) return;
-            await sb.from('users').update({ nickname: newNick }).eq('id', currentUser.id);
-            currentUser.nickname = newNick;
+            const nick = $('new-nick').value.trim();
+            if (!nick || !currentUser) return;
+            const { data: exist } = await sb.from('users').select('id').eq('nickname', nick).limit(1);
+            if (exist && exist.length > 0) return toast('Ник занят', true);
+            await sb.from('users').update({ nickname: nick }).eq('id', currentUser.id);
+            currentUser.nickname = nick;
             updateUI();
             $('new-nick').value = '';
             toast('✅ Ник изменён!');
         }
 
         function setTheme(t) {
+            document.documentElement.setAttribute('data-theme', t === 'cyberpunk' ? '' : t);
             if (t === 'cyberpunk') document.documentElement.removeAttribute('data-theme');
-            else document.documentElement.setAttribute('data-theme', t);
-            localStorage.setItem('gamerfan_theme', t);
+            localStorage.setItem('theme', t);
         }
-
-        function openPrivacy() { $('privacy-modal').style.display = 'flex'; }
 
         // ============ INIT ============
         document.addEventListener('DOMContentLoaded', () => {
             showAuthForm('login');
-            
-            document.querySelectorAll('[data-tab]').forEach(el => {
-                el.addEventListener('click', () => switchTab(el.dataset.tab));
-            });
-            
+            document.querySelectorAll('[data-tab]').forEach(el => el.addEventListener('click', () => switchTab(el.dataset.tab)));
             $('games-tabs').addEventListener('click', e => {
                 const tab = e.target.closest('.section-tab');
-                if (tab) {
-                    document.querySelectorAll('#games-tabs .section-tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    loadGames(tab.dataset.cat);
-                }
+                if (tab) { document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active')); tab.classList.add('active'); loadGames(tab.dataset.cat); }
             });
-            
-            $('msg-input').addEventListener('keydown', e => {
-                if (e.key === 'Enter') sendMessage();
-            });
-
-            document.addEventListener('click', e => {
-                if (!e.target.closest('#settings-avatar')) {
-                    const menu = $('avatar-menu');
-                    if (menu) menu.style.display = 'none';
-                }
-            });
-
-            setInterval(() => {
-                if ($('chat').classList.contains('active')) loadChat();
-            }, 3000);
+            $('msg-input').addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+            setInterval(() => { if ($('chat').classList.contains('active')) loadChat(); }, 3000);
         });
     </script>
 </body>
