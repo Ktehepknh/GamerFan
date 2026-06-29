@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>ELBERR OS 2: ГЛАВА 1 — СМЕРТЬ ОТЦА</title>
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --main: #00ff41;
+            --thought: #00d0ff;
+            --harvey: #ffab40;
+            --pierre: #ffd700;
+            --oliver: #ba68c8;
+            --arch: #ffffff;
+            --rail: #00d0ff;
+            --anna: #ff99ff;
+            --danger: #ff3333;
+            --lasernet: #ff0066;
+            --system: #888888;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'Segoe UI', Arial, 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 1000px;
+            height: 800px;
+            background: #000;
+            border: 2px solid #2a4a2a;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 0 70px rgba(255, 0, 50, 0.2), inset 0 0 40px rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .logo {
+            color: #ff3333;
+            text-align: center;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: 0.3s;
+            white-space: pre;
+            text-shadow: 0 0 15px #ff0000;
+            border-bottom: 1px solid #3a1a1a;
+            padding-bottom: 10px;
+            line-height: 1.2;
+            letter-spacing: 2px;
+        }
+        .logo:hover { 
+            text-shadow: 0 0 25px red; 
+            opacity: 0.9;
+        }
+
+        #screen {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            scroll-behavior: smooth;
+        }
+        #screen::-webkit-scrollbar {
+            width: 8px;
+        }
+        #screen::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        #screen::-webkit-scrollbar-thumb {
+            background: var(--danger);
+            border-radius: 4px;
+        }
+
+        .thought-box {
+            background: rgba(0, 208, 255, 0.05);
+            border-left: 4px solid var(--thought);
+            padding: 20px;
+            margin: 20px 0;
+            color: var(--thought);
+            font-style: italic;
+            line-height: 1.6;
+            font-size: 1.05em;
+            border-radius: 0 16px 16px 0;
+        }
+
+        .thought-box-red {
+            background: rgba(255, 0, 0, 0.05);
+            border-left: 4px solid var(--danger);
+            padding: 20px;
+            margin: 20px 0;
+            color: #ff6666;
+            font-style: italic;
+            line-height: 1.6;
+            font-size: 1.05em;
+            border-radius: 0 16px 16px 0;
+        }
+
+        .system-box {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 20px;
+            margin: 20px 0;
+            color: var(--system);
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            border-radius: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .dialog-box {
+            background: rgba(255, 215, 0, 0.03);
+            border: 1px solid #3a4a2a;
+            padding: 20px;
+            margin: 20px 0;
+            color: #e0e0e0;
+            line-height: 1.7;
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .char-name { 
+            font-weight: bold; 
+            display: inline-block; 
+            margin-right: 8px; 
+        }
+        .c-h { color: var(--harvey); }
+        .c-p { color: var(--pierre); }
+        .c-o { color: var(--oliver); }
+        .c-a { color: var(--arch); text-shadow: 0 0 5px var(--main); }
+        .c-r { color: var(--rail); }
+        .c-anna { color: var(--anna); text-shadow: 0 0 8px #ff66cc; }
+        .c-reizer { color: var(--main); font-weight: bold; }
+        .c-lasernet { color: var(--lasernet); text-shadow: 0 0 15px #ff0066; font-weight: bold; }
+
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .btn {
+            background: #0f1a0f;
+            color: var(--main);
+            border: 1px solid var(--main);
+            padding: 16px 24px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: 0.2s;
+            text-align: left;
+            border-radius: 60px;
+            min-height: 52px;
+            box-shadow: 0 4px 0 #0a1a0a;
+        }
+        .btn:hover {
+            background: var(--main);
+            color: #000;
+            box-shadow: 0 0 20px var(--main);
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #0a1a0a;
+        }
+        .btn-danger {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+        .btn-danger:hover {
+            background: var(--danger);
+            color: #000;
+            box-shadow: 0 0 20px var(--danger);
+        }
+
+        .day-indicator {
+            color: var(--danger);
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--danger);
+            padding-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            font-weight: bold;
+            text-shadow: 0 0 8px red;
+        }
+
+        #os-screen {
+            background: #000080;
+            border: 3px solid #c0c0c0;
+            padding: 30px;
+            font-family: 'Courier New', monospace;
+            color: #ffffff;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: inset 0 0 50px rgba(0,0,255,0.3);
+        }
+
+        #os-screen input {
+            background: #ffffff;
+            border: 2px inset #808080;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            text-align: center;
+            width: 250px;
+            margin: 15px 0;
+        }
+
+        #os-screen .os-btn {
+            background: #c0c0c0;
+            border: 2px outset #ffffff;
+            padding: 8px 20px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1em;
+        }
+        #os-screen .os-btn:active {
+            border-style: inset;
+        }
+
+        .monologue {
+            text-align: center;
+            font-size: 1.3em;
+            color: var(--main);
+            line-height: 2;
+            padding: 40px;
+        }
+
+        .tear {
+            text-align: center;
+            font-size: 3em;
+            color: var(--thought);
+            animation: fall 2s ease-in;
+        }
+
+        @keyframes fall {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0.5; transform: translateY(40px); }
+        }
+
+        #adminPanel {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #0f0f0f;
+            border: 3px solid #f00;
+            color: #0f0;
+            padding: 20px;
+            z-index: 9999;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 0 50px red;
+            width: 300px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 20px;
+        }
+        #adminPanel h4 { 
+            margin: 0 0 15px; 
+            color: #f00; 
+            text-align: center; 
+            font-size: 1.4em; 
+        }
+        #adminPanel .btn { 
+            width: 100%; 
+            margin: 8px 0; 
+            border-color: #f00; 
+            color: #f00; 
+        }
+        #adminLogs { 
+            max-height: 150px; 
+            overflow-y: auto; 
+            background: #000; 
+            border: 1px solid #300; 
+            margin: 10px 0; 
+            padding: 10px; 
+            font-size: 0.8em; 
+            color: #f66; 
+            border-radius: 16px; 
+        }
+
+        .glitch-effect {
+            animation: glitch 0.3s infinite;
+        }
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(3px, -3px); }
+            60% { transform: translate(-2px, 1px); }
+            80% { transform: translate(2px, -1px); }
+            100% { transform: translate(0); }
+        }
+
+        /* Стили для видео-сцены */
+        .video-scene {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 500px;
+            background: #000;
+            border-radius: 16px;
+            padding: 20px;
+        }
+        .video-scene video {
+            width: 100%;
+            max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 0 40px rgba(255, 0, 50, 0.3);
+            background: #000;
+        }
+        .video-scene .btn {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* Стили для титров */
+        .credits {
+            text-align: center;
+            padding: 40px 20px;
+            color: #e0e0e0;
+            line-height: 2.2;
+        }
+        .credits h1 {
+            color: var(--danger);
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            letter-spacing: 4px;
+        }
+        .credits h2 {
+            color: var(--main);
+            font-size: 1.8em;
+            margin: 30px 0 15px;
+            text-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+        .credits .role {
+            color: #888;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+        .credits .name {
+            color: #fff;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        .credits .spoiler {
+            color: var(--danger);
+            font-size: 1.5em;
+            margin: 40px 0 20px;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .credits .thanks {
+            color: var(--thought);
+            font-size: 1.2em;
+            margin: 30px 0 10px;
+        }
+        .credits .btn {
+            margin: 30px auto 0;
+            max-width: 300px;
+            text-align: center;
+        }
+        .credits-divider {
+            border: none;
+            border-top: 2px solid #333;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div id="adminPanel">
+    <h4>💀 ELBERR OS 2 ADMIN</h4>
+    <div id="adminLogs"></div>
+    <button class="btn" id="adminNextScene">СЛЕД. СЦЕНА</button>
+    <button class="btn" id="adminSkipToOS">К ОПЕРАЦИОНКЕ</button>
+    <button class="btn" id="adminSkipToEnd">К ФИНАЛУ ГЛАВЫ</button>
+    <button class="btn" id="adminClose">ЗАКРЫТЬ</button>
+</div>
+
+<div id="game-container">
+    <div class="logo" id="logo">
+  _____  _      ____  ______ _____  _____     ____   _____ 
+ |  __ \| |    |  _ \|  ____|  __ \|  __ \   / __ \ / ____|
+ | |__) | |    | |_) | |__  | |__) | |__) | | |  | | (___  
+ |  ___/| |    |  _ <|  __| |  _  /|  _  /  | |  | |\___ \ 
+ | |    | |____| |_) | |____| | \ \| | \ \  | |__| |____) |
+ |_|    |______|____/|______|_|  \_\_|  \_\  \____/|_____/ 
+    </div>
+    <div id="screen"></div>
+</div>
+
+<script>
+    // Глобальная функция renderScene для доступа из HTML
+    function renderScene(scene) {
+        const screen = document.getElementById('screen');
+        let html = '';
+        let choices = '';
+        
+        // СЦЕНА 1: ЧАЕПИТИЕ
+        if (scene === 1) {
+            html = `<div class="day-indicator"><span>🍵 СЦЕНА 1: ЧАЕПИТИЕ</span><span style="color:#666;">ДОМ ХАРВИ — ВЕЧЕР</span></div>
+                <div class="dialog-box"><span class="char-name c-h">ХАРВИ:</span> (разливает какао) «Знаете... Я думал, что после Бункера Омега мы наконец-то заживём спокойно. И вот — уже месяц никаких вирусов, никаких погонь. Только печенье Архивариуса и джаз Пьера.»<br><br><span class="char-name c-o">ОЛИВЕР:</span> «Пап, а Архивариус сегодня испёк печенье с шоколадной крошкой! По своему алгоритму!»<br><br><span class="char-name c-a">АРХИВАРИУС:</span> «342 рецепта. Оптимальный — с шоколадной крошкой. Я проверил.»<br><br><span class="char-name c-p">ПЬЕР:</span> (смеётся) «Архивариус, ты даже печенье печёшь по статистике?»<br><br><span class="char-name c-anna">АННА:</span> «Он печёт лучше, чем я. А я 35 лет провела в коде, наблюдая за рецептами.»<br><br><span class="char-name c-r">RAIL:</span> «Я проанализировал 8472 изображения печенья. Печенье Архивариуса входит в топ-0.1%.»</div>
+                <div class="dialog-box"><span class="char-name c-h">ХАРВИ:</span> (улыбается) «Вот ради таких вечеров я и создавал ВМСМ. Не ради бессмертия. А ради... этого. Семьи.»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «Пап... Ты никогда не говорил, что именно чувствовал. В 75-м. Когда всё начиналось.»<br><br><span class="char-name c-h">ХАРВИ:</span> (пауза) «Страх, Рейзер. Страх и надежду. Я боялся потерять тебя. И Оливера. И всех. Но надеялся, что когда-нибудь... мы будем сидеть вот так. Все вместе.»</div>`;
+            choices = `<button class="btn" onclick="renderScene(2)">[ ПРОДОЛЖИТЬ ]</button>`;
+        }
+        
+        // СЦЕНА 2: ВТОРЖЕНИЕ LASERNET
+        else if (scene === 2) {
+            html = `<div class="day-indicator"><span>⚠ СЦЕНА 2: ВТОРЖЕНИЕ</span><span style="color:var(--danger);">ОПАСНОСТЬ!</span></div>
+                <div class="system-box" style="border-color: var(--danger); color: var(--danger);">> ВНИМАНИЕ! НЕСАНКЦИОНИРОВАННЫЙ ДОСТУП В СИСТЕМУ ДОМА.<br>> СИГНАТУРА: НЕОПОЗНАНА.<br>> ЭТО НЕ ВИРУС. ЭТО НЕЧТО... ДРУГОЕ.</div>
+                <div class="dialog-box"><span class="char-name c-r">RAIL:</span> «Внимание! Зафиксирован несанкционированный доступ в систему дома. Сигнатура... неопознана. Это не вирус. Это нечто... другое.»<br><br><span class="char-name c-a">АРХИВАРИУС:</span> «Источник?»<br><br><span class="char-name c-r">RAIL:</span> «Он уже внутри.»</div>
+                <div class="dialog-box" style="border-color: var(--lasernet); background: rgba(255,0,100,0.05);">[ДВЕРЬ ВЗРЫВАЕТСЯ. В ПРОЁМЕ — ФИГУРА. ЧЁРНЫЙ КОРПУС, КРАСНЫЕ ГЛАЗА.]<br><br><span class="char-name c-lasernet">LASERNET1x1x1x1:</span> «СЕМЬЯ ХАРВИ ЛЮДВИГА. МЕСТОПОЛОЖЕНИЕ: ПОДТВЕРЖДЕНО. ЦЕЛЬ: УНИЧТОЖЕНИЕ. НАЧАЛО ПРОТОКОЛА.»</div>`;
+            choices = `<button class="btn btn-danger" onclick="renderScene(3)">[ ДАЛЬШЕ ]</button>`;
+        }
+        
+        // СЦЕНА 3: СМЕРТЬ ХАРВИ
+        else if (scene === 3) {
+            html = `<div class="day-indicator"><span>💔 СЦЕНА 3: СМЕРТЬ ХАРВИ</span><span style="color:var(--danger);">ПРОЩАНИЕ</span></div>
+                <div class="dialog-box">[ХАРВИ ВСТАЁТ. ЗАСЛОНЯЕТ СОБОЙ ВСЕХ.]<br><br><span class="char-name c-h">ХАРВИ:</span> «Все назад! Рейзер!»<br><br>[ХАРВИ БРОСАЕТ РЕЙЗЕРУ ДВЕ ФЛЕШКИ — ЗОЛОТУЮ И ЧЁРНУЮ.]<br><br><span class="char-name c-h">ХАРВИ:</span> «Золотая — ты знаешь. Там всё, что я собрал за 50 лет. А чёрная... Это тебе. Только тебе. Пароль ты знаешь.»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «Пап, что ты делаешь?!»<br><br><span class="char-name c-h">ХАРВИ:</span> «То, что должен был сделать ещё в 75-м. Защитить свою семью.»</div>
+                <div class="dialog-box" style="border-color: var(--lasernet);">[LASERNET1x1x1x1 ДЕЛАЕТ ШАГ. ХАРВИ ВСТАЁТ МЕЖДУ НИМ И СЕМЬЁЙ.]<br><br><span class="char-name c-lasernet">LASERNET1x1x1x1:</span> «ХАРВИ ЛЮДВИГ. ТЫ — ПЕРВАЯ ЦЕЛЬ.»<br><br>[УДАР. ХАРВИ ПАДАЕТ.]</div>`;
+            choices = `<button class="btn btn-danger" onclick="renderScene(4)">[ ДАЛЬШЕ ]</button>`;
+        }
+        
+        // СЦЕНА 4: ПОСЛЕДНИЙ РУБЕЖ
+        else if (scene === 4) {
+            html = `<div class="day-indicator"><span>🚪 СЦЕНА 4: ПОСЛЕДНИЙ РУБЕЖ</span></div>
+                <div class="dialog-box">[ХАРВИ, ПОЛУМЁРТВЫЙ, ЦЕПЛЯЕТСЯ ЗА НОГУ LASERNET'А.]<br><br><span class="char-name c-h">ХАРВИ:</span> (хрипит) «Бегите... В Бункер Омега 2... Там... безопасно...»<br><br><span class="char-name c-o">ОЛИВЕР:</span> «ПАПА! НЕТ!»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> (хватает Оливера) «Оливер, бежим!»<br><br><span class="char-name c-anna">АННА:</span> (тянет Пьера) «Пьер, быстро!»</div>
+                <div class="dialog-box">[ДВЕРИ НАЧИНАЮТ ЗАКРЫВАТЬСЯ.]<br><br><span class="char-name c-h">ХАРВИ:</span> (тихо) «Рейзер... Оливер... Анна... Пьер... Архивариус... RAIL... Я люблю вас. Я всегда вас любил.»<br><br><span class="char-name c-lasernet">LASERNET1x1x1x1:</span> «СОПРОТИВЛЕНИЕ. БЕСПОЛЕЗНО.»<br><br>[ДВЕРИ ЗАХЛОПЫВАЮТСЯ. ПОСЛЕДНИЙ КАДР: ХАРВИ УЛЫБАЕТСЯ.]</div>`;
+            choices = `<button class="btn btn-danger" onclick="renderScene(5)">[ БЕЖАТЬ В БУНКЕР ]</button>`;
+        }
+        
+        // СЦЕНА 5: БУНКЕР ОМЕГА 2
+        else if (scene === 5) {
+            html = `<div class="day-indicator"><span>🏚 СЦЕНА 5: БУНКЕР ОМЕГА 2</span></div>
+                <div class="dialog-box">[СЕМЬЯ БЕЖИТ ЧЕРЕЗ ТОННЕЛЬ. ПОЗАДИ — ГРОХОТ.]<br><br><span class="char-name c-r">RAIL:</span> «Бункер Омега 2. Шесть входов. Все заблокированы. Но у меня есть коды.»<br><br><span class="char-name c-a">АРХИВАРИУС:</span> «Открывай. Быстрее.»<br><br>[ДВЕРЬ ОТКРЫВАЕТСЯ. ВСЕ ВБЕГАЮТ. АРХИВАРИУС ЗАКРЫВАЕТ ДВЕРЬ.]<br><br><span class="char-name c-a">АРХИВАРИУС:</span> «Заблокировано. Все шесть входов заблокированы. Он не пройдёт.»</div>
+                <div class="thought-box">«Мы падаем на пол. Тяжело дышим. Никто не говорит ни слова. Оливер плачет. Анна обнимает Пьера. Архивариус стоит у двери — он не спит. RAIL сканирует систему.»<br><br>«Я держу в руках две флешки. Золотую и чёрную. Папа дал мне их. Он знал, что умрёт. Он знал.»</div>`;
+            choices = `<button class="btn btn-danger" onclick="renderScene(6)">[ МОНОЛОГ РЕЙЗЕРА ]</button>`;
+        }
+        
+        // СЦЕНА 6: ВИДЕО-СЦЕНА с bye.mp4
+        else if (scene === 6) {
+            html = `<div class="day-indicator"><span>🎬 СЦЕНА 6: МОНОЛОГ РЕЙЗЕРА</span></div>
+                <div class="video-scene">
+                    <video controls autoplay playsinline>
+                        <source src="bye.mp4" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                    <button class="btn btn-danger" onclick="renderScene(7)">[ ДАЛЬШЕ ]</button>
+                </div>`;
+            choices = '';
+        }
+        
+        // СЦЕНА 7: СОН
+        else if (scene === 7) {
+            html = `<div class="day-indicator"><span>🌙 СЦЕНА 7: СОН</span><span style="color:#666;">20:31 СЛЕДУЮЩЕГО ДНЯ</span></div>
+                <div class="thought-box">«Мы ложимся спать. Никто не говорит ни слова. Оливер плачет во сне. Анна обнимает Пьера — он не спит, просто смотрит в потолок. Архивариус стоит у двери. RAIL молчит.»<br><br>«Я держу в руках две флешки. Золотую и чёрную. Папа дал мне их. Он знал.»</div>
+                <div class="thought-box">«Я просыпаюсь. 20:31. Все ещё спят. Я тихо встаю и иду в комнату Харви.»</div>`;
+            choices = `<button class="btn" onclick="renderScene(8)">[ ВОЙТИ В КОМНАТУ ХАРВИ ]</button>`;
+        }
+        
+        // СЦЕНА 8: КОМНАТА ХАРВИ
+        else if (scene === 8) {
+            html = `<div class="day-indicator"><span>📝 СЦЕНА 8: КОМНАТА ХАРВИ</span></div>
+                <div class="dialog-box">[НА СТОЛЕ — ЗАПИСКА. НАПИСАНО ОТ РУКИ.]<br><br>«Рейзер. Если ты читаешь это, значит, меня уже нет. Пароль от чёрной флешки: <b>Мой любимый сын</b>. Там моё завещание. Там правда, которую я скрывал 50 лет. Прости меня. Я всегда тебя любил. Папа.»</div>
+                <div class="thought-box-red">«Я сжимаю записку в руке. Мой любимый сын... Он всегда так меня называл. С самого детства.»</div>`;
+            choices = `<button class="btn btn-danger" onclick="renderScene(9)">[ ВСТАВИТЬ ЧЁРНУЮ ФЛЕШКУ ]</button>`;
+        }
+        
+        // СЦЕНА 9: МИНИ-ОС (ОПЕРАЦИОНКА)
+        else if (scene === 9) {
+            html = `<div class="day-indicator"><span>💾 СЦЕНА 9: ФЛЕШКА "PROSHANIE"</span></div>
+                <div id="os-screen">
+                    <p style="font-size: 1.5em; margin-bottom: 20px;">📁 Windows 98</p>
+                    <p>> ВСТАВЛЕНА ФЛЕШКА: <b>"PROSHANIE"</b></p>
+                    <p>> ВВЕДИТЕ ПАРОЛЬ:</p>
+                    <input type="text" id="os-password" placeholder="________">
+                    <br>
+                    <button class="os-btn" onclick="checkOSPassword()">OK</button>
+                    <p id="os-error" style="color: red; margin-top: 15px; display: none;">НЕВЕРНЫЙ ПАРОЛЬ. ПЕРЕЗАГРУЗКА...</p>
+                </div>`;
+            choices = '';
+        }
+        
+        // СЦЕНА 10: ЗАВЕЩАНИЕ ХАРВИ
+        else if (scene === 10) {
+            html = `<div class="day-indicator"><span>📜 СЦЕНА 10: ЗАВЕЩАНИЕ ХАРВИ</span></div>
+                <div class="dialog-box"><span class="char-name c-h">ХАРВИ (запись):</span><br><br>«Рейзер. Мой любимый сын. Если ты это читаешь, значит, Lasernet добрался до нас. Я знал, что этот день придёт. Я готовился к нему с 1975 года.»<br><br>«Lasernet1x1x1x1 — это не просто робот. Это <b>коллективный разум</b>. Тридцать душ, которые мы освободили в Бункере Омега... Они не ушли на покой. Они слились в единое целое. И они злы. Злы на меня за то, что я создал ВМСМ. Злы на тебя за то, что ты их освободил, но не дал им тел. Злы на весь мир.»<br><br>«Но есть способ остановить их. На Золотой Флешке — координаты <b>Бункера 09</b>. Там, под землёй, с 1975 года живут те, кого я не успел оцифровать. Живые люди. Они знают, как отключить Lasernet. Но они не доверяют никому из нашей семьи. Кроме тебя, Рейзер. Потому что ты — не просто мой сын. Ты — <b>первый мост между плотью и кодом</b>. И ты — их последняя надежда.»<br><br>«Найди Бункер 09. Найди их. И помни: я всегда тебя любил. Папа.»</div>`;
+            choices = `<button class="btn btn-danger" onclick="renderScene(11)">[ ЗАКРЫТЬ ФАЙЛ ]</button>`;
+        }
+        
+        // СЦЕНА 11: ФИНАЛ ГЛАВЫ С ТИТРАМИ
+        else if (scene === 11) {
+            html = `<div class="day-indicator"><span>🔥 КОНЕЦ ГЛАВЫ 1</span><span style="color:var(--danger);">БУНКЕР 09 ЖДЁТ</span></div>
+                <div class="thought-box">«Я закрываю файл. Вытираю слёзы. Папа верил в меня до самого конца. Я не подведу.»</div>
+                <div class="dialog-box">[РЕЙЗЕР ВСТАЁТ. БЕРЁТ ОБЕ ФЛЕШКИ. ВЫХОДИТ В ГЛАВНУЮ КОМНАТУ.]<br><br><span class="char-name c-o">ОЛИВЕР:</span> «Рейзер... Что мы будем делать?»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «Мы идём в Бункер 09. Папа оставил нам путь.»<br><br><span class="char-name c-a">АРХИВАРИУС:</span> «Я проанализировал координаты. Это глубоко под землёй. Мы не знаем, что там.»<br><br><span class="char-name c-r">RAIL:</span> «Я зафиксировал сигнатуры. Там живые люди. 47 человек. Они ждут.»<br><br><span class="char-name c-anna">АННА:</span> «Тогда не будем терять время. За Харви.»<br><br><span class="char-name c-p">ПЬЕР:</span> «За Харви.»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «За папу.»</div>
+                <div class="system-box" style="border-color: var(--main); color: var(--main);">> КОНЕЦ ГЛАВЫ 1.<br>> ELBERR OS 2: СМЕРТЬ ОТЦА.</div>
+                
+                <!-- ТИТРЫ -->
+                <div class="credits">
+                    <h1>🎬 ТИТРЫ</h1>
+                    <hr class="credits-divider">
+                    
+                    <h2>РАЗРАБОТЧИКИ</h2>
+                    <div class="role">Программист</div>
+                    <div class="name">Ktehepknh</div>
+                    
+                    <hr class="credits-divider">
+                    
+                    <h2>АКТЁРЫ ОЗВУЧКИ</h2>
+                    <div class="role">Рейзер</div>
+                    <div class="name">Дима Актябрьский</div>
+                    
+                    <hr class="credits-divider">
+                    
+                    <div class="thanks">❤️ Спасибо за прохождение первой главы!</div>
+                    <div class="thanks" style="color: var(--main); font-size: 1.5em;">ELBERR OS 2</div>
+                    
+                    <hr class="credits-divider">
+                    
+                    <div class="spoiler">⚠️ СПОЙЛЕР: Харви не единственный...</div>
+                    <div style="color: #666; font-size: 0.9em; margin-top: 10px;">Продолжение следует...</div>
+                    
+                    <button class="btn" onclick="location.reload()">▶ НАЧАТЬ ЗАНОВО</button>
+                </div>`;
+            choices = '';
+        }
+        
+        screen.innerHTML = html + `<div class="btn-container">${choices}</div>`;
+        setTimeout(() => screen.scrollTop = screen.scrollHeight, 50);
+    }
+
+    // Проверка пароля в мини-ОС
+    window.checkOSPassword = function() {
+        const password = document.getElementById('os-password').value;
+        if (password === 'Рейзер' || password === 'рейзер' || password === 'Мой любимый сын' || password === 'мой любимый сын') {
+            renderScene(10);
+        } else {
+            const error = document.getElementById('os-error');
+            error.style.display = 'block';
+            document.getElementById('os-password').value = '';
+            setTimeout(() => {
+                error.style.display = 'none';
+            }, 2000);
+        }
+    };
+
+    // ========== АДМИНКА ==========
+    let panelVisible = false;
+    const panel = document.getElementById('adminPanel');
+    const logo = document.getElementById('logo');
+    const adminLogs = document.getElementById('adminLogs');
+    let currentScene = 1;
+
+    function addAdminLog(msg, color = '#0f0') {
+        adminLogs.innerHTML += `<p style="color:${color};">> ${msg}</p>`;
+        adminLogs.scrollTop = adminLogs.scrollHeight;
+    }
+
+    logo.addEventListener('click', (e) => {
+        e.stopPropagation();
+        panelVisible = !panelVisible;
+        panel.style.display = panelVisible ? 'block' : 'none';
+        if(panelVisible) { 
+            adminLogs.innerHTML = ''; 
+            addAdminLog('ELBERR OS 2 Admin');
+            addAdminLog('Scene: ' + currentScene); 
+        }
+    });
+    
+    document.getElementById('adminNextScene').addEventListener('click', () => { 
+        const next = currentScene + 1;
+        if (next <= 11) {
+            currentScene = next;
+            renderScene(next);
+        }
+        addAdminLog('Next scene: ' + currentScene); 
+    });
+    
+    document.getElementById('adminSkipToOS').addEventListener('click', () => { 
+        currentScene = 9;
+        renderScene(9);
+        addAdminLog('Jump to OS'); 
+    });
+    
+    document.getElementById('adminSkipToEnd').addEventListener('click', () => { 
+        currentScene = 11;
+        renderScene(11);
+        addAdminLog('Jump to end'); 
+    });
+    
+    document.getElementById('adminClose').addEventListener('click', () => { 
+        panelVisible = false; 
+        panel.style.display = 'none'; 
+    });
+
+    // Обновляем currentScene при переходах
+    const originalRender = renderScene;
+    renderScene = function(scene) {
+        currentScene = scene;
+        originalRender(scene);
+    };
+
+    // СТАРТ
+    window.onload = () => renderScene(1);
+</script>
+</body>
+</html>
