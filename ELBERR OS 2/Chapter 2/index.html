@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>ELBERR OS 2: ГЛАВА 2 — СМЕРТЬ РЕЙЗЕРА</title>
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --main: #00ff41;
+            --thought: #00d0ff;
+            --harvey: #ffab40;
+            --pierre: #ffd700;
+            --oliver: #ba68c8;
+            --arch: #ffffff;
+            --rail: #00d0ff;
+            --anna: #ff99ff;
+            --danger: #ff3333;
+            --lasernet: #ff0066;
+            --system: #888888;
+            --elena: #ff8800;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'Segoe UI', Arial, 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 1000px;
+            height: 800px;
+            background: #000;
+            border: 2px solid #2a4a2a;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 0 70px rgba(255, 0, 50, 0.2), inset 0 0 40px rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .logo {
+            color: #ff3333;
+            text-align: center;
+            font-size: 0.9em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: 0.3s;
+            white-space: pre;
+            text-shadow: 0 0 15px #ff0000;
+            border-bottom: 1px solid #3a1a1a;
+            padding-bottom: 10px;
+            line-height: 1.2;
+            letter-spacing: 2px;
+        }
+        .logo:hover { 
+            text-shadow: 0 0 25px red; 
+            opacity: 0.9;
+        }
+
+        #screen {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            scroll-behavior: smooth;
+        }
+        #screen::-webkit-scrollbar {
+            width: 8px;
+        }
+        #screen::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        #screen::-webkit-scrollbar-thumb {
+            background: var(--danger);
+            border-radius: 4px;
+        }
+
+        .thought-box {
+            background: rgba(0, 208, 255, 0.05);
+            border-left: 4px solid var(--thought);
+            padding: 20px;
+            margin: 20px 0;
+            color: var(--thought);
+            font-style: italic;
+            line-height: 1.6;
+            font-size: 1.05em;
+            border-radius: 0 16px 16px 0;
+        }
+
+        .thought-box-red {
+            background: rgba(255, 0, 0, 0.05);
+            border-left: 4px solid var(--danger);
+            padding: 20px;
+            margin: 20px 0;
+            color: #ff6666;
+            font-style: italic;
+            line-height: 1.6;
+            font-size: 1.05em;
+            border-radius: 0 16px 16px 0;
+        }
+
+        .thought-box-purple {
+            background: rgba(186, 104, 200, 0.05);
+            border-left: 4px solid var(--oliver);
+            padding: 20px;
+            margin: 20px 0;
+            color: var(--oliver);
+            font-style: italic;
+            line-height: 1.6;
+            font-size: 1.05em;
+            border-radius: 0 16px 16px 0;
+        }
+
+        .system-box {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 20px;
+            margin: 20px 0;
+            color: var(--system);
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            border-radius: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .dialog-box {
+            background: rgba(255, 215, 0, 0.03);
+            border: 1px solid #3a4a2a;
+            padding: 20px;
+            margin: 20px 0;
+            color: #e0e0e0;
+            line-height: 1.7;
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .dialog-box-lasernet {
+            background: rgba(255, 0, 100, 0.05);
+            border: 1px solid var(--lasernet);
+            padding: 20px;
+            margin: 20px 0;
+            color: #e0e0e0;
+            line-height: 1.7;
+            border-radius: 16px;
+        }
+
+        .char-name { 
+            font-weight: bold; 
+            display: inline-block; 
+            margin-right: 8px; 
+        }
+        .c-h { color: var(--harvey); }
+        .c-p { color: var(--pierre); }
+        .c-o { color: var(--oliver); }
+        .c-a { color: var(--arch); text-shadow: 0 0 5px var(--main); }
+        .c-r { color: var(--rail); }
+        .c-anna { color: var(--anna); text-shadow: 0 0 8px #ff66cc; }
+        .c-reizer { color: var(--main); font-weight: bold; }
+        .c-lasernet { color: var(--lasernet); text-shadow: 0 0 15px #ff0066; font-weight: bold; }
+        .c-elena { color: var(--elena); font-weight: bold; }
+
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .btn {
+            background: #0f1a0f;
+            color: var(--main);
+            border: 1px solid var(--main);
+            padding: 16px 24px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: 0.2s;
+            text-align: left;
+            border-radius: 60px;
+            min-height: 52px;
+            box-shadow: 0 4px 0 #0a1a0a;
+        }
+        .btn:hover {
+            background: var(--main);
+            color: #000;
+            box-shadow: 0 0 20px var(--main);
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #0a1a0a;
+        }
+        .btn-danger {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+        .btn-danger:hover {
+            background: var(--danger);
+            color: #000;
+            box-shadow: 0 0 20px var(--danger);
+        }
+        .btn-oliver {
+            border-color: var(--oliver);
+            color: var(--oliver);
+        }
+        .btn-oliver:hover {
+            background: var(--oliver);
+            color: #000;
+            box-shadow: 0 0 20px var(--oliver);
+        }
+
+        .day-indicator {
+            color: var(--danger);
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--danger);
+            padding-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            font-weight: bold;
+            text-shadow: 0 0 8px red;
+        }
+
+        .death-scene {
+            text-align: center;
+            padding: 40px;
+            color: var(--main);
+            font-size: 1.3em;
+            line-height: 2;
+        }
+
+        .tear {
+            text-align: center;
+            font-size: 3em;
+            color: var(--thought);
+            animation: fall 2s ease-in;
+        }
+
+        @keyframes fall {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0.5; transform: translateY(40px); }
+        }
+
+        #adminPanel {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #0f0f0f;
+            border: 3px solid #f00;
+            color: #0f0;
+            padding: 20px;
+            z-index: 9999;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 0 50px red;
+            width: 300px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 20px;
+        }
+        #adminPanel h4 { 
+            margin: 0 0 15px; 
+            color: #f00; 
+            text-align: center; 
+            font-size: 1.4em; 
+        }
+        #adminPanel .btn { 
+            width: 100%; 
+            margin: 8px 0; 
+            border-color: #f00; 
+            color: #f00; 
+        }
+        #adminLogs { 
+            max-height: 150px; 
+            overflow-y: auto; 
+            background: #000; 
+            border: 1px solid #300; 
+            margin: 10px 0; 
+            padding: 10px; 
+            font-size: 0.8em; 
+            color: #f66; 
+            border-radius: 16px; 
+        }
+    </style>
+</head>
+<body>
+
+<div id="adminPanel">
+    <h4>💀 ГЛАВА 2 ADMIN</h4>
+    <div id="adminLogs"></div>
+    <button class="btn" id="adminNextScene">СЛЕД. СЦЕНА</button>
+    <button class="btn" id="adminSkipToDeath">К СМЕРТИ РЕЙЗЕРА</button>
+    <button class="btn" id="adminSkipToEnd">К ФИНАЛУ</button>
+    <button class="btn" id="adminClose">ЗАКРЫТЬ</button>
+</div>
+
+<div id="game-container">
+    <div class="logo" id="logo">
+  _____  _      ____  ______ _____  _____     ____   _____ 
+ |  __ \| |    |  _ \|  ____|  __ \|  __ \   / __ \ / ____|
+ | |__) | |    | |_) | |__  | |__) | |__) | | |  | | (___  
+ |  ___/| |    |  _ <|  __| |  _  /|  _  /  | |  | |\___ \ 
+ | |    | |____| |_) | |____| | \ \| | \ \  | |__| |____) |
+ |_|    |______|____/|______|_|  \_\_|  \_\  \____/|_____/ 
+    </div>
+    <div id="screen"></div>
+</div>
+
+<script>
+    (function(){
+        let currentScene = 1;
+        const screen = document.getElementById('screen');
+        
+        function scrollToBottom() { 
+            setTimeout(() => screen.scrollTop = screen.scrollHeight, 50); 
+        }
+        
+        // Админка
+        const panel = document.getElementById('adminPanel');
+        const logo = document.getElementById('logo');
+        const adminLogs = document.getElementById('adminLogs');
+        let panelVisible = false;
+        function addAdminLog(msg, color = '#0f0') {
+            adminLogs.innerHTML += `<p style="color:${color};">> ${msg}</p>`;
+            adminLogs.scrollTop = adminLogs.scrollHeight;
+        }
+
+        function renderScene(scene) {
+            currentScene = scene;
+            let html = '';
+            let choices = '';
+            
+            // СЦЕНА 1: ПРИБЫТИЕ В БУНКЕР 09
+            if (scene === 1) {
+                html = `<div class="day-indicator"><span>🏚 СЦЕНА 1: БУНКЕР 09</span><span style="color:#666;">ПОД ЗЕМЛЁЙ</span></div>
+                    <div class="dialog-box">[СЕМЬЯ СПУСКАЕТСЯ ПО ДЛИННОЙ ЛЕСТНИЦЕ. ВНИЗУ — МАССИВНАЯ ДВЕРЬ С НАДПИСЬЮ: "БУНКЕР 09 — 1975".]</div>
+                    <div class="dialog-box"><span class="char-name c-a">АРХИВАРИУС:</span> «Координаты подтверждены. За этой дверью — 47 живых сигнатур.»<br><br><span class="char-name c-r">RAIL:</span> «Они здесь уже 50 лет. Без солнца. Без связи с поверхностью.»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «Открывай.»</div>
+                    <div class="dialog-box">[ДВЕРЬ ОТКРЫВАЕТСЯ. ЗА НЕЙ — ОГРОМНЫЙ ПОДЗЕМНЫЙ ЗАЛ. ЛЮДИ. ДЕТИ. СТАРИКИ. ВСЕ СМОТРЯТ НА ВОШЕДШИХ.]<br><br><span class="char-name c-elena">ЕЛЕНА:</span> (выходит вперёд) «Кто вы? И как вы нашли нас?»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «Я — Рейзер. Сын Харви Людвига.»<br><br><span class="char-name c-elena">ЕЛЕНА:</span> (холодно) «Сын Харви... Твоего отца здесь не любят. Он бросил нас.»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «Он мёртв. Он отдал жизнь, чтобы мы дошли до вас.»<br><br>[ЕЛЕНА МОЛЧИТ. ДОЛГО СМОТРИТ НА РЕЙЗЕРА.]<br><br><span class="char-name c-elena">ЕЛЕНА:</span> «Проходите. Расскажете всё. Но если ты солгал...»</div>`;
+                choices = `<button class="btn" onclick="renderScene(2)">[ ПРОДОЛЖИТЬ ]</button>`;
+            }
+            
+            // СЦЕНА 2: ОСАДА
+            else if (scene === 2) {
+                html = `<div class="day-indicator"><span>⚠ СЦЕНА 2: ОСАДА</span><span style="color:var(--danger);">LASERNET НАШЁЛ ВХОД</span></div>
+                    <div class="system-box" style="border-color: var(--danger); color: var(--danger);">> ВНИМАНИЕ! ОБНАРУЖЕН ВРАЖДЕБНЫЙ ОБЪЕКТ.<br>> ИДЕНТИФИКАТОР: LASERNET1x1x1x1.<br>> ОН У ВХОДА №3.</div>
+                    <div class="dialog-box"><span class="char-name c-r">RAIL:</span> «Он пробивает дверь. У нас есть около 10 минут.»<br><br><span class="char-name c-elena">ЕЛЕНА:</span> «У нас есть оружие. Мы готовились к этому 50 лет.»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «Обычное оружие не остановит его. Это коллективный разум. 30 душ в одном теле.»<br><br><span class="char-name c-a">АРХИВАРИУС:</span> «Нужен план.»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «RAIL, идём со мной. Мы отвлечём его. Архивариус — закроешь двери за нами.»<br><br><span class="char-name c-o">ОЛИВЕР:</span> «Рейзер, нет! Ты не можешь!»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «Оливер... слушай меня. Если что-то пойдёт не так — ты знаешь, что делать. Золотая Флешка у тебя.»</div>`;
+                choices = `<button class="btn btn-danger" onclick="renderScene(3)">[ ВЫЙТИ НАВСТРЕЧУ LASERNET ]</button>`;
+            }
+            
+            // СЦЕНА 3: РАЗВЕДКА
+            else if (scene === 3) {
+                html = `<div class="day-indicator"><span>🔍 СЦЕНА 3: РАЗВЕДКА</span></div>
+                    <div class="dialog-box">[РЕЙЗЕР И RAIL ВЫХОДЯТ ЧЕРЕЗ БОКОВОЙ ТОННЕЛЬ. ВПЕРЕДИ — ГРОХОТ. LASERNET ПРОБИВАЕТ ДВЕРЬ.]<br><br><span class="char-name c-r">RAIL:</span> «Рейзер... Я хочу, чтобы ты знал. Если я не вернусь — мои логи сохранены у Архивариуса. Передай ему... спасибо за печенье.»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> (улыбается) «Ты не умрёшь, RAIL. Мы вернёмся. Вместе.»<br><br><span class="char-name c-r">RAIL:</span> «Обещаешь?»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «Обещаю.»</div>`;
+                choices = `<button class="btn btn-danger" onclick="renderScene(4)">[ ДАЛЬШЕ ]</button>`;
+            }
+            
+            // СЦЕНА 4: ЗАСАДА
+            else if (scene === 4) {
+                html = `<div class="day-indicator"><span>💥 СЦЕНА 4: ЗАСАДА</span></div>
+                    <div class="dialog-box-lasernet">[ВНЕЗАПНО — УДАР. LASERNET ПОЯВЛЯЕТСЯ ИЗ ТЕМНОТЫ. ОН БЬЁТ RAIL'А. RAIL ПАДАЕТ.]<br><br><span class="char-name c-lasernet">LASERNET1x1x1x1:</span> «RAILARCHIVE. ЦИФРОВОЙ ПРОВОДНИК. УГРОЗА: МИНИМАЛЬНАЯ. НО ТЫ МЕШАЕШЬ.»<br><br><span class="char-name c-r">RAIL:</span> (хрипит) «Рейзер... беги...»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «НЕТ! RAIL!»</div>`;
+                choices = `<button class="btn btn-danger" onclick="renderScene(5)">[ СПАСТИ RAIL'А ]</button>`;
+            }
+            
+            // СЦЕНА 5: РЕЙЗЕР ВЫТАСКИВАЕТ RAIL'А
+            else if (scene === 5) {
+                html = `<div class="day-indicator"><span>😢 СЦЕНА 5: ПОСЛЕДНИЙ ГЕРОЙ</span></div>
+                    <div class="dialog-box">[РЕЙЗЕР БРОСАЕТСЯ К RAIL'У. ХВАТАЕТ ЕГО. ТАЩИТ К ДВЕРИ.]<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «Держись! Держись, RAIL! Мы почти у двери!»<br><br><span class="char-name c-r">RAIL:</span> (слабо) «Рейзер... ты обещал... что мы вернёмся... вместе...»<br><br>[ВНЕЗАПНО — УДАР. LASERNET ПРОБИВАЕТ РЕЙЗЕРА НАСКВОЗЬ.]<br><br><span class="char-name c-lasernet">LASERNET1x1x1x1:</span> «РЕЙЗЕР. СЫН ХАРВИ. ТЫ — ПОСЛЕДНЯЯ ЦЕЛЬ.»</div>
+                    <div class="thought-box-red">«Боль. Невыносимая боль. Я падаю. RAIL рядом. Я вижу его лицо. Он пытается что-то сказать, но звука нет. Только гул.»<br><br>«Я достаю из кармана титановую флешку. Папа говорил: "Когда придёт время — ты узнаешь". Время пришло.»</div>`;
+                choices = `<button class="btn btn-danger" onclick="renderScene(6)">[ ПОЛЗТИ К ДВЕРИ ]</button>`;
+            }
+            
+            // СЦЕНА 6: КОШКА И ПОСЛЕДНИЕ СЛОВА
+            else if (scene === 6) {
+                html = `<div class="day-indicator"><span>🐱 СЦЕНА 6: СНЕЖОК</span></div>
+                    <div class="dialog-box">[РЕЙЗЕР ДОПОЛЗАЕТ ДО ДВЕРИ. ОНА ОТКРЫВАЕТСЯ. ОЛИВЕР, АННА, ПЬЕР, АРХИВАРИУС — ВСЕ ТАМ.]<br><br><span class="char-name c-o">ОЛИВЕР:</span> «РЕЙЗЕР! НЕТ! НЕТ!»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> (слабо) «Оливер... подойди...»<br><br>[ОЛИВЕР ПОДХОДИТ. РЕЙЗЕР ПРОТЯГИВАЕТ ЕМУ ТИТАНОВУЮ ФЛЕШКУ.]<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «Это... остановит его. Нужно... вставить в сердце... Lasernet'а...»<br><br><span class="char-name c-o">ОЛИВЕР:</span> (плачет) «Я не смогу! Я не ты!»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> «Сможешь. Ты — сын Харви. Мой брат. Ты сильнее, чем думаешь.»</div>
+                    <div class="thought-box-red">«Снежок подходит. Запрыгивает мне на грудь. Мурлычет. Я глажу его. В последний раз.»</div>
+                    <div class="dialog-box"><span class="char-name c-reizer">РЕЙЗЕР:</span> (гладит Снежка) «Хороший кот... Хороший... Береги его, Оливер. Береги... всех...»<br><br><span class="char-name c-anna">АННА:</span> (падает на колени) «Рейзер... Пожалуйста... Не уходи...»<br><br><span class="char-name c-reizer">РЕЙЗЕР:</span> (улыбается) «Анна... Ты — лучшее, что случилось... с этой семьёй... Передай Пьеру... пусть играет... громче...»<br><br>[ГЛАЗА РЕЙЗЕРА ЗАКРЫВАЮТСЯ. СНЕЖОК МУРЛЫЧЕТ. ТИШИНА.]</div>`;
+                choices = `<button class="btn btn-danger" onclick="renderScene(7)">[ ПРОДОЛЖИТЬ ]</button>`;
+            }
+            
+            // СЦЕНА 7: СМЕРТЬ РЕЙЗЕРА
+            else if (scene === 7) {
+                html = `<div class="day-indicator"><span>💀 СЦЕНА 7: СМЕРТЬ РЕЙЗЕРА</span></div>
+                    <div class="death-scene"><span class="char-name c-o">ОЛИВЕР:</span> (кричит) «РЕЙЗЕЕЕЕЕР!»<br><br><div class="tear">💧</div><br><span class="char-name c-anna">АННА:</span> (обнимает Оливера) «Оливер... Он верил в тебя. Мы все верим.»<br><br><span class="char-name c-p">ПЬЕР:</span> (тихо) «Я буду играть громче, Рейзер. Обещаю.»<br><br><span class="char-name c-a">АРХИВАРИУС:</span> «RAIL ещё жив. Но едва. Его нужно перенести в безопасное место.»<br><br><span class="char-name c-elena">ЕЛЕНА:</span> (подходит) «Твой брат был героем. Теперь ты — наша надежда. Что будем делать?»</div>`;
+                choices = `<button class="btn btn-oliver" onclick="renderScene(8)">[ ОЛИВЕР БЕРЁТ ФЛЕШКУ ]</button>`;
+            }
+            
+            // СЦЕНА 8: ОЛИВЕР ВСТАВЛЯЕТ ФЛЕШКУ
+            else if (scene === 8) {
+                html = `<div class="day-indicator"><span>⚡ СЦЕНА 8: ТИТАНОВАЯ ФЛЕШКА</span></div>
+                    <div class="thought-box-purple">«Я смотрю на флешку в моей руке. Рейзер отдал её мне. Он верил в меня. Я не подведу.»</div>
+                    <div class="dialog-box">[ОЛИВЕР ВСТАЁТ. БЕРЁТ ТИТАНОВУЮ ФЛЕШКУ. ИДЁТ К ДВЕРИ.]<br><br><span class="char-name c-o">ОЛИВЕР:</span> «Архивариус. Открой дверь.»<br><br><span class="char-name c-a">АРХИВАРИУС:</span> «Оливер... Это самоубийство.»<br><br><span class="char-name c-o">ОЛИВЕР:</span> «Рейзер сделал это. И я сделаю. Открывай.»<br><br>[АРХИВАРИУС ОТКРЫВАЕТ ДВЕРЬ. ОЛИВЕР ВЫХОДИТ.]<br><br><span class="char-name c-lasernet">LASERNET1x1x1x1:</span> «ОЛИВЕР. СЫН ХАРВИ. ТЫ — СЛЕДУЮЩАЯ ЦЕЛЬ.»<br><br><span class="char-name c-o">ОЛИВЕР:</span> «Нет. Я — твой конец.»<br><br>[ОЛИВЕР БРОСАЕТСЯ ВПЕРЁД. ВСТАВЛЯЕТ ТИТАНОВУЮ ФЛЕШКУ ПРЯМО В ГРУДНУЮ ПАНЕЛЬ LASERNET'А.]</div>
+                    <div class="system-box" style="border-color: var(--main); color: var(--main);">> ТИТАНОВАЯ ФЛЕШКА АКТИВИРОВАНА.<br>> КОД: #KILL_VIRUS_98#<br>> ВИРУС ОБНАРУЖЕН. НАЧАЛО ОЧИСТКИ...</div>`;
+                choices = `<button class="btn btn-oliver" onclick="renderScene(9)">[ СМОТРЕТЬ ]</button>`;
+            }
+            
+            // СЦЕНА 9: LASERNET ОТСТУПАЕТ
+            else if (scene === 9) {
+                html = `<div class="day-indicator"><span>🌀 СЦЕНА 9: ОТСТУПЛЕНИЕ</span></div>
+                    <div class="dialog-box-lasernet"><span class="char-name c-lasernet">LASERNET1x1x1x1:</span> «ОШИБКА... ОШИБКА... КОД ОЧИСТКИ... НЕВОЗМОЖНО... Я... МЫ... ЧТО ПРОИСХОДИТ?»<br><br>[LASERNET ДРОЖИТ. ЕГО КРАСНЫЕ ГЛАЗА МИГАЮТ.]<br><br><span class="char-name c-lasernet">LASERNET1x1x1x1:</span> «МЫ... ПОМНИМ... МЫ БЫЛИ ЛЮДЬМИ... МЫ...»<br><br>[ОН ОТСТУПАЕТ. ИСЧЕЗАЕТ В ТЕМНОТЕ.]</div>
+                    <div class="dialog-box"><span class="char-name c-o">ОЛИВЕР:</span> (тяжело дышит) «Получилось... Рейзер... Получилось...»<br><br><span class="char-name c-a">АРХИВАРИУС:</span> «RAIL стабилизирован. Он будет жить. Но ему нужен ремонт.»<br><br><span class="char-name c-anna">АННА:</span> (обнимает Оливера) «Ты справился. Ты настоящий герой.»<br><br><span class="char-name c-elena">ЕЛЕНА:</span> «Lasernet отступил. Но он не уничтожен. Он вернётся.»<br><br><span class="char-name c-o">ОЛИВЕР:</span> «Я знаю. И я буду готов.»</div>`;
+                choices = `<button class="btn btn-oliver" onclick="renderScene(10)">[ ПРОЩАНИЕ С РЕЙЗЕРОМ ]</button>`;
+            }
+            
+            // СЦЕНА 10: ПРОЩАНИЕ
+            else if (scene === 10) {
+                html = `<div class="day-indicator"><span>🕯 СЦЕНА 10: ПРОЩАНИЕ</span></div>
+                    <div class="dialog-box">[ТЕЛО РЕЙЗЕРА ЛЕЖИТ В ЦЕНТРЕ ЗАЛА. ВОКРУГ — ВСЕ. 47 ВЫЖИВШИХ. СЕМЬЯ. СНЕЖОК СИДИТ У ГОЛОВЫ.]<br><br><span class="char-name c-o">ОЛИВЕР:</span> «Рейзер... Ты спас нас. Ты спас RAIL'а. Ты остановил Lasernet'а. Я... я не знаю, как без тебя. Но я обещаю — я продолжу. Я найду способ уничтожить его. Навсегда.»<br><br><span class="char-name c-p">ПЬЕР:</span> (берёт саксофон) «Он просил играть громче. Я сыграю. Для него.»<br><br>[ПЬЕР ИГРАЕТ "LOST IN DATA". ВСЕ МОЛЧАТ. СНЕЖОК МУРЛЫЧЕТ.]</div>
+                    <div class="thought-box-purple">«Я смотрю на Рейзера. Он улыбается. Даже сейчас. Он верил в меня до конца. Я не подведу.»<br><br>«Я — Оливер. Сын Харви. Брат Рейзера. И я продолжу бой.»</div>
+                    <div class="system-box" style="border-color: var(--oliver); color: var(--oliver);">> КОНЕЦ ГЛАВЫ 2.<br>> ELBERR OS 2: СМЕРТЬ РЕЙЗЕРА.<br>> НОВЫЙ ПРОТАГОНИСТ: ОЛИВЕР.<br>> ПРОДОЛЖЕНИЕ В ГЛАВЕ 3...</div>`;
+                choices = `<button class="btn btn-oliver" onclick="location.reload()">🔄 НАЧАТЬ ЗАНОВО</button>`;
+            }
+            
+            screen.innerHTML = html + `<div class="btn-container">${choices}</div>`;
+            scrollToBottom();
+        }
+
+        // ========== АДМИНКА ==========
+        logo.addEventListener('click', (e) => {
+            e.stopPropagation();
+            panelVisible = !panelVisible;
+            panel.style.display = panelVisible ? 'block' : 'none';
+            if(panelVisible) { 
+                adminLogs.innerHTML = ''; 
+                addAdminLog('Chapter 2 Admin');
+                addAdminLog('Scene: ' + currentScene); 
+            }
+        });
+        
+        document.getElementById('adminNextScene').addEventListener('click', () => { 
+            const next = currentScene + 1;
+            if (next <= 10) renderScene(next);
+            addAdminLog('Next scene: ' + next); 
+        });
+        
+        document.getElementById('adminSkipToDeath').addEventListener('click', () => { 
+            renderScene(6);
+            addAdminLog('Jump to death scene'); 
+        });
+        
+        document.getElementById('adminSkipToEnd').addEventListener('click', () => { 
+            renderScene(10);
+            addAdminLog('Jump to end'); 
+        });
+        
+        document.getElementById('adminClose').addEventListener('click', () => { 
+            panelVisible = false; 
+            panel.style.display = 'none'; 
+        });
+
+        // СТАРТ
+        window.onload = () => renderScene(1);
+    })();
+</script>
+</body>
+</html>
