@@ -396,7 +396,7 @@
             <span id="game-title-display">Game Title</span>
             <button class="btn-neon" onclick="closeGame()" style="width: auto; padding: 5px 15px;">Закрыть игру</button>
         </div>
-        <iframe id="game-frame" src=""></iframe>
+        <iframe id="game-frame" src="" sandbox="allow-scripts allow-pointer-lock allow-orientation-lock allow-forms"></iframe>
     </div>
 
     <div class="toast-container" id="toast-container"></div>
@@ -444,9 +444,16 @@
 
         function $(id) { return document.getElementById(id); }
 
+        // Обычный escape для вставки в HTML-текст
         function escapeHtml(text) {
             if (!text) return "";
             return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Безопасная строка для вставки в inline-onclick (защита от XSS)
+        function safeStr(str) {
+            if (!str) return "";
+            return String(str).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
 
         function showToast(icon, msg, isError = false) {
@@ -607,11 +614,11 @@
             showToast('⏳', 'Публикация...');
 
             const container = $('feed-container');
-            const imageHtml = imageUrl ? `<img src="${imageUrl}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">` : '';
+            const imageHtml = imageUrl ? `<img src="${escapeHtml(imageUrl)}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">` : '';
             container.insertAdjacentHTML('afterbegin', `
                 <div class="card" style="opacity: 0.7;">
                     <div class="post-header">
-                        <img src="${currentUser.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}" class="post-avatar">
+                        <img src="${escapeHtml(currentUser.avatar) || 'https://via.placeholder.com/100/555/fff?text=User'}" class="post-avatar">
                         <div class="post-meta"><h4>${escapeHtml(currentUser.nick)}</h4><span>Только что</span></div>
                     </div>
                     ${text ? `<div class="post-content">${escapeHtml(text)}</div>` : ''}
@@ -649,7 +656,7 @@
                 const likes = post.likes || {};
                 const likeCount = Object.keys(likes).length;
                 const isLiked = currentUser && likes[currentUser.id];
-                const imageHtml = post.image ? `<img src="${post.image}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">` : '';
+                const imageHtml = post.image ? `<img src="${escapeHtml(post.image)}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">` : '';
 
                 const { data: comments } = await supabase.from('comments').select('*').eq('post_id', post.id).order('created_at', { ascending: true });
 
@@ -671,23 +678,23 @@
                 container.innerHTML += `
                     <div class="card" id="post-${post.id}">
                         <div class="post-header">
-                            <img src="${post.author_avatar || 'https://via.placeholder.com/100/555/fff?text=User'}" class="post-avatar" onclick="viewProfile('${post.author_id}')">
+                            <img src="${escapeHtml(post.author_avatar) || 'https://via.placeholder.com/100/555/fff?text=User'}" class="post-avatar" onclick="viewProfile('${safeStr(post.author_id)}')">
                             <div class="post-meta">
-                                <h4 onclick="viewProfile('${post.author_id}')">${escapeHtml(post.author_nick)}</h4>
+                                <h4 onclick="viewProfile('${safeStr(post.author_id)}')">${escapeHtml(post.author_nick)}</h4>
                                 <span>${new Date(post.created_at).toLocaleString('ru-RU')}</span>
                             </div>
                         </div>
                         ${post.text ? `<div class="post-content">${escapeHtml(post.text)}</div>` : ''}
                         ${imageHtml}
                         <div class="post-actions">
-                            <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')"><i class="fas fa-heart"></i> ${likeCount}</button>
-                            <button class="action-btn" onclick="toggleComments('${post.id}')"><i class="fas fa-comment"></i> ${comments?.length || 0}</button>
+                            <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${safeStr(post.id)}')"><i class="fas fa-heart"></i> ${likeCount}</button>
+                            <button class="action-btn" onclick="toggleComments('${safeStr(post.id)}')"><i class="fas fa-comment"></i> ${comments?.length || 0}</button>
                         </div>
                         ${commentsHtml}
                         <div id="comment-input-${post.id}" style="display: none; margin-top: 10px;">
                             <div style="display: flex; gap: 10px;">
-                                <input type="text" id="comment-text-${post.id}" class="chat-input" placeholder="Написать комментарий..." onkeydown="if(event.key==='Enter') addComment('${post.id}')">
-                                <button class="btn-neon" onclick="addComment('${post.id}')" style="width: auto; padding: 8px 16px;">Отправить</button>
+                                <input type="text" id="comment-text-${post.id}" class="chat-input" placeholder="Написать комментарий..." onkeydown="if(event.key==='Enter') addComment('${safeStr(post.id)}')">
+                                <button class="btn-neon" onclick="addComment('${safeStr(post.id)}')" style="width: auto; padding: 8px 16px;">Отправить</button>
                             </div>
                         </div>
                     </div>
@@ -760,7 +767,6 @@
                 let uploadedCount = 0;
                 const totalFiles = Object.keys(contents.files).length;
 
-                // Загружаем ВСЕ файлы
                 for (const [path, zipEntry] of Object.entries(contents.files)) {
                     if (zipEntry.dir) continue;
 
@@ -841,11 +847,10 @@
                 const statusColors = { upcoming: 'var(--primary)', active: 'var(--success)', ended: 'var(--text-sec)' };
                 const statusTexts = { upcoming: 'Предстоящий', active: 'Активный', ended: 'Завершён' };
                 
-                const gameBtn = event.game_url ? `<button class="btn-neon" onclick="launchGame('${event.game_url}', '${escapeHtml(event.title)}')" style="width: auto; margin-top: 10px; padding: 8px 15px; font-size: 14px;">🎮 Играть</button>` : '';
+                const gameBtn = event.game_url ? `<button class="btn-neon" onclick="launchGame('${safeStr(event.game_url)}', '${safeStr(event.title)}')" style="width: auto; margin-top: 10px; padding: 8px 15px; font-size: 14px;">🎮 Играть</button>` : '';
 
-                // Кнопка удаления для админа
                 const isAdmin = currentUser && currentUser.email === ADMIN_EMAIL;
-                const deleteBtn = isAdmin ? `<button class="btn-danger" onclick="deleteEvent('${event.id}')" style="margin-top: 10px; margin-left: 10px;">🗑️ Удалить</button>` : '';
+                const deleteBtn = isAdmin ? `<button class="btn-danger" onclick="deleteEvent('${safeStr(event.id)}')" style="margin-top: 10px; margin-left: 10px;">🗑️ Удалить</button>` : '';
 
                 container.innerHTML += `
                     <div class="card">
@@ -904,7 +909,6 @@
             }
         });
 
-        // Удаление ивента и всех его файлов из облака
         window.deleteEvent = async (eventId) => {
             if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
                 showToast('⛔', 'Нет прав для удаления', true);
@@ -912,18 +916,13 @@
             }
             if (!confirm('⚠️ Удалить ивент? Файлы игры из облака тоже удалятся.')) return;
 
-            // Получаем инфу об ивенте, чтобы узнать ссылку на игру
             const { data: event } = await supabase.from('events').select('game_url').eq('id', eventId).single();
             
-            // Если игра была загружена в облако, удаляем папку с файлами
             if (event && event.game_url && event.game_url.includes('supabase.co')) {
                 try {
-                    // Извлекаем путь к папке из ссылки
                     const urlParts = event.game_url.split('/public/games/');
                     if (urlParts.length > 1) {
-                        const folderPath = urlParts[1].split('/')[0]; // папка event_123456
-                        
-                        // Получаем все файлы в этой папке
+                        const folderPath = urlParts[1].split('/')[0];
                         const { data: files } = await supabase.storage.from('games').list(folderPath);
                         if (files && files.length > 0) {
                             const filePaths = files.map(f => `${folderPath}/${f.name}`);
@@ -935,7 +934,6 @@
                 }
             }
 
-            // Удаляем сам ивент из базы
             await supabase.from('events').delete().eq('id', eventId);
             showToast('🗑️', 'Ивент удалён');
             loadEvents();
@@ -963,8 +961,8 @@
             }
             data.forEach(user => {
                 container.innerHTML += `
-                    <div class="contact-item" onclick="startChat('${user.id}', '${escapeHtml(user.nick)}', '${user.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}')">
-                        <img src="${user.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}" class="contact-avatar">
+                    <div class="contact-item" onclick="startChat('${safeStr(user.id)}', '${safeStr(user.nick)}', '${safeStr(user.avatar || 'https://via.placeholder.com/100/555/fff?text=User')}')">
+                        <img src="${escapeHtml(user.avatar) || 'https://via.placeholder.com/100/555/fff?text=User'}" class="contact-avatar">
                         <div class="contact-info">
                             <div class="contact-name">${escapeHtml(user.nick)}</div>
                             <div class="contact-last-msg">Нажмите для чата</div>
@@ -995,8 +993,8 @@
                 const { data: user } = await supabase.from('users').select('*').eq('id', userId).single();
                 if (user) {
                     container.innerHTML += `
-                        <div class="contact-item" onclick="startChat('${user.id}', '${escapeHtml(user.nick)}', '${user.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}')">
-                            <img src="${user.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}" class="contact-avatar">
+                        <div class="contact-item" onclick="startChat('${safeStr(user.id)}', '${safeStr(user.nick)}', '${safeStr(user.avatar || 'https://via.placeholder.com/100/555/fff?text=User')}')">
+                            <img src="${escapeHtml(user.avatar) || 'https://via.placeholder.com/100/555/fff?text=User'}" class="contact-avatar">
                             <div class="contact-info">
                                 <div class="contact-name">${escapeHtml(user.nick)}</div>
                                 <div class="contact-last-msg">Открыть чат</div>
@@ -1042,7 +1040,7 @@
                 const isOwn = msg.sender_id === currentUser.id;
                 let mediaHtml = '';
                 if (msg.media_url) {
-                    mediaHtml = `<img src="${msg.media_url}" onclick="window.open('${msg.media_url}')" style="max-width: 100%; cursor: pointer; border-radius: 10px; margin-top: 5px;">`;
+                    mediaHtml = `<img src="${escapeHtml(msg.media_url)}" onclick="window.open('${safeStr(msg.media_url)}')" style="max-width: 100%; cursor: pointer; border-radius: 10px; margin-top: 5px;">`;
                 }
                 container.innerHTML += `
                     <div class="message ${isOwn ? 'msg-out' : 'msg-in'}">
@@ -1150,7 +1148,7 @@
             if (btn) btn.disabled = true;
 
             const container = $('chat-messages');
-            const mediaHtml = mediaUrl ? `<img src="${mediaUrl}" style="max-width: 100%; border-radius: 10px; margin-top: 5px;">` : '';
+            const mediaHtml = mediaUrl ? `<img src="${escapeHtml(mediaUrl)}" style="max-width: 100%; border-radius: 10px; margin-top: 5px;">` : '';
             container.innerHTML += `
                 <div class="message msg-out" id="temp-msg" style="opacity: 0.7;">
                     ${text ? `<div>${escapeHtml(text)}</div>` : ''}
@@ -1224,24 +1222,24 @@
             const friendsCount = friendships?.length || 0;
             let friendButton = '';
             if (!isMe) {
-                if (!friendshipStatus) friendButton = `<button class="btn-neon" onclick="addFriend('${userId}')">Добавить в друзья</button>`;
+                if (!friendshipStatus) friendButton = `<button class="btn-neon" onclick="addFriend('${safeStr(userId)}')">Добавить в друзья</button>`;
                 else if (friendshipStatus === 'pending') friendButton = `<button class="btn-neon" style="opacity: 0.5;">Заявка отправлена</button>`;
                 else if (friendshipStatus === 'accepted') friendButton = `<button class="btn-neon" style="background: var(--success);">✓ В друзьях</button>`;
             }
 
             container.innerHTML = `
                 <div class="card profile-header">
-                    <img src="${user.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}" class="profile-big-avatar">
+                    <img src="${escapeHtml(user.avatar) || 'https://via.placeholder.com/100/555/fff?text=User'}" class="profile-big-avatar">
                     <div class="profile-info">
                         <h2>${escapeHtml(user.nick)} ${isMe ? '(Вы)' : ''}</h2>
-                        <div style="color:var(--text-sec);">${user.email || ''}</div>
+                        <div style="color:var(--text-sec);">${escapeHtml(user.email || '')}</div>
                         ${(user.first_name || user.last_name) ? `<div style="margin-top: 5px;"><strong>Имя:</strong> ${escapeHtml((user.first_name || '') + ' ' + (user.last_name || ''))}</div>` : ''}
                         ${user.phone && isMe ? `<div style="color: var(--text-sec);"><strong>Телефон:</strong> ${escapeHtml(user.phone)}</div>` : ''}
                         <div style="margin-top: 10px; color: var(--text-sec);">Друзей: ${friendsCount}</div>
                         ${!isMe ? `
                             <div class="profile-actions">
                                 ${friendButton}
-                                <button class="btn-neon" onclick="switchTab('messenger'); startChat('${userId}', '${escapeHtml(user.nick)}', '${user.avatar || ''}')">Написать</button>
+                                <button class="btn-neon" onclick="switchTab('messenger'); startChat('${safeStr(userId)}', '${safeStr(user.nick)}', '${safeStr(user.avatar || '')}')">Написать</button>
                             </div>
                         ` : ''}
                     </div>
@@ -1255,8 +1253,8 @@
                     const { data: friend } = await supabase.from('users').select('*').eq('id', friendId).single();
                     if (friend) {
                         friendsHtml += `
-                            <div class="card" style="cursor: pointer; padding: 15px; text-align: center;" onclick="viewProfile('${friend.id}')">
-                                <img src="${friend.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px;">
+                            <div class="card" style="cursor: pointer; padding: 15px; text-align: center;" onclick="viewProfile('${safeStr(friend.id)}')">
+                                <img src="${escapeHtml(friend.avatar) || 'https://via.placeholder.com/100/555/fff?text=User'}" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px;">
                                 <div style="font-weight: bold;">${escapeHtml(friend.nick)}</div>
                             </div>
                         `;
@@ -1411,11 +1409,11 @@
             const filtered = category === 'all' ? GAMES_LIST : GAMES_LIST.filter(g => g.category === category);
             filtered.forEach(game => {
                 container.innerHTML += `
-                    <div class="game-card" onclick="launchGame('${game.path}', '${game.name}')">
+                    <div class="game-card" onclick="launchGame('${safeStr(game.path)}', '${safeStr(game.name)}')">
                         <div class="game-img">${game.icon}</div>
                         <div class="game-info">
-                            <div class="game-title">${game.name}</div>
-                            <div class="game-cat">${game.category}</div>
+                            <div class="game-title">${escapeHtml(game.name)}</div>
+                            <div class="game-cat">${escapeHtml(game.category)}</div>
                         </div>
                     </div>
                 `;
@@ -1483,7 +1481,7 @@
             }
 
             const password = generatePassword();
-            console.log('🔐 Admin password:', password);
+            // Пароль больше не выводится в консоль!
 
             try {
                 if (typeof emailjs === 'undefined') {
@@ -1500,7 +1498,7 @@
                 showToast('📧', 'Пароль отправлен на почту!');
             } catch (e) {
                 console.log('⚠️ Ошибка отправки email:', e);
-                alert('⚠️ Не удалось отправить на почту.\n\nПароль: ' + password + '\n\n(смотрите консоль F12)');
+                alert('⚠️ Ошибка отправки на почту. Попробуйте позже.');
             }
 
             const enteredPassword = prompt('🔐 Админ-панель\n\nПароль отправлен на vetrovlev1@gmail.com\n\nВведите пароль:');
@@ -1593,13 +1591,13 @@
                         <div style="padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
                             <div>
                                 <strong>${escapeHtml(user.nick)}</strong>
-                                <span style="color: var(--text-sec);">(${user.email})</span>
+                                <span style="color: var(--text-sec);">(${escapeHtml(user.email)})</span>
                                 ${isBanned ? `<span style="color: var(--danger); margin-left: 10px;">🚫 до ${new Date(user.banned_until).toLocaleString('ru-RU')}</span>` : ''}
                             </div>
                             <div style="display: flex; gap: 10px;">
                                 ${currentUser && user.id !== currentUser.id ? `
-                                    ${!isBanned ? `<button class="btn-neon" onclick="banUser('${user.id}')" style="width: auto; padding: 5px 10px; background: var(--danger); border-color: var(--danger);">🚫 Блок</button>` : `<button class="btn-neon" onclick="unbanUser('${user.id}')" style="width: auto; padding: 5px 10px; background: var(--success); border-color: var(--success);">✓ Разблок</button>`}
-                                    <button class="btn-danger" onclick="deleteUserByAdmin('${user.id}')">Удалить</button>
+                                    ${!isBanned ? `<button class="btn-neon" onclick="banUser('${safeStr(user.id)}')" style="width: auto; padding: 5px 10px; background: var(--danger); border-color: var(--danger);">🚫 Блок</button>` : `<button class="btn-neon" onclick="unbanUser('${safeStr(user.id)}')" style="width: auto; padding: 5px 10px; background: var(--success); border-color: var(--success);">✓ Разблок</button>`}
+                                    <button class="btn-danger" onclick="deleteUserByAdmin('${safeStr(user.id)}')">Удалить</button>
                                 ` : '<span style="color: var(--primary);">Это вы</span>'}
                             </div>
                         </div>
@@ -1620,9 +1618,9 @@
                                         <strong>${escapeHtml(post.author_nick)}</strong>
                                         <span style="color: var(--text-sec); font-size: 12px;">${new Date(post.created_at).toLocaleString('ru-RU')}</span>
                                         <p style="margin-top: 5px;">${escapeHtml(post.text?.substring(0, 100) || '')}${post.text?.length > 100 ? '...' : ''}</p>
-                                        ${post.image ? `<img src="${post.image}" style="max-width: 200px; border-radius: 5px; margin-top: 5px;">` : ''}
+                                        ${post.image ? `<img src="${escapeHtml(post.image)}" style="max-width: 200px; border-radius: 5px; margin-top: 5px;">` : ''}
                                     </div>
-                                    <button class="btn-danger" onclick="deletePost('${post.id}')" style="margin-left: 10px;">Удалить</button>
+                                    <button class="btn-danger" onclick="deletePost('${safeStr(post.id)}')" style="margin-left: 10px;">Удалить</button>
                                 </div>
                             </div>
                         `;
@@ -1633,7 +1631,7 @@
             } else if (tab === 'emails') {
                 let html = '<h3>📧 Email адреса</h3><div style="margin-top: 20px;">';
                 users?.forEach(user => {
-                    html += `<div style="padding: 10px; border-bottom: 1px solid var(--border);"><strong>${escapeHtml(user.nick)}</strong>: ${user.email}</div>`;
+                    html += `<div style="padding: 10px; border-bottom: 1px solid var(--border);"><strong>${escapeHtml(user.nick)}</strong>: ${escapeHtml(user.email)}</div>`;
                 });
                 html += '</div>';
                 content.innerHTML = html;
