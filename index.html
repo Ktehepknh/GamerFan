@@ -3,160 +3,1372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GamerFan | Игры</title>
+    <title>GamerFan | Социальная сеть для геймеров</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg: #0f0f13; --card: #1a1a24; --text: #e0e0e0; --sec: #a0a0b0; --acc: #ff0055; --pri: #00d4ff; --border: #2a2a35; }
-        [data-theme="dark"] { --bg: #0a0a0a; --card: #141414; --text: #fff; --sec: #ccc; --acc: #ff4757; --pri: #fff; --border: #333; }
-        [data-theme="black"] { --bg: #000; --card: #0a0a0a; --text: #fff; --sec: #aaa; --acc: #ff4757; --pri: #fff; --border: #222; }
-        [data-theme="light"] { --bg: #f5f5f5; --card: #fff; --text: #1a1a1a; --sec: #555; --acc: #ff4757; --pri: #1a1a1a; --border: #ddd; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; min-height: 100vh; }
-        h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
-        
-        header { background: var(--card); border-bottom: 1px solid var(--border); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 24px; color: var(--acc); cursor: pointer; }
-        .theme-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-        .theme-btn { padding: 5px 12px; border: 1px solid var(--border); border-radius: 15px; cursor: pointer; font-size: 12px; background: var(--card); color: var(--sec); }
-        .theme-btn:hover, .theme-btn.active { background: var(--acc); color: #fff; }
-        
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .games-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab { padding: 8px 16px; border: 1px solid var(--border); border-radius: 20px; cursor: pointer; font-size: 14px; color: var(--sec); }
-        .tab:hover, .tab.active { background: var(--acc); color: #fff; }
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .game-card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; }
-        .game-card:hover { transform: translateY(-5px); border-color: var(--pri); box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
-        .game-icon { height: 100px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: #000; }
-        .game-info { padding: 12px; }
-        .game-title { font-weight: bold; font-size: 14px; margin-bottom: 3px; }
-        .game-cat { font-size: 11px; color: var(--acc); text-transform: uppercase; }
-        
-        #game-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: none; flex-direction: column; }
-        #game-frame { flex: 1; border: none; }
-        #game-header { height: 45px; background: #111; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; color: #fff; }
-        .btn-close { background: var(--acc); border: none; color: #fff; padding: 5px 15px; border-radius: 5px; cursor: pointer; font-size: 14px; }
-        
-        footer { text-align: center; padding: 20px; color: var(--sec); font-size: 12px; border-top: 1px solid var(--border); margin-top: 30px; }
-        footer a { color: var(--pri); text-decoration: none; }
+        :root {
+            --bg-color: #0f0f13;
+            --card-bg: #1a1a24;
+            --text-main: #e0e0e0;
+            --text-sec: #a0a0b0;
+            --accent: #ff0055;
+            --accent-glow: rgba(255, 0, 85, 0.4);
+            --primary: #00d4ff;
+            --border: #2a2a35;
+            --success: #00ff88;
+            --danger: #ff3333;
+        }
+        [data-theme="dark"] { --bg-color: #0a0a0a; --card-bg: #141414; --text-main: #ffffff; --text-sec: #cccccc; --accent: #ff4757; --accent-glow: rgba(255, 71, 87, 0.3); --primary: #ffffff; --border: #333; }
+        [data-theme="black"] { --bg-color: #000000; --card-bg: #0a0a0a; --text-main: #ffffff; --text-sec: #aaaaaa; --accent: #ff4757; --accent-glow: rgba(255, 71, 87, 0.2); --primary: #ffffff; --border: #222; }
+        [data-theme="light"] { --bg-color: #f5f5f5; --card-bg: #ffffff; --text-main: #1a1a1a; --text-sec: #555555; --accent: #ff4757; --accent-glow: rgba(255, 71, 87, 0.2); --primary: #1a1a1a; --border: #ddd; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        body { font-family: 'Roboto', sans-serif; background-color: var(--bg-color); color: var(--text-main); transition: background 0.3s, color 0.3s; overflow-x: hidden; height: 100vh; display: flex; flex-direction: column; }
+        h1, h2, h3, .logo { font-family: 'Orbitron', sans-serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        /* Auth Screen */
+        #auth-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a1a24 0%, #000 100%);
+            z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;
+        }
+        .auth-box {
+            background: rgba(26, 26, 36, 0.95); padding: 40px; border-radius: 15px;
+            border: 1px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow);
+            text-align: center; width: 100%; max-width: 400px;
+        }
+        .auth-input {
+            width: 100%; padding: 12px; margin: 10px 0;
+            background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+            color: var(--text-main); border-radius: 5px;
+        }
+        .btn-neon {
+            background: transparent; border: 2px solid var(--accent);
+            color: var(--accent); padding: 10px 20px;
+            font-weight: bold; cursor: pointer; text-transform: uppercase;
+            transition: 0.3s; border-radius: 5px; width: 100%; margin-top: 10px;
+            font-family: 'Orbitron', sans-serif;
+        }
+        .btn-neon:hover { background: var(--accent); color: #fff; box-shadow: 0 0 15px var(--accent-glow); }
+        .btn-danger { background: var(--danger); color: #fff; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
+        .btn-danger:hover { opacity: 0.8; }
+
+        /* App Layout */
+        #app { display: none; height: 100%; flex-direction: column; }
+        #app.visible { display: flex; }
+
+        header {
+            height: 60px; background: var(--card-bg); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-size: 24px; color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); cursor: pointer; }
+
+        .nav-links { display: flex; gap: 20px; }
+        .nav-item { cursor: pointer; color: var(--text-sec); transition: 0.3s; display: flex; align-items: center; gap: 5px; }
+        .nav-item:hover, .nav-item.active { color: var(--primary); text-shadow: 0 0 8px rgba(0, 212, 255, 0.5); }
+
+        .user-mini { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .mini-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); background: #333; }
+
+        main { flex: 1; overflow-y: auto; padding: 20px; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+        .section { display: none; animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Cards & Posts */
+        .card { background: var(--card-bg); border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .post-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; cursor: pointer; background: #333; }
+        .post-meta h4 { color: var(--text-main); cursor: pointer; }
+        .post-meta span { font-size: 12px; color: var(--text-sec); }
+        .post-content { font-size: 16px; line-height: 1.5; margin-bottom: 15px; white-space: pre-wrap; }
+        .post-actions { display: flex; gap: 15px; border-top: 1px solid var(--border); padding-top: 10px; }
+        .action-btn { background: none; border: none; color: var(--text-sec); cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+        .action-btn:hover { color: var(--primary); }
+        .action-btn.liked { color: var(--accent); }
+
+        /* Games Library */
+        .games-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .section-tab { padding: 8px 16px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; cursor: pointer; color: var(--text-sec); transition: 0.3s; }
+        .section-tab.active, .section-tab:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .game-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); transition: 0.3s; cursor: pointer; }
+        .game-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); border-color: var(--primary); }
+        .game-img { width: 100%; height: 120px; display: flex; align-items: center; justify-content: center; font-size: 40px; background: #000; }
+        .game-info { padding: 15px; }
+        .game-title { font-weight: bold; margin-bottom: 5px; }
+        .game-cat { font-size: 12px; color: var(--accent); text-transform: uppercase; }
+
+        /* Messenger */
+        .messenger-layout { display: flex; height: calc(100vh - 140px); gap: 20px; }
+        .contacts-panel { width: 300px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+        .chat-panel { flex: 1; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+
+        .m-tabs { display: flex; border-bottom: 1px solid var(--border); }
+        .m-tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; color: var(--text-sec); transition: 0.3s; }
+        .m-tab.active { background: rgba(255, 0, 85, 0.1); color: var(--accent); border-bottom: 2px solid var(--accent); }
+
+        .contacts-list { flex: 1; overflow-y: auto; }
+        .contact-item { padding: 15px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-bottom: 1px solid var(--border); transition: 0.2s; }
+        .contact-item:hover, .contact-item.active { background: rgba(255, 255, 255, 0.05); }
+        .contact-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #333; }
+        .contact-info { flex: 1; overflow: hidden; }
+        .contact-name { font-weight: bold; color: var(--text-main); }
+        .contact-last-msg { font-size: 13px; color: var(--text-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .chat-header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.2); }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+
+        .message { max-width: 70%; padding: 10px 15px; border-radius: 15px; position: relative; word-wrap: break-word; }
+        .msg-in { align-self: flex-start; background: var(--card-bg); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
+        .msg-out { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 2px; }
+        .msg-meta { font-size: 10px; opacity: 0.7; text-align: right; margin-top: 5px; }
+
+        .chat-input-area { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
+        .chat-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 10px; border-radius: 20px; color: var(--text-main); }
+
+        /* Profile */
+        .profile-header { display: flex; gap: 30px; align-items: center; margin-bottom: 30px; flex-wrap: wrap; }
+        .profile-big-avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow); background: #333; }
+        .profile-info h2 { font-size: 32px; margin-bottom: 5px; }
+        .profile-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+
+        /* Modal & Toast */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: none; justify-content: center; align-items: center; }
+        .modal-content { background: var(--card-bg); padding: 30px; border-radius: 10px; width: 90%; max-width: 500px; border: 1px solid var(--accent); position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: var(--text-sec); }
+
+        .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--card-bg); border-left: 4px solid var(--primary); padding: 15px 20px; border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease; min-width: 250px; }
+        .toast.error { border-color: var(--danger); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* Game Overlay */
+        #game-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 4000; display: none; flex-direction: column; }
+        #game-frame { flex: 1; border: none; width: 100%; height: 100%; }
+        #game-header { height: 50px; background: #111; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; color: #fff; }
+
+        /* Settings Modal */
+        .settings-group { margin-top: 20px; }
+        .settings-label { display: block; margin-bottom: 10px; font-weight: bold; color: var(--primary); }
+
+        footer { text-align: center; padding: 20px; color: var(--text-sec); font-size: 12px; border-top: 1px solid var(--border); }
+        footer a { color: var(--primary); text-decoration: none; }
+
+        @media (max-width: 768px) {
+            .messenger-layout { flex-direction: column; height: auto; }
+            .contacts-panel { width: 100%; height: 300px; }
+            .chat-panel { height: 500px; }
+            .nav-links span { display: none; }
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">🎮 GAMER<span style="color:#fff">FAN</span></div>
-        <div class="theme-btns">
-            <button class="theme-btn active" onclick="setTheme('cyberpunk')">🎮 Киберпанк</button>
-            <button class="theme-btn" onclick="setTheme('dark')">🌙 Тёмная</button>
-            <button class="theme-btn" onclick="setTheme('black')">🖤 Чёрная</button>
-            <button class="theme-btn" onclick="setTheme('light')">☀️ Светлая</button>
-        </div>
-    </header>
+    <!-- AUTH SCREEN -->
+    <div id="auth-screen">
+        <div class="auth-box">
+            <h1 class="logo" style="margin-bottom: 20px;">GAMER<span style="color:#fff">FAN</span></h1>
+            <h3 id="auth-title" style="margin-bottom: 20px; color: var(--primary);">Вход</h3>
 
-    <div class="container">
-        <h2 style="margin-bottom:20px;">🎮 Библиотека игр</h2>
-        
-        <div class="games-tabs" id="games-tabs">
-            <div class="tab active" data-cat="all">Все</div>
-            <div class="tab" data-cat="slime">🧪 Slime</div>
-            <div class="tab" data-cat="elberr_old">💾 ELBERR OS</div>
-            <div class="tab" data-cat="elberr_new">🆕 Remake</div>
-            <div class="tab" data-cat="elberr_2">⭐ ELBERR OS 2</div>
-            <div class="tab" data-cat="dlc">🔥 DLC</div>
-            <div class="tab" data-cat="daardos">🐦 Daardos</div>
+            <input type="email" id="auth-email" class="auth-input" placeholder="Email">
+            <input type="password" id="auth-pass" class="auth-input" placeholder="Пароль">
+
+            <button id="main-auth-btn" class="btn-neon">Войти</button>
+
+            <p style="margin-top: 15px; font-size: 14px; color: var(--text-sec);">
+                <span id="auth-switch-text">Нет аккаунта?</span>
+                <a href="#" id="toggle-auth-mode" style="color: var(--accent); text-decoration: none;">Зарегистрироваться</a>
+            </p>
         </div>
-        
-        <div class="games-grid" id="games-container"></div>
     </div>
 
-    <footer>
-        <p>GamerFan &copy; 2026 | 
-        <a href="https://github.com/Ktehepknh/GamerFan" target="_blank">GitHub</a> | 
-        Партнёр: <a href="https://daardos.github.io/the_daardos/" target="_blank">The Daardos Project</a></p>
-    </footer>
+    <!-- MAIN APP -->
+    <div id="app">
+        <header>
+            <div class="logo" onclick="switchTab('feed')">GAMER<span style="color:#fff">FAN</span></div>
+
+            <nav class="nav-links">
+                <div class="nav-item active" data-tab="feed"><i class="fas fa-home"></i> <span>Лента</span></div>
+                <div class="nav-item" data-tab="games"><i class="fas fa-gamepad"></i> <span>Игры</span></div>
+                <div class="nav-item" data-tab="events"><i class="fas fa-calendar-alt"></i> <span>Ивенты</span></div>
+                <div class="nav-item" data-tab="messenger"><i class="fas fa-comments"></i> <span>Чат</span></div>
+                <div class="nav-item" data-tab="settings"><i class="fas fa-cog"></i> <span>Настройки</span></div>
+            </nav>
+
+            <div class="user-mini" onclick="switchTab('profile')">
+                <img src="https://via.placeholder.com/100/555/fff?text=User" id="header-avatar" class="mini-avatar" alt="Avatar">
+                <span id="user-nick" style="font-weight: bold;">Загрузка...</span>
+                <i class="fas fa-sign-out-alt" style="margin-left: 10px; color: var(--danger);" onclick="event.stopPropagation(); logout();" title="Выйти"></i>
+            </div>
+        </header>
+
+        <main>
+            <!-- FEED SECTION -->
+            <section id="feed" class="section active">
+                <div class="card" style="display: flex; gap: 15px; align-items: center;">
+                    <img src="https://via.placeholder.com/100/555/fff?text=User" id="feed-avatar" class="mini-avatar" style="width: 50px; height: 50px;">
+                    <div style="flex: 1;">
+                        <input type="text" id="post-input" placeholder="О чем думаешь, геймер?" style="width: 100%; background: transparent; border: none; color: var(--text-main); font-size: 16px;" readonly onclick="openPostModal()">
+                    </div>
+                    <button class="btn-neon" style="width: auto;" onclick="openPostModal()">Пост</button>
+                </div>
+                <div id="feed-container"></div>
+            </section>
+
+            <!-- GAMES SECTION -->
+            <section id="games" class="section">
+                <h2 style="margin-bottom: 20px;">Библиотека игр</h2>
+                <div class="games-tabs" id="games-tabs">
+                    <div class="section-tab active" data-category="all">Все</div>
+                    <div class="section-tab" data-category="slime">Slime</div>
+                    <div class="section-tab" data-category="elberr_old">ELBERR OS</div>
+                    <div class="section-tab" data-category="elberr_new">Remake</div>
+                    <div class="section-tab" data-category="elberr_2">ELBERR OS 2</div>
+                    <div class="section-tab" data-category="dlc">DLC</div>
+                    <div class="section-tab" data-category="daardos">Daardos</div>
+                </div>
+                <div class="games-grid" id="games-container"></div>
+            </section>
+
+            <!-- EVENTS SECTION -->
+            <section id="events" class="section">
+                <h2 style="margin-bottom: 20px;">Игровые ивенты</h2>
+                <div id="events-create-area" style="display: none; margin-bottom: 20px;" class="card">
+                    <h3>Создать ивент</h3>
+                    <input type="text" id="event-title" class="auth-input" placeholder="Название" style="margin-top: 10px;">
+                    <textarea id="event-desc" class="auth-input" placeholder="Описание" rows="3" style="margin-top: 10px;"></textarea>
+                    <select id="event-status" class="auth-input" style="margin-top: 10px;">
+                        <option value="upcoming">Предстоящий</option>
+                        <option value="active">Активный</option>
+                        <option value="ended">Завершён</option>
+                    </select>
+                    <button class="btn-neon" id="createEventBtn" style="margin-top: 10px;">Создать ивент</button>
+                </div>
+                <div id="events-container"></div>
+            </section>
+
+            <!-- MESSENGER SECTION -->
+            <section id="messenger" class="section">
+                <div class="messenger-layout">
+                    <div class="contacts-panel">
+                        <div class="m-tabs">
+                            <div class="m-tab active" data-mtab="all">Все пользователи</div>
+                            <div class="m-tab" data-mtab="chats">Мои чаты</div>
+                        </div>
+                        <div class="contacts-list" id="contacts-list">
+                            <div style="padding: 20px; text-align: center; color: var(--text-sec);">Загрузка...</div>
+                        </div>
+                    </div>
+
+                    <div class="chat-panel">
+                        <div class="chat-header" id="chat-header" style="display: none;">
+                            <img src="" id="chat-avatar" class="mini-avatar">
+                            <div style="flex: 1;">
+                                <div id="chat-name" style="font-weight: bold; font-size: 18px;"></div>
+                            </div>
+                        </div>
+                        <div class="chat-messages" id="chat-messages" style="display: none;"></div>
+                        <div class="chat-input-area" id="chat-input-area" style="display: none;">
+                            <input type="text" id="msg-input" class="chat-input" placeholder="Напишите сообщение...">
+                            <button class="btn-neon" id="sendMsgBtn" style="width: auto;"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                        <div id="empty-chat-state" style="flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-sec); flex-direction: column;">
+                            <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+                            <p>Выберите собеседника слева, чтобы начать общение</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PROFILE SECTION -->
+            <section id="profile" class="section">
+                <div id="profile-view"></div>
+            </section>
+
+            <!-- SETTINGS SECTION -->
+            <section id="settings" class="section">
+                <div class="card">
+                    <h2 style="margin-bottom: 20px;">Настройки аккаунта</h2>
+                    <div class="settings-group">
+                        <label class="settings-label">Сменить никнейм</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="settings-nick" class="auth-input" placeholder="Новый ник">
+                            <button class="btn-neon" id="updateNickBtn" style="width: auto;">Сохранить</button>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <label class="settings-label">Сменить аватар</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="file" id="avatar-file" accept="image/*" style="display: none;" onchange="uploadAvatar(this)">
+                            <button class="btn-neon" onclick="document.getElementById('avatar-file').click()" style="width: auto;">Выбрать файл</button>
+                            <span id="avatar-upload-status" style="font-size: 12px; color: var(--text-sec);"></span>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <label class="settings-label">Сменить пароль</label>
+                        <button class="btn-neon" id="changePasswordBtn" style="width: auto;">Сменить пароль</button>
+                    </div>
+                    <div class="settings-group">
+                        <label class="settings-label">Тема оформления</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                            <button class="btn-neon" onclick="setTheme('cyberpunk')">🎮 Киберпанк</button>
+                            <button class="btn-neon" onclick="setTheme('dark')">🌙 Тёмная</button>
+                            <button class="btn-neon" onclick="setTheme('black')">🖤 Чёрная</button>
+                            <button class="btn-neon" onclick="setTheme('light')">☀️ Светлая</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>GamerFan v3.0 &copy; 2026 |
+            <a href="https://github.com/Ktehepknh/GamerFan" target="_blank">GitHub</a> |
+            Партнёр: <a href="https://daardos.github.io/the_daardos/" target="_blank">The Daardos Project</a></p>
+        </footer>
+    </div>
+
+    <!-- MODALS -->
+    <div id="post-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePostModal()">&times;</span>
+            <h3>Новый пост</h3>
+            <textarea id="post-text-area" class="auth-input" rows="5" placeholder="Текст поста..." style="margin-top: 15px;"></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 10px; align-items: center;">
+                <input type="file" id="post-image-file" accept="image/*" style="display: none;" onchange="uploadPostImage(this)">
+                <button class="btn-neon" onclick="document.getElementById('post-image-file').click()" style="width: auto; padding: 8px 16px;">📷 Добавить фото</button>
+                <span id="post-upload-status" style="font-size: 12px;"></span>
+            </div>
+            <input type="hidden" id="post-image-url">
+            <button class="btn-neon" id="publishPostBtn" style="margin-top: 20px;">Опубликовать</button>
+        </div>
+    </div>
 
     <div id="game-overlay">
         <div id="game-header">
-            <span id="game-title-display">Игра</span>
-            <button class="btn-close" onclick="closeGame()">✕ Закрыть</button>
+            <span id="game-title-display">Game Title</span>
+            <button class="btn-neon" onclick="closeGame()" style="width: auto; padding: 5px 15px;">Закрыть игру</button>
         </div>
         <iframe id="game-frame" src=""></iframe>
     </div>
 
-    <script>
-        const GAMES = [
-            // Slime
-            {name:"Slime Clicker 2D",path:"Slime_Clicker/index.html",icon:"🧪",cat:"slime"},
-            {name:"Slime Farm 2D",path:"Slime_Farm_2D/index.html",icon:"🚜",cat:"slime"},
-            {name:"Slime Farm 2",path:"Slime_Farm2/index.html",icon:"🍄",cat:"slime"},
-            // ELBERR OS
-            {name:"ELBERR OS: Ch 1",path:"ELBERR_OS/Chapter1/index.html",icon:"💾",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 2",path:"ELBERR_OS/Chapter2/index.html",icon:"🔐",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 3",path:"ELBERR_OS/Chapter3/index.html",icon:"⚙️",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 4",path:"ELBERR_OS/Chapter4/index.html",icon:"💿",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 5",path:"ELBERR_OS/Chapter5/index.html",icon:"📡",cat:"elberr_old"},
-            {name:"ELBERR OS: Ch 6",path:"ELBERR_OS/Chapter6/index.html",icon:"🧠",cat:"elberr_old"},
-            // Remake
-            {name:"ELBERR OS R: Ch 1",path:"ELBERR_OS_REMAKE/Chapter1/index.html",icon:"🆕",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 2",path:"ELBERR_OS_REMAKE/Chapter2/index.html",icon:"✨",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 3",path:"ELBERR_OS_REMAKE/Chapter3/index.html",icon:"🚀",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 4",path:"ELBERR_OS_REMAKE/Chapter4/index.html",icon:"💫",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 5",path:"ELBERR_OS_REMAKE/Chapter5/index.html",icon:"⚡",cat:"elberr_new"},
-            {name:"ELBERR OS R: Ch 6",path:"ELBERR_OS_REMAKE/Chapter6/index.html",icon:"🔥",cat:"elberr_new"},
-            // ELBERR OS 2 (НОВАЯ!)
-            {name:"ELBERR OS 2: Ch 1",path:"ELBERR OS 2/Chapter 1/index.html",icon:"⭐",cat:"elberr_2"},
-            // DLC
-            {name:"RTAP DLC",path:"ELBERR_OS_REMAKE/RTAP/index.html",icon:"🦾",cat:"dlc"},
-            {name:"TAD DLC",path:"ELBERR_OS_REMAKE/TAD/index.html",icon:"🔥",cat:"dlc"},
-            {name:"TPD DLC",path:"ELBERR_OS_REMAKE/TPD/index.html",icon:"🔥",cat:"dlc"},
-            // Daardos
-            {name:"Neon Bird",path:"daardos/neon_bird/index.html",icon:"🐦",cat:"daardos"}
+    <div class="toast-container" id="toast-container"></div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+        const SUPABASE_URL = 'https://waatvbalvsjitvshcrnb.supabase.co'
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndhYXR2YmFsdnNqaXR2c2hjcm5iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1NzI4NDEsImV4cCI6MjExMDE0ODg0MX0.jpsKpZ5LDBk8XRvyl3VOA7LdEI4n0vUXEl_-uCcs4VU'
+        const ADMIN_EMAIL = 'vetrovlev1@gmail.com'
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+        const GAMES_LIST = [
+            { name: "Slime Clicker 2D", path: "Slime_Clicker/index.html", icon: "🧪", category: "slime" },
+            { name: "Slime Farm 2D", path: "Slime_Farm_2D/index.html", icon: "🚜", category: "slime" },
+            { name: "Slime Farm 2", path: "Slime_Farm2/index.html", icon: "🍄", category: "slime" },
+            { name: "ELBERR OS: Ch 1", path: "ELBERR_OS/Chapter1/index.html", icon: "💾", category: "elberr_old" },
+            { name: "ELBERR OS: Ch 2", path: "ELBERR_OS/Chapter2/index.html", icon: "🔐", category: "elberr_old" },
+            { name: "ELBERR OS: Ch 3", path: "ELBERR_OS/Chapter3/index.html", icon: "⚙️", category: "elberr_old" },
+            { name: "ELBERR OS: Ch 4", path: "ELBERR_OS/Chapter4/index.html", icon: "💿", category: "elberr_old" },
+            { name: "ELBERR OS: Ch 5", path: "ELBERR_OS/Chapter5/index.html", icon: "📡", category: "elberr_old" },
+            { name: "ELBERR OS: Ch 6", path: "ELBERR_OS/Chapter6/index.html", icon: "🧠", category: "elberr_old" },
+            { name: "ELBERR OS R: Ch 1", path: "ELBERR_OS_REMAKE/Chapter1/index.html", icon: "🆕", category: "elberr_new" },
+            { name: "ELBERR OS R: Ch 2", path: "ELBERR_OS_REMAKE/Chapter2/index.html", icon: "✨", category: "elberr_new" },
+            { name: "ELBERR OS R: Ch 3", path: "ELBERR_OS_REMAKE/Chapter3/index.html", icon: "🚀", category: "elberr_new" },
+            { name: "ELBERR OS R: Ch 4", path: "ELBERR_OS_REMAKE/Chapter4/index.html", icon: "💫", category: "elberr_new" },
+            { name: "ELBERR OS R: Ch 5", path: "ELBERR_OS_REMAKE/Chapter5/index.html", icon: "⚡", category: "elberr_new" },
+            { name: "ELBERR OS R: Ch 6", path: "ELBERR_OS_REMAKE/Chapter6/index.html", icon: "🔥", category: "elberr_new" },
+            { name: "ELBERR OS 2: Ch 1", path: "ELBERR OS 2/Chapter 1/index.html", icon: "⭐", category: "elberr_2" },
+            { name: "RTAP DLC", path: "ELBERR_OS_REMAKE/RTAP/index.html", icon: "🦾", category: "dlc" },
+            { name: "TAD DLC", path: "ELBERR_OS_REMAKE/TAD/index.html", icon: "🔥", category: "dlc" },
+            { name: "TPD DLC", path: "ELBERR_OS_REMAKE/TPD/index.html", icon: "🔥", category: "dlc" },
+            { name: "Neon Bird", path: "daardos/neon_bird/index.html", icon: "🐦", category: "daardos" }
         ];
 
-        function loadGames(cat) {
-            const filtered = cat === 'all' ? GAMES : GAMES.filter(g => g.cat === cat);
-            document.getElementById('games-container').innerHTML = filtered.map(g => `
-                <div class="game-card" onclick="launchGame('${g.path}','${g.name}')">
-                    <div class="game-icon">${g.icon}</div>
-                    <div class="game-info">
-                        <div class="game-title">${g.name}</div>
-                        <div class="game-cat">${g.cat}</div>
-                    </div>
-                </div>
-            `).join('');
+        let currentUser = null;
+        let currentChatUserId = null;
+        let isRegistering = false;
+        let messagesSubscription = null;
+
+        function $(id) { return document.getElementById(id); }
+
+        function escapeHtml(text) {
+            if (!text) return "";
+            return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        function launchGame(path, name) {
-            document.getElementById('game-title-display').textContent = name;
-            document.getElementById('game-frame').src = path;
-            document.getElementById('game-overlay').style.display = 'flex';
+        function showToast(icon, msg, isError = false) {
+            const container = $('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'error' : ''}`;
+            toast.innerHTML = `<span>${icon}</span><span>${escapeHtml(msg)}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
 
-        function closeGame() {
-            document.getElementById('game-overlay').style.display = 'none';
-            document.getElementById('game-frame').src = '';
-        }
+        // AUTH
+        $('toggle-auth-mode').addEventListener('click', (e) => {
+            e.preventDefault();
+            isRegistering = !isRegistering;
+            $('auth-title').textContent = isRegistering ? 'Регистрация' : 'Вход';
+            $('main-auth-btn').textContent = isRegistering ? 'Создать аккаунт' : 'Войти';
+            $('auth-switch-text').textContent = isRegistering ? 'Есть аккаунт?' : 'Нет аккаунта?';
+            $('toggle-auth-mode').textContent = isRegistering ? 'Войти' : 'Зарегистрироваться';
+        });
 
-        function setTheme(t) {
-            if (t === 'cyberpunk') document.documentElement.removeAttribute('data-theme');
-            else document.documentElement.setAttribute('data-theme', t);
-            localStorage.setItem('gf_theme', t);
-            document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-        }
+        $('main-auth-btn').addEventListener('click', async () => {
+            const email = $('auth-email').value.trim();
+            const pass = $('auth-pass').value;
 
-        document.getElementById('games-tabs').addEventListener('click', e => {
-            const tab = e.target.closest('.tab');
-            if (tab) {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                loadGames(tab.dataset.cat);
+            if (!email || !pass) {
+                showToast('⚠️', 'Введите email и пароль', true);
+                return;
+            }
+
+            try {
+                if (isRegistering) {
+                    // Регистрация
+                    const { data: authData, error: authError } = await supabase.auth.signUp({
+                        email: email,
+                        password: pass
+                    });
+
+                    if (authError) throw authError;
+
+                    // Создаем профиль пользователя
+                    const { error: insertError } = await supabase
+                        .from('users')
+                        .insert([{
+                            id: authData.user.id,
+                            email: email,
+                            nick: email.split('@')[0],
+                            theme: 'cyberpunk'
+                        }]);
+
+                    if (insertError) throw insertError;
+
+                    showToast('✅', 'Аккаунт создан! Войдите в систему');
+                    isRegistering = false;
+                    $('toggle-auth-mode').click();
+                } else {
+                    // Вход
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: pass
+                    });
+
+                    if (error) throw error;
+
+                    showToast('👋', 'С возвращением!');
+                    await loadUserData();
+                }
+            } catch (error) {
+                showToast('❌', error.message, true);
             }
         });
 
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGame(); });
+        async function loadUserData() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
 
-        loadGames('all');
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (data) {
+                currentUser = data;
+                $('user-nick').textContent = data.nick;
+                $('header-avatar').src = data.avatar || 'https://via.placeholder.com/100/555/fff?text=User';
+                $('feed-avatar').src = data.avatar || 'https://via.placeholder.com/100/555/fff?text=User';
+
+                if (data.theme) setTheme(data.theme);
+
+                $('auth-screen').style.display = 'none';
+                $('app').classList.add('visible');
+
+                loadFeed();
+                loadEvents();
+            }
+        }
+
+        window.logout = async () => {
+            if (confirm('Выйти из аккаунта?')) {
+                await supabase.auth.signOut();
+                location.reload();
+            }
+        };
+
+        // POSTS
+        window.openPostModal = () => { $('post-modal').style.display = 'flex'; };
+        window.closePostModal = () => {
+            $('post-modal').style.display = 'none';
+            $('post-text-area').value = '';
+            $('post-image-url').value = '';
+            $('post-upload-status').textContent = '';
+            const preview = $('post-image-preview');
+            if (preview) preview.remove();
+        };
+
+        $('publishPostBtn').addEventListener('click', async () => {
+            const text = $('post-text-area').value.trim();
+            const imageUrl = $('post-image-url').value;
+
+            if (!text && !imageUrl) {
+                showToast('⚠️', 'Введите текст или добавьте фото', true);
+                return;
+            }
+
+            const { error } = await supabase
+                .from('posts')
+                .insert([{
+                    author_id: currentUser.id,
+                    author_nick: currentUser.nick,
+                    author_avatar: currentUser.avatar,
+                    text: text,
+                    image: imageUrl
+                }]);
+
+            if (error) {
+                showToast('❌', error.message, true);
+            } else {
+                showToast('✅', 'Пост опубликован');
+                closePostModal();
+                loadFeed();
+            }
+        });
+
+        async function loadFeed() {
+            const { data, error } = await supabase
+                .from('posts')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(20);
+
+            const container = $('feed-container');
+            container.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="card" style="text-align:center; color:var(--text-sec);">Лента пуста. Создайте первый пост!</div>';
+                return;
+            }
+
+            for (const post of data) {
+                const likes = post.likes || {};
+                const likeCount = Object.keys(likes).length;
+                const isLiked = currentUser && likes[currentUser.id];
+
+                const imageHtml = post.image ? `<img src="${post.image}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">` : '';
+
+                // Загружаем комментарии для этого поста
+                const { data: comments } = await supabase
+                    .from('comments')
+                    .select('*')
+                    .eq('post_id', post.id)
+                    .order('created_at', { ascending: true });
+
+                let commentsHtml = '';
+                if (comments && comments.length > 0) {
+                    commentsHtml = '<div class="comments-section" style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 5px;">';
+                    comments.forEach(comment => {
+                        commentsHtml += `
+                            <div class="comment" style="padding: 8px 0; border-bottom: 1px solid var(--border);">
+                                <strong style="color: var(--primary);">${escapeHtml(comment.author_nick)}:</strong>
+                                <span style="color: var(--text-main);">${escapeHtml(comment.text)}</span>
+                                <span style="font-size: 11px; color: var(--text-sec); margin-left: 10px;">${new Date(comment.created_at).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})}</span>
+                            </div>
+                        `;
+                    });
+                    commentsHtml += '</div>';
+                }
+
+                container.innerHTML += `
+                    <div class="card" id="post-${post.id}">
+                        <div class="post-header">
+                            <img src="${post.author_avatar || 'https://via.placeholder.com/100/555/fff?text=User'}" class="post-avatar" onclick="viewProfile('${post.author_id}')">
+                            <div class="post-meta">
+                                <h4 onclick="viewProfile('${post.author_id}')">${escapeHtml(post.author_nick)}</h4>
+                                <span>${new Date(post.created_at).toLocaleString('ru-RU')}</span>
+                            </div>
+                        </div>
+                        ${post.text ? `<div class="post-content">${escapeHtml(post.text)}</div>` : ''}
+                        ${imageHtml}
+                        <div class="post-actions">
+                            <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
+                                <i class="fas fa-heart"></i> ${likeCount}
+                            </button>
+                            <button class="action-btn" onclick="toggleComments('${post.id}')">
+                                <i class="fas fa-comment"></i> ${comments?.length || 0}
+                            </button>
+                        </div>
+                        ${commentsHtml}
+                        <div id="comment-input-${post.id}" style="display: none; margin-top: 10px;">
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="comment-text-${post.id}" class="chat-input" placeholder="Написать комментарий..." onkeydown="if(event.key==='Enter') addComment('${post.id}')">
+                                <button class="btn-neon" onclick="addComment('${post.id}')" style="width: auto; padding: 8px 16px;">Отправить</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        window.toggleComments = function(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            if (input.style.display === 'none') {
+                input.style.display = 'block';
+                document.getElementById(`comment-text-${postId}`).focus();
+            } else {
+                input.style.display = 'none';
+            }
+        };
+
+        window.addComment = async function(postId) {
+            const input = document.getElementById(`comment-text-${postId}`);
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            await supabase
+                .from('comments')
+                .insert([{
+                    post_id: postId,
+                    author_id: currentUser.id,
+                    author_nick: currentUser.nick,
+                    author_avatar: currentUser.avatar,
+                    text: text
+                }]);
+
+            input.value = '';
+            loadFeed();
+        };
+
+        window.toggleLike = async (postId) => {
+            const { data: post } = await supabase
+                .from('posts')
+                .select('likes')
+                .eq('id', postId)
+                .single();
+
+            const likes = post.likes || {};
+
+            if (likes[currentUser.id]) {
+                delete likes[currentUser.id];
+            } else {
+                likes[currentUser.id] = true;
+            }
+
+            await supabase
+                .from('posts')
+                .update({ likes: likes })
+                .eq('id', postId);
+
+            loadFeed();
+        };
+
+        // EVENTS
+        async function loadEvents() {
+            // Показываем форму создания только для админа
+            if (currentUser && currentUser.email === ADMIN_EMAIL) {
+                document.getElementById('events-create-area').style.display = 'block';
+            }
+
+            const { data } = await supabase
+                .from('events')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            const container = $('events-container');
+            container.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="card" style="text-align:center; color:var(--text-sec);">🎉 Пока нет ивентов</div>';
+                return;
+            }
+
+            data.forEach(event => {
+                const statusColors = {
+                    upcoming: 'var(--primary)',
+                    active: 'var(--success)',
+                    ended: 'var(--text-sec)'
+                };
+                const statusTexts = {
+                    upcoming: 'Предстоящий',
+                    active: 'Активный',
+                    ended: 'Завершён'
+                };
+
+                container.innerHTML += `
+                    <div class="card">
+                        <h3>${escapeHtml(event.title)}</h3>
+                        <p style="color:var(--text-sec); margin-top:10px;">${escapeHtml(event.description || '')}</p>
+                        <div style="font-size:12px; margin-top:10px;">
+                            <span style="color:var(--text-sec);">Создал: ${escapeHtml(event.created_by)}</span> |
+                            <span style="color:${statusColors[event.status] || 'var(--text-sec)'};">Статус: ${statusTexts[event.status] || event.status}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Создание ивента (только для админа)
+        document.addEventListener('DOMContentLoaded', () => {
+            const createEventBtn = document.getElementById('createEventBtn');
+            if (createEventBtn) {
+                createEventBtn.addEventListener('click', async () => {
+                    if (currentUser.email !== ADMIN_EMAIL) {
+                        showToast('⛔', 'Только администратор может создавать ивенты', true);
+                        return;
+                    }
+
+                    const title = document.getElementById('event-title').value.trim();
+                    const desc = document.getElementById('event-desc').value.trim();
+                    const status = document.getElementById('event-status').value;
+
+                    if (!title) {
+                        showToast('⚠️', 'Введите название ивента', true);
+                        return;
+                    }
+
+                    const { error } = await supabase
+                        .from('events')
+                        .insert([{
+                            title: title,
+                            description: desc,
+                            status: status,
+                            created_by: currentUser.nick
+                        }]);
+
+                    if (error) {
+                        showToast('❌', error.message, true);
+                    } else {
+                        showToast('✅', 'Ивент создан!');
+                        document.getElementById('event-title').value = '';
+                        document.getElementById('event-desc').value = '';
+                        loadEvents();
+                    }
+                });
+            }
+        });
+
+        // MESSENGER
+        document.querySelectorAll('.m-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                if (tab.dataset.mtab === 'all') loadAllUsers();
+                else if (tab.dataset.mtab === 'chats') loadMyChats();
+            });
+        });
+
+        async function loadAllUsers() {
+            const { data } = await supabase
+                .from('users')
+                .select('*')
+                .neq('id', currentUser.id);
+
+            const container = $('contacts-list');
+            container.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-sec);">Вы единственный пользователь</div>';
+                return;
+            }
+
+            data.forEach(user => {
+                container.innerHTML += `
+                    <div class="contact-item" onclick="startChat('${user.id}', '${escapeHtml(user.nick)}', '${user.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}')">
+                        <img src="${user.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}" class="contact-avatar">
+                        <div class="contact-info">
+                            <div class="contact-name">${escapeHtml(user.nick)}</div>
+                            <div class="contact-last-msg">Нажмите для чата</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function loadMyChats() {
+            const { data } = await supabase
+                .from('messages')
+                .select('sender_id, receiver_id')
+                .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+                .order('created_at', { ascending: false });
+
+            const uniqueUserIds = new Set();
+            data?.forEach(msg => {
+                const otherUserId = msg.sender_id === currentUser.id ? msg.receiver_id : msg.sender_id;
+                uniqueUserIds.add(otherUserId);
+            });
+
+            const container = $('contacts-list');
+            container.innerHTML = '';
+
+            if (uniqueUserIds.size === 0) {
+                container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-sec);">Нет активных чатов</div>';
+                return;
+            }
+
+            for (const userId of uniqueUserIds) {
+                const { data: user } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+
+                if (user) {
+                    container.innerHTML += `
+                        <div class="contact-item" onclick="startChat('${user.id}', '${escapeHtml(user.nick)}', '${user.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}')">
+                            <img src="${user.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}" class="contact-avatar">
+                            <div class="contact-info">
+                                <div class="contact-name">${escapeHtml(user.nick)}</div>
+                                <div class="contact-last-msg">Открыть чат</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        window.startChat = (userId, nick, avatar) => {
+            currentChatUserId = userId;
+
+            $('chat-avatar').src = avatar;
+            $('chat-name').textContent = nick;
+
+            $('empty-chat-state').style.display = 'none';
+            $('chat-header').style.display = 'flex';
+            $('chat-messages').style.display = 'flex';
+            $('chat-input-area').style.display = 'flex';
+
+            loadMessages(userId);
+        };
+
+        async function loadMessages(otherUserId) {
+            // Отписываемся от старой подписки
+            if (messagesSubscription) {
+                supabase.removeChannel(messagesSubscription);
+            }
+
+            const { data } = await supabase
+                .from('messages')
+                .select('*')
+                .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUser.id})`)
+                .order('created_at', { ascending: true });
+
+            renderMessages(data || []);
+
+            // Подписываемся на новые сообщения
+            messagesSubscription = supabase
+                .channel('messages')
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'messages'
+                }, () => {
+                    loadMessages(otherUserId);
+                })
+                .subscribe();
+        }
+
+        function renderMessages(messages) {
+            const container = $('chat-messages');
+            container.innerHTML = '';
+
+            if (messages.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:var(--text-sec); margin-top:20px;">💬 Напишите первое сообщение!</div>';
+                return;
+            }
+
+            messages.forEach(msg => {
+                const isOwn = msg.sender_id === currentUser.id;
+                container.innerHTML += `
+                    <div class="message ${isOwn ? 'msg-out' : 'msg-in'}">
+                        <div>${escapeHtml(msg.text)}</div>
+                        <div class="msg-meta">${new Date(msg.created_at).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})}</div>
+                    </div>
+                `;
+            });
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        $('sendMsgBtn').addEventListener('click', sendMessage);
+        $('msg-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        async function sendMessage() {
+            const input = $('msg-input');
+            const text = input.value.trim();
+
+            if (!text || !currentChatUserId) return;
+
+            await supabase
+                .from('messages')
+                .insert([{
+                    sender_id: currentUser.id,
+                    sender_nick: currentUser.nick,
+                    receiver_id: currentChatUserId,
+                    text: text
+                }]);
+
+            input.value = '';
+        }
+
+        // PROFILE
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            $(tabId).classList.add('active');
+            document.querySelector(`.nav-item[data-tab="${tabId}"]`)?.classList.add('active');
+
+            if (tabId === 'profile') viewProfile(currentUser.id);
+            if (tabId === 'games') filterGames('all');
+            if (tabId === 'messenger') loadAllUsers();
+        };
+
+        async function viewProfile(userId) {
+            const { data: user } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', userId)
+                .single();
+
+            const container = $('profile-view');
+            const isMe = userId === currentUser.id;
+
+            // Проверяем статус дружбы
+            let friendshipStatus = null;
+            if (!isMe) {
+                const { data: friendship } = await supabase
+                    .from('friendships')
+                    .select('*')
+                    .or(`and(user_id.eq.${currentUser.id},friend_id.eq.${userId}),and(user_id.eq.${userId},friend_id.eq.${currentUser.id})`)
+                    .single();
+
+                friendshipStatus = friendship?.status;
+            }
+
+            // Получаем список друзей
+            const { data: friendships } = await supabase
+                .from('friendships')
+                .select('*')
+                .eq('status', 'accepted')
+                .or(`user_id.eq.${userId},friend_id.eq.${userId}`);
+
+            const friendsCount = friendships?.length || 0;
+
+            let friendButton = '';
+            if (!isMe) {
+                if (!friendshipStatus) {
+                    friendButton = `<button class="btn-neon" onclick="addFriend('${userId}')">Добавить в друзья</button>`;
+                } else if (friendshipStatus === 'pending') {
+                    friendButton = `<button class="btn-neon" style="opacity: 0.5;">Заявка отправлена</button>`;
+                } else if (friendshipStatus === 'accepted') {
+                    friendButton = `<button class="btn-neon" style="background: var(--success);">✓ В друзьях</button>`;
+                }
+            }
+
+            container.innerHTML = `
+                <div class="card profile-header">
+                    <img src="${user.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}" class="profile-big-avatar">
+                    <div class="profile-info">
+                        <h2>${escapeHtml(user.nick)} ${isMe ? '(Вы)' : ''}</h2>
+                        <div style="color:var(--text-sec);">${user.email || ''}</div>
+                        <div style="margin-top: 10px; color: var(--text-sec);">Друзей: ${friendsCount}</div>
+                        ${!isMe ? `
+                            <div class="profile-actions">
+                                ${friendButton}
+                                <button class="btn-neon" onclick="switchTab('messenger'); startChat('${userId}', '${escapeHtml(user.nick)}', '${user.avatar || ''}')">Написать</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+
+            // Показываем список друзей
+            if (friendsCount > 0) {
+                let friendsHtml = '<div class="card"><h3>Друзья</h3><div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">';
+
+                for (const friendship of friendships) {
+                    const friendId = friendship.user_id === userId ? friendship.friend_id : friendship.user_id;
+                    const { data: friend } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('id', friendId)
+                        .single();
+
+                    if (friend) {
+                        friendsHtml += `
+                            <div class="card" style="cursor: pointer; padding: 15px; text-align: center;" onclick="viewProfile('${friend.id}')">
+                                <img src="${friend.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px;">
+                                <div style="font-weight: bold;">${escapeHtml(friend.nick)}</div>
+                            </div>
+                        `;
+                    }
+                }
+
+                friendsHtml += '</div></div>';
+                container.innerHTML += friendsHtml;
+            }
+        }
+
+        window.addFriend = async function(friendId) {
+            const { error } = await supabase
+                .from('friendships')
+                .insert([{
+                    user_id: currentUser.id,
+                    friend_id: friendId,
+                    status: 'accepted' // Сразу принимаем (можно сделать pending для запросов)
+                }]);
+
+            if (error) {
+                showToast('❌', error.message, true);
+            } else {
+                showToast('✅', 'Добавлено в друзья!');
+                viewProfile(friendId);
+            }
+        };
+
+        // SETTINGS
+        const IMGBB_API_KEY = 'b80b9e18e607bfe48e6c03a19289c465';
+
+        // Загрузка аватара
+        window.uploadAvatar = async function(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const status = $('avatar-upload-status');
+            status.textContent = 'Загрузка...';
+            status.style.color = 'var(--primary)';
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    const imageUrl = data.data.url;
+
+                    await supabase
+                        .from('users')
+                        .update({ avatar: imageUrl })
+                        .eq('id', currentUser.id);
+
+                    currentUser.avatar = imageUrl;
+                    $('header-avatar').src = imageUrl;
+                    $('feed-avatar').src = imageUrl;
+
+                    status.textContent = '✅ Готово!';
+                    status.style.color = 'var(--success)';
+                    showToast('✅', 'Аватар обновлён');
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (e) {
+                status.textContent = '❌ Ошибка';
+                status.style.color = 'var(--danger)';
+                showToast('❌', 'Ошибка загрузки', true);
+            }
+        };
+
+        // Загрузка фото для поста
+        window.uploadPostImage = async function(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const status = $('post-upload-status');
+            status.textContent = 'Загрузка...';
+            status.style.color = 'var(--primary)';
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    $('post-image-url').value = data.data.url;
+                    status.textContent = '✅ Готово!';
+                    status.style.color = 'var(--success)';
+
+                    // Показываем превью
+                    const preview = document.createElement('img');
+                    preview.src = data.data.url;
+                    preview.style = 'width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; margin-top: 10px;';
+                    preview.id = 'post-image-preview';
+
+                    const existing = $('post-image-preview');
+                    if (existing) existing.remove();
+
+                    $('post-image-url').parentElement.appendChild(preview);
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (e) {
+                status.textContent = '❌ Ошибка';
+                status.style.color = 'var(--danger)';
+                showToast('❌', 'Ошибка загрузки', true);
+            }
+        };
+
+        $('updateNickBtn').addEventListener('click', async () => {
+            const newNick = $('settings-nick').value.trim();
+
+            if (!newNick) {
+                showToast('⚠️', 'Введите новый ник', true);
+                return;
+            }
+
+            const { error } = await supabase
+                .from('users')
+                .update({ nick: newNick })
+                .eq('id', currentUser.id);
+
+            if (error) {
+                showToast('❌', error.message, true);
+            } else {
+                showToast('✅', 'Ник изменён');
+                currentUser.nick = newNick;
+                $('user-nick').textContent = newNick;
+                $('settings-nick').value = '';
+            }
+        });
+
+        // Смена пароля
+        $('changePasswordBtn').addEventListener('click', async () => {
+            if (!confirm('Вы хотите сменить пароль?\n\nНа вашу почту будет отправлена ссылка для сброса пароля.')) {
+                return;
+            }
+
+            const { error } = await supabase.auth.resetPasswordForEmail(currentUser.email);
+
+            if (error) {
+                showToast('❌', error.message, true);
+            } else {
+                showToast('📧', 'Ссылка отправлена на почту!');
+            }
+        });
+
+        window.setTheme = async function(theme) {
+            if (theme === 'cyberpunk') document.documentElement.removeAttribute('data-theme');
+            else document.documentElement.setAttribute('data-theme', theme);
+
+            localStorage.setItem('gf_theme', theme);
+
+            if (currentUser) {
+                await supabase
+                    .from('users')
+                    .update({ theme: theme })
+                    .eq('id', currentUser.id);
+            }
+        };
+
+        // GAMES
+        window.filterGames = function(category) {
+            document.querySelectorAll('.section-tab').forEach(t => t.classList.toggle('active', t.dataset.category === category));
+            const container = $('games-container');
+            container.innerHTML = '';
+            const filtered = category === 'all' ? GAMES_LIST : GAMES_LIST.filter(g => g.category === category);
+            filtered.forEach(game => {
+                container.innerHTML += `
+                    <div class="game-card" onclick="launchGame('${game.path}', '${game.name}')">
+                        <div class="game-img">${game.icon}</div>
+                        <div class="game-info">
+                            <div class="game-title">${game.name}</div>
+                            <div class="game-cat">${game.category}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        };
+
+        window.launchGame = function(path, name) {
+            $('game-title-display').textContent = name;
+            $('game-frame').src = path;
+            $('game-overlay').style.display = 'flex';
+        };
+
+        window.closeGame = function() {
+            $('game-overlay').style.display = 'none';
+            $('game-frame').src = '';
+        };
+
+        // EVENT LISTENERS
+        document.querySelectorAll('[data-tab]').forEach(el => {
+            el.addEventListener('click', () => switchTab(el.dataset.tab));
+        });
+
+        $('games-tabs').addEventListener('click', (e) => {
+            const tab = e.target.closest('.section-tab');
+            if (tab) filterGames(tab.dataset.category);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeGame();
+
+            // Ctrl + Shift - админ панель
+            if (e.ctrlKey && e.shiftKey && !e.repeat) {
+                openAdminAccess();
+            }
+        });
+
+        // ADMIN ACCESS
+        async function openAdminAccess() {
+            // Проверяем, есть ли активная админская сессия
+            if (currentUser.admin_until && new Date(currentUser.admin_until) > new Date()) {
+                showToast('✅', 'У вас уже есть активная админ-сессия');
+                showAdminPanel();
+                return;
+            }
+
+            const password = generatePassword();
+
+            // Показываем пароль сразу в консоли
+            console.log('🔐 Admin password:', password);
+
+            // Отправляем пароль на почту через EmailJS
+            try {
+                // Загружаем EmailJS SDK
+                if (typeof emailjs === 'undefined') {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js';
+                    document.head.appendChild(script);
+
+                    await new Promise((resolve) => {
+                        script.onload = resolve;
+                    });
+
+                    emailjs.init('a7UcmYTDXHeJR2ptr');
+                }
+
+                const result = await emailjs.send('service_ibbyyis', 'template_1u8l77i', {
+                    admin_password: password,
+                    timestamp: new Date().toLocaleString('ru-RU')
+                });
+
+                console.log('✅ Письмо отправлено успешно!', result);
+                showToast('📧', 'Пароль отправлен на почту!');
+            } catch (e) {
+                console.log('⚠️ Ошибка отправки email:', e);
+                alert('⚠️ Не удалось отправить на почту.\n\nПароль: ' + password + '\n\n(Также смотрите в консоли - F12)');
+            }
+
+            const enteredPassword = prompt('🔐 Админ-панель\n\nПароль отправлен на vetrovlev1@gmail.com\n\nВведите пароль для доступа:');
+
+            if (enteredPassword === password) {
+                // Устанавливаем время окончания админской сессии (12 часов)
+                const adminUntil = new Date();
+                adminUntil.setHours(adminUntil.getHours() + 12);
+
+                await supabase
+                    .from('users')
+                    .update({ admin_until: adminUntil.toISOString() })
+                    .eq('id', currentUser.id);
+
+                currentUser.admin_until = adminUntil.toISOString();
+
+                showToast('✅', 'Доступ к админ-панели получен на 12 часов!');
+                showAdminPanel();
+            } else if (enteredPassword !== null) {
+                showToast('❌', 'Неверный пароль', true);
+            }
+        }
+
+        function generatePassword() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let password = '';
+            for (let i = 0; i < 6; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return password;
+        }
+
+        async function showAdminPanel() {
+            // Проверяем, не истекла ли админская сессия
+            if (!currentUser.admin_until || new Date(currentUser.admin_until) <= new Date()) {
+                showToast('⛔', 'Админская сессия истекла. Получите новый доступ.', true);
+                return;
+            }
+
+            const { data: users } = await supabase.from('users').select('*');
+            const { data: posts } = await supabase.from('posts').select('*');
+
+            const timeLeft = Math.floor((new Date(currentUser.admin_until) - new Date()) / 1000 / 60 / 60);
+            const minutesLeft = Math.floor(((new Date(currentUser.admin_until) - new Date()) / 1000 / 60) % 60);
+
+            let html = '<h2>👑 Админ-панель</h2>';
+            html += `<p style="color: var(--success);">Активна до: ${new Date(currentUser.admin_until).toLocaleString('ru-RU')}</p>`;
+            html += `<p style="color: var(--primary);">Осталось: ${timeLeft}ч ${minutesLeft}мин</p>`;
+            html += `<p>Всего пользователей: ${users?.length || 0}</p>`;
+            html += `<p>Всего постов: ${posts?.length || 0}</p>`;
+            html += '<hr style="margin: 20px 0; border-color: var(--border);">';
+            html += '<h3>Пользователи:</h3>';
+
+            users?.forEach(user => {
+                html += `<div style="padding: 10px; border-bottom: 1px solid var(--border);">
+                    <strong>${escapeHtml(user.nick)}</strong> (${user.email})
+                    ${user.id !== currentUser.id ? `<button class="btn-danger" onclick="deleteUserByAdmin('${user.id}')" style="margin-left: 10px;">Удалить</button>` : ''}
+                </div>`;
+            });
+
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.style.display = 'flex';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close-modal" onclick="this.closest('.modal-overlay').remove()">&times;</span>
+                    ${html}
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        window.deleteUserByAdmin = async (userId) => {
+            if (!confirm('Удалить этого пользователя и все его данные?')) return;
+
+            // Проверяем админскую сессию
+            if (!currentUser.admin_until || new Date(currentUser.admin_until) <= new Date()) {
+                showToast('⛔', 'Админская сессия истекла', true);
+                return;
+            }
+
+            await supabase.from('users').delete().eq('id', userId);
+            showToast('🗑️', 'Пользователь удалён');
+            document.querySelector('.modal-overlay')?.remove();
+        };
+
+        // INIT
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                loadUserData();
+            }
+        });
+
         const savedTheme = localStorage.getItem('gf_theme') || 'cyberpunk';
         setTheme(savedTheme);
     </script>
