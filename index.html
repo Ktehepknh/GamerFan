@@ -31,7 +31,6 @@
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-        /* Auth Screen */
         #auth-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at center, #1a1a24 0%, #000 100%);
@@ -55,10 +54,10 @@
             font-family: 'Orbitron', sans-serif;
         }
         .btn-neon:hover { background: var(--accent); color: #fff; box-shadow: 0 0 15px var(--accent-glow); }
+        .btn-neon:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-danger { background: var(--danger); color: #fff; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
         .btn-danger:hover { opacity: 0.8; }
 
-        /* App Layout */
         #app { display: none; height: 100%; flex-direction: column; }
         #app.visible { display: flex; }
 
@@ -82,7 +81,6 @@
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Cards & Posts */
         .card { background: var(--card-bg); border-radius: 10px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); }
         .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
         .post-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; cursor: pointer; background: #333; }
@@ -94,7 +92,6 @@
         .action-btn:hover { color: var(--primary); }
         .action-btn.liked { color: var(--accent); }
 
-        /* Games Library */
         .games-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .section-tab { padding: 8px 16px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; cursor: pointer; color: var(--text-sec); transition: 0.3s; }
         .section-tab.active, .section-tab:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
@@ -107,7 +104,6 @@
         .game-title { font-weight: bold; margin-bottom: 5px; }
         .game-cat { font-size: 12px; color: var(--accent); text-transform: uppercase; }
 
-        /* Messenger */
         .messenger-layout { display: flex; height: calc(100vh - 140px); gap: 20px; }
         .contacts-panel { width: 300px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
         .chat-panel { flex: 1; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
@@ -135,13 +131,11 @@
         .chat-input-area { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
         .chat-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 10px; border-radius: 20px; color: var(--text-main); }
 
-        /* Profile */
         .profile-header { display: flex; gap: 30px; align-items: center; margin-bottom: 30px; flex-wrap: wrap; }
         .profile-big-avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow); background: #333; }
         .profile-info h2 { font-size: 32px; margin-bottom: 5px; }
         .profile-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
 
-        /* Modal & Toast */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: none; justify-content: center; align-items: center; }
         .modal-content { background: var(--card-bg); padding: 30px; border-radius: 10px; width: 90%; max-width: 500px; border: 1px solid var(--accent); position: relative; max-height: 90vh; overflow-y: auto; }
         .close-modal { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: var(--text-sec); }
@@ -151,12 +145,10 @@
         .toast.error { border-color: var(--danger); }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* Game Overlay */
         #game-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 4000; display: none; flex-direction: column; }
         #game-frame { flex: 1; border: none; width: 100%; height: 100%; }
         #game-header { height: 50px; background: #111; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; color: #fff; }
 
-        /* Settings Modal */
         .settings-group { margin-top: 20px; }
         .settings-label { display: block; margin-bottom: 10px; font-weight: bold; color: var(--primary); }
 
@@ -168,21 +160,42 @@
             .contacts-panel { width: 100%; height: 300px; }
             .chat-panel { height: 500px; }
             .nav-links span { display: none; }
+            .games-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+            .game-img { height: 80px; font-size: 30px; }
+            .game-info { padding: 10px; }
+            .game-title { font-size: 13px; }
+            .post-avatar, .mini-avatar { width: 35px; height: 35px; }
+            .profile-big-avatar { width: 80px; height: 80px; }
+            .card { padding: 15px; }
+            main { padding: 10px; }
+            .btn-neon { padding: 8px 16px; font-size: 14px; }
+            .auth-box { padding: 30px 20px; max-width: 90%; }
+            .message { max-width: 85%; }
+            .chat-input-area { padding: 10px; gap: 5px; }
+            .profile-header { flex-direction: column; align-items: center; text-align: center; }
+            .profile-info h2 { font-size: 24px; }
+            .nav-item, .action-btn, .section-tab { padding: 12px; }
+            #emoji-picker { left: 10px; right: 10px; max-width: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- AUTH SCREEN -->
     <div id="auth-screen">
         <div class="auth-box">
             <h1 class="logo" style="margin-bottom: 20px;">GAMER<span style="color:#fff">FAN</span></h1>
             <h3 id="auth-title" style="margin-bottom: 20px; color: var(--primary);">Вход</h3>
 
-            <input type="email" id="auth-email" class="auth-input" placeholder="Email">
-            <input type="password" id="auth-pass" class="auth-input" placeholder="Пароль">
+            <input type="email" id="auth-email" class="auth-input" placeholder="Email" autocomplete="email">
+            <input type="password" id="auth-pass" class="auth-input" placeholder="Пароль" autocomplete="current-password">
 
-            <button id="main-auth-btn" class="btn-neon">Войти</button>
+            <div id="register-fields" style="display: none;">
+                <input type="text" id="auth-firstname" class="auth-input" placeholder="Имя">
+                <input type="text" id="auth-lastname" class="auth-input" placeholder="Фамилия">
+                <input type="tel" id="auth-phone" class="auth-input" placeholder="Телефон (необязательно)">
+            </div>
+
+            <button id="main-auth-btn" class="btn-neon" type="button">Войти</button>
 
             <p style="margin-top: 15px; font-size: 14px; color: var(--text-sec);">
                 <span id="auth-switch-text">Нет аккаунта?</span>
@@ -191,7 +204,6 @@
         </div>
     </div>
 
-    <!-- MAIN APP -->
     <div id="app">
         <header>
             <div class="logo" onclick="switchTab('feed')">GAMER<span style="color:#fff">FAN</span></div>
@@ -207,12 +219,12 @@
             <div class="user-mini" onclick="switchTab('profile')">
                 <img src="https://via.placeholder.com/100/555/fff?text=User" id="header-avatar" class="mini-avatar" alt="Avatar">
                 <span id="user-nick" style="font-weight: bold;">Загрузка...</span>
+                <button id="admin-panel-btn" class="btn-neon" style="display: none; width: auto; padding: 5px 10px; margin-left: 10px;" onclick="event.stopPropagation(); showAdminPanel()">👑 Админ</button>
                 <i class="fas fa-sign-out-alt" style="margin-left: 10px; color: var(--danger);" onclick="event.stopPropagation(); logout();" title="Выйти"></i>
             </div>
         </header>
 
         <main>
-            <!-- FEED SECTION -->
             <section id="feed" class="section active">
                 <div class="card" style="display: flex; gap: 15px; align-items: center;">
                     <img src="https://via.placeholder.com/100/555/fff?text=User" id="feed-avatar" class="mini-avatar" style="width: 50px; height: 50px;">
@@ -224,7 +236,6 @@
                 <div id="feed-container"></div>
             </section>
 
-            <!-- GAMES SECTION -->
             <section id="games" class="section">
                 <h2 style="margin-bottom: 20px;">Библиотека игр</h2>
                 <div class="games-tabs" id="games-tabs">
@@ -239,7 +250,6 @@
                 <div class="games-grid" id="games-container"></div>
             </section>
 
-            <!-- EVENTS SECTION -->
             <section id="events" class="section">
                 <h2 style="margin-bottom: 20px;">Игровые ивенты</h2>
                 <div id="events-create-area" style="display: none; margin-bottom: 20px;" class="card">
@@ -256,7 +266,6 @@
                 <div id="events-container"></div>
             </section>
 
-            <!-- MESSENGER SECTION -->
             <section id="messenger" class="section">
                 <div class="messenger-layout">
                     <div class="contacts-panel">
@@ -278,8 +287,14 @@
                         </div>
                         <div class="chat-messages" id="chat-messages" style="display: none;"></div>
                         <div class="chat-input-area" id="chat-input-area" style="display: none;">
+                            <button class="btn-neon" onclick="toggleEmojiPicker()" style="width: auto; padding: 8px 12px;" title="Смайлики">😊</button>
+                            <input type="file" id="chat-media-file" accept="image/*,video/*" style="display: none;" onchange="uploadChatMedia(this)">
+                            <button class="btn-neon" onclick="document.getElementById('chat-media-file').click()" style="width: auto; padding: 8px 12px;" title="Фото/Видео">📎</button>
                             <input type="text" id="msg-input" class="chat-input" placeholder="Напишите сообщение...">
                             <button class="btn-neon" id="sendMsgBtn" style="width: auto;"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                        <div id="emoji-picker" style="display: none; position: absolute; bottom: 70px; left: 20px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); max-width: 300px; z-index: 100;">
+                            <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; max-height: 200px; overflow-y: auto;"></div>
                         </div>
                         <div id="empty-chat-state" style="flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-sec); flex-direction: column;">
                             <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
@@ -289,12 +304,10 @@
                 </div>
             </section>
 
-            <!-- PROFILE SECTION -->
             <section id="profile" class="section">
                 <div id="profile-view"></div>
             </section>
 
-            <!-- SETTINGS SECTION -->
             <section id="settings" class="section">
                 <div class="card">
                     <h2 style="margin-bottom: 20px;">Настройки аккаунта</h2>
@@ -337,7 +350,6 @@
         </footer>
     </div>
 
-    <!-- MODALS -->
     <div id="post-modal" class="modal-overlay">
         <div class="modal-content">
             <span class="close-modal" onclick="closePostModal()">&times;</span>
@@ -395,6 +407,8 @@
             { name: "Neon Bird", path: "daardos/neon_bird/index.html", icon: "🐦", category: "daardos" }
         ];
 
+        const IMGBB_API_KEY = 'b80b9e18e607bfe48e6c03a19289c465';
+
         let currentUser = null;
         let currentChatUserId = null;
         let isRegistering = false;
@@ -409,6 +423,7 @@
 
         function showToast(icon, msg, isError = false) {
             const container = $('toast-container');
+            if (!container) return;
             const toast = document.createElement('div');
             toast.className = `toast ${isError ? 'error' : ''}`;
             toast.innerHTML = `<span>${icon}</span><span>${escapeHtml(msg)}</span>`;
@@ -416,65 +431,112 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // AUTH
-        $('toggle-auth-mode').addEventListener('click', (e) => {
-            e.preventDefault();
-            isRegistering = !isRegistering;
-            $('auth-title').textContent = isRegistering ? 'Регистрация' : 'Вход';
-            $('main-auth-btn').textContent = isRegistering ? 'Создать аккаунт' : 'Войти';
-            $('auth-switch-text').textContent = isRegistering ? 'Есть аккаунт?' : 'Нет аккаунта?';
-            $('toggle-auth-mode').textContent = isRegistering ? 'Войти' : 'Зарегистрироваться';
-        });
+        // ================= AUTH =================
 
-        $('main-auth-btn').addEventListener('click', async () => {
-            const email = $('auth-email').value.trim();
-            const pass = $('auth-pass').value;
+        const toggleLink = $('toggle-auth-mode');
+        if (toggleLink) {
+            toggleLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                isRegistering = !isRegistering;
+                $('auth-title').textContent = isRegistering ? 'Регистрация' : 'Вход';
+                $('main-auth-btn').textContent = isRegistering ? 'Создать аккаунт' : 'Войти';
+                $('auth-switch-text').textContent = isRegistering ? 'Есть аккаунт?' : 'Нет аккаунта?';
+                $('toggle-auth-mode').textContent = isRegistering ? 'Войти' : 'Зарегистрироваться';
+                $('register-fields').style.display = isRegistering ? 'block' : 'none';
+                $('auth-pass').autocomplete = isRegistering ? 'new-password' : 'current-password';
+            });
+        }
 
-            if (!email || !pass) {
-                showToast('⚠️', 'Введите email и пароль', true);
-                return;
-            }
+        const authBtn = $('main-auth-btn');
+        if (authBtn) {
+            authBtn.addEventListener('click', async () => {
+                const email = $('auth-email').value.trim();
+                const pass = $('auth-pass').value;
 
-            try {
-                if (isRegistering) {
-                    // Регистрация
-                    const { data: authData, error: authError } = await supabase.auth.signUp({
-                        email: email,
-                        password: pass
-                    });
-
-                    if (authError) throw authError;
-
-                    // Создаем профиль пользователя
-                    const { error: insertError } = await supabase
-                        .from('users')
-                        .insert([{
-                            id: authData.user.id,
-                            email: email,
-                            nick: email.split('@')[0],
-                            theme: 'cyberpunk'
-                        }]);
-
-                    if (insertError) throw insertError;
-
-                    showToast('✅', 'Аккаунт создан! Войдите в систему');
-                    isRegistering = false;
-                    $('toggle-auth-mode').click();
-                } else {
-                    // Вход
-                    const { data, error } = await supabase.auth.signInWithPassword({
-                        email: email,
-                        password: pass
-                    });
-
-                    if (error) throw error;
-
-                    showToast('👋', 'С возвращением!');
-                    await loadUserData();
+                if (!email || !pass) {
+                    showToast('⚠️', 'Введите email и пароль', true);
+                    return;
                 }
-            } catch (error) {
-                showToast('❌', error.message, true);
-            }
+                if (isRegistering && pass.length < 6) {
+                    showToast('⚠️', 'Пароль минимум 6 символов', true);
+                    return;
+                }
+
+                const btn = authBtn;
+                btn.disabled = true;
+                const oldText = btn.textContent;
+                btn.textContent = 'Загрузка...';
+
+                try {
+                    if (isRegistering) {
+                        const firstName = $('auth-firstname').value.trim();
+                        const lastName = $('auth-lastname').value.trim();
+                        const phone = $('auth-phone').value.trim();
+
+                        if (!firstName || !lastName) {
+                            throw new Error('Введите имя и фамилию');
+                        }
+
+                        const { data: authData, error: authError } = await supabase.auth.signUp({
+                            email: email,
+                            password: pass
+                        });
+
+                        if (authError) throw authError;
+                        if (!authData.user) throw new Error('Не удалось создать пользователя');
+
+                        const { error: insertError } = await supabase
+                            .from('users')
+                            .upsert([{
+                                id: authData.user.id,
+                                email: email,
+                                nick: `${firstName} ${lastName}`,
+                                first_name: firstName,
+                                last_name: lastName,
+                                phone: phone || null,
+                                theme: 'cyberpunk'
+                            }], { onConflict: 'id' });
+
+                        if (insertError) {
+                            console.error('Profile insert error:', insertError);
+                            throw new Error('Аккаунт создан, но профиль не сохранён: ' + insertError.message);
+                        }
+
+                        showToast('✅', 'Аккаунт создан! Теперь войдите');
+
+                        isRegistering = false;
+                        $('auth-title').textContent = 'Вход';
+                        $('main-auth-btn').textContent = 'Войти';
+                        $('auth-switch-text').textContent = 'Нет аккаунта?';
+                        $('toggle-auth-mode').textContent = 'Зарегистрироваться';
+                        $('register-fields').style.display = 'none';
+                        $('auth-pass').value = '';
+                    } else {
+                        const { data, error } = await supabase.auth.signInWithPassword({
+                            email: email,
+                            password: pass
+                        });
+
+                        if (error) throw error;
+                        if (!data.session) throw new Error('Email не подтверждён. Проверьте почту.');
+
+                        showToast('👋', 'С возвращением!');
+                        await loadUserData();
+                    }
+                } catch (error) {
+                    console.error('AUTH ERROR:', error);
+                    showToast('❌', error.message || 'Ошибка', true);
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = isRegistering ? 'Создать аккаунт' : 'Войти';
+                }
+            });
+        }
+
+        // Enter по полям
+        ['auth-email', 'auth-pass', 'auth-firstname', 'auth-lastname', 'auth-phone'].forEach(id => {
+            const el = $(id);
+            if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') authBtn.click(); });
         });
 
         async function loadUserData() {
@@ -487,20 +549,49 @@
                 .eq('id', user.id)
                 .single();
 
-            if (data) {
+            if (error) {
+                console.error('loadUserData error:', error);
+                // Если профиля нет — создадим минимальный
+                if (error.code === 'PGRST116') {
+                    const { data: newUser } = await supabase.from('users').insert([{
+                        id: user.id,
+                        email: user.email,
+                        nick: user.email.split('@')[0],
+                        theme: 'cyberpunk'
+                    }]).select().single();
+                    currentUser = newUser;
+                } else {
+                    showToast('❌', 'Ошибка загрузки профиля: ' + error.message, true);
+                    return;
+                }
+            } else {
                 currentUser = data;
-                $('user-nick').textContent = data.nick;
-                $('header-avatar').src = data.avatar || 'https://via.placeholder.com/100/555/fff?text=User';
-                $('feed-avatar').src = data.avatar || 'https://via.placeholder.com/100/555/fff?text=User';
-
-                if (data.theme) setTheme(data.theme);
-
-                $('auth-screen').style.display = 'none';
-                $('app').classList.add('visible');
-
-                loadFeed();
-                loadEvents();
             }
+
+            if (!currentUser) return;
+
+            if (currentUser.banned_until && new Date(currentUser.banned_until) > new Date()) {
+                alert('⛔ Аккаунт заблокирован до ' + new Date(currentUser.banned_until).toLocaleString('ru-RU') + '\nПричина: ' + (currentUser.ban_reason || 'Не указана'));
+                await supabase.auth.signOut();
+                location.reload();
+                return;
+            }
+
+            $('user-nick').textContent = currentUser.nick;
+            $('header-avatar').src = currentUser.avatar || 'https://via.placeholder.com/100/555/fff?text=User';
+            $('feed-avatar').src = currentUser.avatar || 'https://via.placeholder.com/100/555/fff?text=User';
+
+            if (currentUser.theme) setTheme(currentUser.theme);
+
+            if (currentUser.admin_until && new Date(currentUser.admin_until) > new Date()) {
+                $('admin-panel-btn').style.display = 'block';
+            }
+
+            $('auth-screen').style.display = 'none';
+            $('app').classList.add('visible');
+
+            loadFeed();
+            loadEvents();
         }
 
         window.logout = async () => {
@@ -510,7 +601,8 @@
             }
         };
 
-        // POSTS
+        // ================= POSTS =================
+
         window.openPostModal = () => { $('post-modal').style.display = 'flex'; };
         window.closePostModal = () => {
             $('post-modal').style.display = 'none';
@@ -521,7 +613,8 @@
             if (preview) preview.remove();
         };
 
-        $('publishPostBtn').addEventListener('click', async () => {
+        $('publishPostBtn')?.addEventListener('click', async () => {
+            if (!currentUser) return;
             const text = $('post-text-area').value.trim();
             const imageUrl = $('post-image-url').value;
 
@@ -529,6 +622,31 @@
                 showToast('⚠️', 'Введите текст или добавьте фото', true);
                 return;
             }
+
+            closePostModal();
+            showToast('⏳', 'Публикация...');
+
+            const container = $('feed-container');
+            const imageHtml = imageUrl ? `<img src="${imageUrl}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">` : '';
+
+            const tempPostHtml = `
+                <div class="card" style="opacity: 0.7;">
+                    <div class="post-header">
+                        <img src="${currentUser.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}" class="post-avatar">
+                        <div class="post-meta">
+                            <h4>${escapeHtml(currentUser.nick)}</h4>
+                            <span>Только что</span>
+                        </div>
+                    </div>
+                    ${text ? `<div class="post-content">${escapeHtml(text)}</div>` : ''}
+                    ${imageHtml}
+                    <div class="post-actions">
+                        <button class="action-btn"><i class="fas fa-heart"></i> 0</button>
+                        <button class="action-btn"><i class="fas fa-comment"></i> 0</button>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('afterbegin', tempPostHtml);
 
             const { error } = await supabase
                 .from('posts')
@@ -542,10 +660,10 @@
 
             if (error) {
                 showToast('❌', error.message, true);
+                container.firstElementChild.remove();
             } else {
                 showToast('✅', 'Пост опубликован');
-                closePostModal();
-                loadFeed();
+                setTimeout(() => loadFeed(), 500);
             }
         });
 
@@ -571,7 +689,6 @@
 
                 const imageHtml = post.image ? `<img src="${post.image}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">` : '';
 
-                // Загружаем комментарии для этого поста
                 const { data: comments } = await supabase
                     .from('comments')
                     .select('*')
@@ -637,8 +754,7 @@
         window.addComment = async function(postId) {
             const input = document.getElementById(`comment-text-${postId}`);
             const text = input.value.trim();
-
-            if (!text) return;
+            if (!text || !currentUser) return;
 
             await supabase
                 .from('comments')
@@ -655,6 +771,7 @@
         };
 
         window.toggleLike = async (postId) => {
+            if (!currentUser) return;
             const { data: post } = await supabase
                 .from('posts')
                 .select('likes')
@@ -662,12 +779,8 @@
                 .single();
 
             const likes = post.likes || {};
-
-            if (likes[currentUser.id]) {
-                delete likes[currentUser.id];
-            } else {
-                likes[currentUser.id] = true;
-            }
+            if (likes[currentUser.id]) delete likes[currentUser.id];
+            else likes[currentUser.id] = true;
 
             await supabase
                 .from('posts')
@@ -677,9 +790,9 @@
             loadFeed();
         };
 
-        // EVENTS
+        // ================= EVENTS =================
+
         async function loadEvents() {
-            // Показываем форму создания только для админа
             if (currentUser && currentUser.email === ADMIN_EMAIL) {
                 document.getElementById('events-create-area').style.display = 'block';
             }
@@ -698,16 +811,8 @@
             }
 
             data.forEach(event => {
-                const statusColors = {
-                    upcoming: 'var(--primary)',
-                    active: 'var(--success)',
-                    ended: 'var(--text-sec)'
-                };
-                const statusTexts = {
-                    upcoming: 'Предстоящий',
-                    active: 'Активный',
-                    ended: 'Завершён'
-                };
+                const statusColors = { upcoming: 'var(--primary)', active: 'var(--success)', ended: 'var(--text-sec)' };
+                const statusTexts = { upcoming: 'Предстоящий', active: 'Активный', ended: 'Завершён' };
 
                 container.innerHTML += `
                     <div class="card">
@@ -722,12 +827,11 @@
             });
         }
 
-        // Создание ивента (только для админа)
         document.addEventListener('DOMContentLoaded', () => {
             const createEventBtn = document.getElementById('createEventBtn');
             if (createEventBtn) {
                 createEventBtn.addEventListener('click', async () => {
-                    if (currentUser.email !== ADMIN_EMAIL) {
+                    if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
                         showToast('⛔', 'Только администратор может создавать ивенты', true);
                         return;
                     }
@@ -743,12 +847,7 @@
 
                     const { error } = await supabase
                         .from('events')
-                        .insert([{
-                            title: title,
-                            description: desc,
-                            status: status,
-                            created_by: currentUser.nick
-                        }]);
+                        .insert([{ title, description: desc, status, created_by: currentUser.nick }]);
 
                     if (error) {
                         showToast('❌', error.message, true);
@@ -762,18 +861,19 @@
             }
         });
 
-        // MESSENGER
+        // ================= MESSENGER =================
+
         document.querySelectorAll('.m-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-
                 if (tab.dataset.mtab === 'all') loadAllUsers();
                 else if (tab.dataset.mtab === 'chats') loadMyChats();
             });
         });
 
         async function loadAllUsers() {
+            if (!currentUser) return;
             const { data } = await supabase
                 .from('users')
                 .select('*')
@@ -801,6 +901,7 @@
         }
 
         async function loadMyChats() {
+            if (!currentUser) return;
             const { data } = await supabase
                 .from('messages')
                 .select('sender_id, receiver_id')
@@ -844,23 +945,17 @@
 
         window.startChat = (userId, nick, avatar) => {
             currentChatUserId = userId;
-
             $('chat-avatar').src = avatar;
             $('chat-name').textContent = nick;
-
             $('empty-chat-state').style.display = 'none';
             $('chat-header').style.display = 'flex';
             $('chat-messages').style.display = 'flex';
             $('chat-input-area').style.display = 'flex';
-
             loadMessages(userId);
         };
 
         async function loadMessages(otherUserId) {
-            // Отписываемся от старой подписки
-            if (messagesSubscription) {
-                supabase.removeChannel(messagesSubscription);
-            }
+            if (messagesSubscription) supabase.removeChannel(messagesSubscription);
 
             const { data } = await supabase
                 .from('messages')
@@ -870,14 +965,9 @@
 
             renderMessages(data || []);
 
-            // Подписываемся на новые сообщения
             messagesSubscription = supabase
                 .channel('messages')
-                .on('postgres_changes', {
-                    event: '*',
-                    schema: 'public',
-                    table: 'messages'
-                }, () => {
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => {
                     loadMessages(otherUserId);
                 })
                 .subscribe();
@@ -894,9 +984,19 @@
 
             messages.forEach(msg => {
                 const isOwn = msg.sender_id === currentUser.id;
+                let mediaHtml = '';
+                if (msg.media_url) {
+                    if (msg.media_type === 'video') {
+                        mediaHtml = `<video src="${msg.media_url}" controls style="max-width: 100%; border-radius: 10px; margin-top: 5px;"></video>`;
+                    } else if (msg.media_type === 'image') {
+                        mediaHtml = `<img src="${msg.media_url}" onclick="window.open('${msg.media_url}')" style="max-width: 100%; cursor: pointer; border-radius: 10px; margin-top: 5px;">`;
+                    }
+                }
+
                 container.innerHTML += `
                     <div class="message ${isOwn ? 'msg-out' : 'msg-in'}">
-                        <div>${escapeHtml(msg.text)}</div>
+                        ${msg.text ? `<div>${escapeHtml(msg.text)}</div>` : ''}
+                        ${mediaHtml}
                         <div class="msg-meta">${new Date(msg.created_at).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})}</div>
                     </div>
                 `;
@@ -905,37 +1005,123 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        $('sendMsgBtn').addEventListener('click', sendMessage);
-        $('msg-input').addEventListener('keydown', (e) => {
+        const EMOJIS = ['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','😇','🥰','😍','🤩','😘','😗','😚','😙','🥲','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','🤯','🤠','🥳','😎','🤓','🧐','😕','😟','🙁','☹️','😮','😯','😲','😳','🥺','😦','😧','😨','😰','😥','😢','😭','😱','😖','😣','😞','😓','😩','😫','🥱','😤','😡','😠','🤬','😈','👿','💀','☠️','💩','🤡','👹','👺','👻','👽','👾','🤖','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🙈','🙉','🙊','💋','💌','💘','💝','💖','💗','💓','💞','💕','💟','❣️','💔','❤️','🧡','💛','💚','💙','💜','🤎','🖤','🤍','💯','💢','💥','💫','💦','💨','🕳️','💣','💬','👁️','🗨️','🗯️','💭','💤','👋','🤚','🖐️','✋','🖖','👌','🤌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','🦿','🦵','🦶','👂','🦻','👃','🧠','🫀','🫁','🦷','🦴','👀','👁️','👅','👄'];
+
+        window.toggleEmojiPicker = function() {
+            const picker = document.getElementById('emoji-picker');
+            if (picker.style.display === 'none') {
+                if (!picker.querySelector('span')) {
+                    picker.querySelector('div').innerHTML = EMOJIS.map(emoji =>
+                        `<span onclick="insertEmoji('${emoji}')" style="font-size: 24px; cursor: pointer; padding: 5px; display: inline-block; transition: 0.2s;" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform='scale(1)'">${emoji}</span>`
+                    ).join('');
+                }
+                picker.style.display = 'block';
+            } else {
+                picker.style.display = 'none';
+            }
+        };
+
+        window.insertEmoji = function(emoji) {
+            const input = document.getElementById('msg-input');
+            input.value += emoji;
+            input.focus();
+        };
+
+        document.addEventListener('click', (e) => {
+            const picker = document.getElementById('emoji-picker');
+            const emojiBtn = e.target.closest('[onclick="toggleEmojiPicker()"]');
+            if (picker && picker.style.display === 'block' && !picker.contains(e.target) && !emojiBtn) {
+                picker.style.display = 'none';
+            }
+        });
+
+        let uploadedMediaUrl = null;
+        let uploadedMediaType = null;
+
+        window.uploadChatMedia = async function(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const isVideo = file.type.startsWith('video/');
+            const isImage = file.type.startsWith('image/');
+            if (!isVideo && !isImage) { showToast('⚠️', 'Только фото или видео', true); return; }
+
+            showToast('⏳', 'Загрузка...');
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.success) {
+                    uploadedMediaUrl = data.data.url;
+                    uploadedMediaType = isVideo ? 'video' : 'image';
+                    await sendMessage();
+                    showToast('✅', 'Отправлено!');
+                } else throw new Error('Upload failed');
+            } catch (e) {
+                showToast('❌', 'Ошибка загрузки', true);
+            }
+            input.value = '';
+        };
+
+        $('sendMsgBtn')?.addEventListener('click', sendMessage);
+        $('msg-input')?.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') sendMessage();
         });
 
         async function sendMessage() {
+            if (!currentUser) return;
             const input = $('msg-input');
             const text = input.value.trim();
+            if (!text && !uploadedMediaUrl) return;
+            if (!currentChatUserId) return;
 
-            if (!text || !currentChatUserId) return;
+            const container = $('chat-messages');
+            const mediaHtml = uploadedMediaUrl ?
+                (uploadedMediaType === 'video' ?
+                    `<video src="${uploadedMediaUrl}" controls style="max-width: 100%; border-radius: 10px; margin-top: 5px;"></video>` :
+                    `<img src="${uploadedMediaUrl}" style="max-width: 100%; border-radius: 10px; margin-top: 5px;">`) : '';
 
-            await supabase
-                .from('messages')
-                .insert([{
+            container.innerHTML += `
+                <div class="message msg-out" style="opacity: 0.7;">
+                    ${text ? `<div>${escapeHtml(text)}</div>` : ''}
+                    ${mediaHtml}
+                    <div class="msg-meta">Отправка...</div>
+                </div>
+            `;
+            container.scrollTop = container.scrollHeight;
+
+            input.value = '';
+            const mediaUrl = uploadedMediaUrl;
+            const mediaType = uploadedMediaType;
+            uploadedMediaUrl = null;
+            uploadedMediaType = null;
+
+            try {
+                await supabase.from('messages').insert([{
                     sender_id: currentUser.id,
                     sender_nick: currentUser.nick,
                     receiver_id: currentChatUserId,
-                    text: text
+                    text: text,
+                    media_url: mediaUrl,
+                    media_type: mediaType
                 }]);
-
-            input.value = '';
+            } catch (e) {
+                showToast('❌', 'Ошибка отправки', true);
+            }
         }
 
-        // PROFILE
+        // ================= PROFILE =================
+
         window.switchTab = function(tabId) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             $(tabId).classList.add('active');
             document.querySelector(`.nav-item[data-tab="${tabId}"]`)?.classList.add('active');
 
-            if (tabId === 'profile') viewProfile(currentUser.id);
+            if (tabId === 'profile' && currentUser) viewProfile(currentUser.id);
             if (tabId === 'games') filterGames('all');
             if (tabId === 'messenger') loadAllUsers();
         };
@@ -947,22 +1133,21 @@
                 .eq('id', userId)
                 .single();
 
-            const container = $('profile-view');
-            const isMe = userId === currentUser.id;
+            if (!user) return;
 
-            // Проверяем статус дружбы
+            const container = $('profile-view');
+            const isMe = currentUser && userId === currentUser.id;
+
             let friendshipStatus = null;
-            if (!isMe) {
+            if (!isMe && currentUser) {
                 const { data: friendship } = await supabase
                     .from('friendships')
                     .select('*')
                     .or(`and(user_id.eq.${currentUser.id},friend_id.eq.${userId}),and(user_id.eq.${userId},friend_id.eq.${currentUser.id})`)
                     .single();
-
                 friendshipStatus = friendship?.status;
             }
 
-            // Получаем список друзей
             const { data: friendships } = await supabase
                 .from('friendships')
                 .select('*')
@@ -973,13 +1158,9 @@
 
             let friendButton = '';
             if (!isMe) {
-                if (!friendshipStatus) {
-                    friendButton = `<button class="btn-neon" onclick="addFriend('${userId}')">Добавить в друзья</button>`;
-                } else if (friendshipStatus === 'pending') {
-                    friendButton = `<button class="btn-neon" style="opacity: 0.5;">Заявка отправлена</button>`;
-                } else if (friendshipStatus === 'accepted') {
-                    friendButton = `<button class="btn-neon" style="background: var(--success);">✓ В друзьях</button>`;
-                }
+                if (!friendshipStatus) friendButton = `<button class="btn-neon" onclick="addFriend('${userId}')">Добавить в друзья</button>`;
+                else if (friendshipStatus === 'pending') friendButton = `<button class="btn-neon" style="opacity: 0.5;">Заявка отправлена</button>`;
+                else if (friendshipStatus === 'accepted') friendButton = `<button class="btn-neon" style="background: var(--success);">✓ В друзьях</button>`;
             }
 
             container.innerHTML = `
@@ -999,18 +1180,11 @@
                 </div>
             `;
 
-            // Показываем список друзей
             if (friendsCount > 0) {
                 let friendsHtml = '<div class="card"><h3>Друзья</h3><div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">';
-
                 for (const friendship of friendships) {
                     const friendId = friendship.user_id === userId ? friendship.friend_id : friendship.user_id;
-                    const { data: friend } = await supabase
-                        .from('users')
-                        .select('*')
-                        .eq('id', friendId)
-                        .single();
-
+                    const { data: friend } = await supabase.from('users').select('*').eq('id', friendId).single();
                     if (friend) {
                         friendsHtml += `
                             <div class="card" style="cursor: pointer; padding: 15px; text-align: center;" onclick="viewProfile('${friend.id}')">
@@ -1020,36 +1194,26 @@
                         `;
                     }
                 }
-
                 friendsHtml += '</div></div>';
                 container.innerHTML += friendsHtml;
             }
         }
 
         window.addFriend = async function(friendId) {
+            if (!currentUser) return;
             const { error } = await supabase
                 .from('friendships')
-                .insert([{
-                    user_id: currentUser.id,
-                    friend_id: friendId,
-                    status: 'accepted' // Сразу принимаем (можно сделать pending для запросов)
-                }]);
+                .insert([{ user_id: currentUser.id, friend_id: friendId, status: 'accepted' }]);
 
-            if (error) {
-                showToast('❌', error.message, true);
-            } else {
-                showToast('✅', 'Добавлено в друзья!');
-                viewProfile(friendId);
-            }
+            if (error) showToast('❌', error.message, true);
+            else { showToast('✅', 'Добавлено в друзья!'); viewProfile(friendId); }
         };
 
-        // SETTINGS
-        const IMGBB_API_KEY = 'b80b9e18e607bfe48e6c03a19289c465';
+        // ================= SETTINGS =================
 
-        // Загрузка аватара
         window.uploadAvatar = async function(input) {
             const file = input.files[0];
-            if (!file) return;
+            if (!file || !currentUser) return;
 
             const status = $('avatar-upload-status');
             status.textContent = 'Загрузка...';
@@ -1059,31 +1223,18 @@
             formData.append('image', file);
 
             try {
-                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                    method: 'POST',
-                    body: formData
-                });
-
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
                 const data = await res.json();
-
                 if (data.success) {
                     const imageUrl = data.data.url;
-
-                    await supabase
-                        .from('users')
-                        .update({ avatar: imageUrl })
-                        .eq('id', currentUser.id);
-
+                    await supabase.from('users').update({ avatar: imageUrl }).eq('id', currentUser.id);
                     currentUser.avatar = imageUrl;
                     $('header-avatar').src = imageUrl;
                     $('feed-avatar').src = imageUrl;
-
                     status.textContent = '✅ Готово!';
                     status.style.color = 'var(--success)';
                     showToast('✅', 'Аватар обновлён');
-                } else {
-                    throw new Error('Upload failed');
-                }
+                } else throw new Error('Upload failed');
             } catch (e) {
                 status.textContent = '❌ Ошибка';
                 status.style.color = 'var(--danger)';
@@ -1091,7 +1242,6 @@
             }
         };
 
-        // Загрузка фото для поста
         window.uploadPostImage = async function(input) {
             const file = input.files[0];
             if (!file) return;
@@ -1104,19 +1254,13 @@
             formData.append('image', file);
 
             try {
-                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                    method: 'POST',
-                    body: formData
-                });
-
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
                 const data = await res.json();
-
                 if (data.success) {
                     $('post-image-url').value = data.data.url;
                     status.textContent = '✅ Готово!';
                     status.style.color = 'var(--success)';
 
-                    // Показываем превью
                     const preview = document.createElement('img');
                     preview.src = data.data.url;
                     preview.style = 'width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; margin-top: 10px;';
@@ -1124,11 +1268,8 @@
 
                     const existing = $('post-image-preview');
                     if (existing) existing.remove();
-
                     $('post-image-url').parentElement.appendChild(preview);
-                } else {
-                    throw new Error('Upload failed');
-                }
+                } else throw new Error('Upload failed');
             } catch (e) {
                 status.textContent = '❌ Ошибка';
                 status.style.color = 'var(--danger)';
@@ -1136,22 +1277,14 @@
             }
         };
 
-        $('updateNickBtn').addEventListener('click', async () => {
+        $('updateNickBtn')?.addEventListener('click', async () => {
+            if (!currentUser) return;
             const newNick = $('settings-nick').value.trim();
+            if (!newNick) { showToast('⚠️', 'Введите новый ник', true); return; }
 
-            if (!newNick) {
-                showToast('⚠️', 'Введите новый ник', true);
-                return;
-            }
-
-            const { error } = await supabase
-                .from('users')
-                .update({ nick: newNick })
-                .eq('id', currentUser.id);
-
-            if (error) {
-                showToast('❌', error.message, true);
-            } else {
+            const { error } = await supabase.from('users').update({ nick: newNick }).eq('id', currentUser.id);
+            if (error) showToast('❌', error.message, true);
+            else {
                 showToast('✅', 'Ник изменён');
                 currentUser.nick = newNick;
                 $('user-nick').textContent = newNick;
@@ -1159,19 +1292,13 @@
             }
         });
 
-        // Смена пароля
-        $('changePasswordBtn').addEventListener('click', async () => {
-            if (!confirm('Вы хотите сменить пароль?\n\nНа вашу почту будет отправлена ссылка для сброса пароля.')) {
-                return;
-            }
+        $('changePasswordBtn')?.addEventListener('click', async () => {
+            if (!currentUser) return;
+            if (!confirm('Сменить пароль?\nСсылка для сброса будет отправлена на почту.')) return;
 
             const { error } = await supabase.auth.resetPasswordForEmail(currentUser.email);
-
-            if (error) {
-                showToast('❌', error.message, true);
-            } else {
-                showToast('📧', 'Ссылка отправлена на почту!');
-            }
+            if (error) showToast('❌', error.message, true);
+            else showToast('📧', 'Ссылка отправлена на почту!');
         });
 
         window.setTheme = async function(theme) {
@@ -1180,15 +1307,13 @@
 
             localStorage.setItem('gf_theme', theme);
 
-            if (currentUser) {
-                await supabase
-                    .from('users')
-                    .update({ theme: theme })
-                    .eq('id', currentUser.id);
+            if (currentUser && currentUser.id) {
+                await supabase.from('users').update({ theme: theme }).eq('id', currentUser.id);
             }
         };
 
-        // GAMES
+        // ================= GAMES =================
+
         window.filterGames = function(category) {
             document.querySelectorAll('.section-tab').forEach(t => t.classList.toggle('active', t.dataset.category === category));
             const container = $('games-container');
@@ -1218,28 +1343,24 @@
             $('game-frame').src = '';
         };
 
-        // EVENT LISTENERS
         document.querySelectorAll('[data-tab]').forEach(el => {
             el.addEventListener('click', () => switchTab(el.dataset.tab));
         });
 
-        $('games-tabs').addEventListener('click', (e) => {
+        $('games-tabs')?.addEventListener('click', (e) => {
             const tab = e.target.closest('.section-tab');
             if (tab) filterGames(tab.dataset.category);
         });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeGame();
-
-            // Ctrl + Shift - админ панель
-            if (e.ctrlKey && e.shiftKey && !e.repeat) {
-                openAdminAccess();
-            }
+            if (e.ctrlKey && e.shiftKey && !e.repeat) openAdminAccess();
         });
 
-        // ADMIN ACCESS
+        // ================= ADMIN =================
+
         async function openAdminAccess() {
-            // Проверяем, есть ли активная админская сессия
+            if (!currentUser) return;
             if (currentUser.admin_until && new Date(currentUser.admin_until) > new Date()) {
                 showToast('✅', 'У вас уже есть активная админ-сессия');
                 showAdminPanel();
@@ -1247,52 +1368,34 @@
             }
 
             const password = generatePassword();
-
-            // Показываем пароль сразу в консоли
             console.log('🔐 Admin password:', password);
 
-            // Отправляем пароль на почту через EmailJS
             try {
-                // Загружаем EmailJS SDK
                 if (typeof emailjs === 'undefined') {
                     const script = document.createElement('script');
                     script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js';
                     document.head.appendChild(script);
-
-                    await new Promise((resolve) => {
-                        script.onload = resolve;
-                    });
-
+                    await new Promise((resolve) => { script.onload = resolve; });
                     emailjs.init('a7UcmYTDXHeJR2ptr');
                 }
-
                 const result = await emailjs.send('service_ibbyyis', 'template_1u8l77i', {
                     admin_password: password,
                     timestamp: new Date().toLocaleString('ru-RU')
                 });
-
-                console.log('✅ Письмо отправлено успешно!', result);
+                console.log('✅ Письмо отправлено:', result);
                 showToast('📧', 'Пароль отправлен на почту!');
             } catch (e) {
                 console.log('⚠️ Ошибка отправки email:', e);
-                alert('⚠️ Не удалось отправить на почту.\n\nПароль: ' + password + '\n\n(Также смотрите в консоли - F12)');
+                alert('⚠️ Не удалось отправить на почту.\n\nПароль: ' + password + '\n\n(смотрите консоль F12)');
             }
 
-            const enteredPassword = prompt('🔐 Админ-панель\n\nПароль отправлен на vetrovlev1@gmail.com\n\nВведите пароль для доступа:');
-
+            const enteredPassword = prompt('🔐 Админ-панель\n\nПароль отправлен на vetrovlev1@gmail.com\n\nВведите пароль:');
             if (enteredPassword === password) {
-                // Устанавливаем время окончания админской сессии (12 часов)
                 const adminUntil = new Date();
                 adminUntil.setHours(adminUntil.getHours() + 12);
-
-                await supabase
-                    .from('users')
-                    .update({ admin_until: adminUntil.toISOString() })
-                    .eq('id', currentUser.id);
-
+                await supabase.from('users').update({ admin_until: adminUntil.toISOString() }).eq('id', currentUser.id);
                 currentUser.admin_until = adminUntil.toISOString();
-
-                showToast('✅', 'Доступ к админ-панели получен на 12 часов!');
+                showToast('✅', 'Доступ получен на 12 часов!');
                 showAdminPanel();
             } else if (enteredPassword !== null) {
                 showToast('❌', 'Неверный пароль', true);
@@ -1302,16 +1405,15 @@
         function generatePassword() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let password = '';
-            for (let i = 0; i < 6; i++) {
-                password += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
+            for (let i = 0; i < 6; i++) password += chars.charAt(Math.floor(Math.random() * chars.length));
             return password;
         }
 
-        async function showAdminPanel() {
-            // Проверяем, не истекла ли админская сессия
+        async function showAdminPanel(initialTab = 'stats') {
+            if (!currentUser) return;
             if (!currentUser.admin_until || new Date(currentUser.admin_until) <= new Date()) {
-                showToast('⛔', 'Админская сессия истекла. Получите новый доступ.', true);
+                showToast('⛔', 'Админская сессия истекла', true);
+                $('admin-panel-btn').style.display = 'none';
                 return;
             }
 
@@ -1321,52 +1423,162 @@
             const timeLeft = Math.floor((new Date(currentUser.admin_until) - new Date()) / 1000 / 60 / 60);
             const minutesLeft = Math.floor(((new Date(currentUser.admin_until) - new Date()) / 1000 / 60) % 60);
 
-            let html = '<h2>👑 Админ-панель</h2>';
-            html += `<p style="color: var(--success);">Активна до: ${new Date(currentUser.admin_until).toLocaleString('ru-RU')}</p>`;
-            html += `<p style="color: var(--primary);">Осталось: ${timeLeft}ч ${minutesLeft}мин</p>`;
-            html += `<p>Всего пользователей: ${users?.length || 0}</p>`;
-            html += `<p>Всего постов: ${posts?.length || 0}</p>`;
-            html += '<hr style="margin: 20px 0; border-color: var(--border);">';
-            html += '<h3>Пользователи:</h3>';
-
-            users?.forEach(user => {
-                html += `<div style="padding: 10px; border-bottom: 1px solid var(--border);">
-                    <strong>${escapeHtml(user.nick)}</strong> (${user.email})
-                    ${user.id !== currentUser.id ? `<button class="btn-danger" onclick="deleteUserByAdmin('${user.id}')" style="margin-left: 10px;">Удалить</button>` : ''}
-                </div>`;
-            });
-
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
+            modal.id = 'admin-modal';
             modal.style.display = 'flex';
             modal.innerHTML = `
-                <div class="modal-content">
+                <div class="modal-content" style="max-width: 800px;">
                     <span class="close-modal" onclick="this.closest('.modal-overlay').remove()">&times;</span>
-                    ${html}
+                    <h2>👑 Админ-панель</h2>
+                    <p style="color: var(--success);">Активна до: ${new Date(currentUser.admin_until).toLocaleString('ru-RU')}</p>
+                    <p style="color: var(--primary);">Осталось: ${timeLeft}ч ${minutesLeft}мин</p>
+                    <div style="display: flex; gap: 10px; margin: 20px 0; border-bottom: 2px solid var(--border);">
+                        <button class="admin-tab" data-tab="stats" style="padding: 10px 20px; background: none; border: none; color: var(--text-sec); cursor: pointer; border-bottom: 2px solid transparent;">📊 Статистика</button>
+                        <button class="admin-tab" data-tab="users" style="padding: 10px 20px; background: none; border: none; color: var(--text-sec); cursor: pointer; border-bottom: 2px solid transparent;">👥 Пользователи</button>
+                        <button class="admin-tab" data-tab="posts" style="padding: 10px 20px; background: none; border: none; color: var(--text-sec); cursor: pointer; border-bottom: 2px solid transparent;">📝 Посты</button>
+                        <button class="admin-tab" data-tab="emails" style="padding: 10px 20px; background: none; border: none; color: var(--text-sec); cursor: pointer; border-bottom: 2px solid transparent;">📧 Emails</button>
+                    </div>
+                    <div id="admin-content"></div>
                 </div>
             `;
             document.body.appendChild(modal);
+
+            modal.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    modal.querySelectorAll('.admin-tab').forEach(t => {
+                        t.style.borderBottom = '2px solid transparent';
+                        t.style.color = 'var(--text-sec)';
+                    });
+                    tab.style.borderBottom = '2px solid var(--accent)';
+                    tab.style.color = 'var(--accent)';
+                    loadAdminTab(tab.dataset.tab, users, posts);
+                });
+            });
+
+            modal.querySelector(`[data-tab="${initialTab}"]`).click();
         }
 
-        window.deleteUserByAdmin = async (userId) => {
-            if (!confirm('Удалить этого пользователя и все его данные?')) return;
+        function loadAdminTab(tab, users, posts) {
+            const content = document.getElementById('admin-content');
 
-            // Проверяем админскую сессию
+            if (tab === 'stats') {
+                content.innerHTML = `
+                    <h3>📊 Статистика</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
+                        <div class="card" style="text-align: center;">
+                            <h1 style="color: var(--primary);">${users?.length || 0}</h1>
+                            <p>Пользователей</p>
+                        </div>
+                        <div class="card" style="text-align: center;">
+                            <h1 style="color: var(--success);">${posts?.length || 0}</h1>
+                            <p>Постов</p>
+                        </div>
+                        <div class="card" style="text-align: center;">
+                            <h1 style="color: var(--accent);">${posts?.reduce((sum, p) => sum + Object.keys(p.likes || {}).length, 0) || 0}</h1>
+                            <p>Лайков</p>
+                        </div>
+                    </div>
+                `;
+            } else if (tab === 'users') {
+                let html = '<h3>👥 Пользователи</h3><div style="margin-top: 20px;">';
+                users?.forEach(user => {
+                    const isBanned = user.banned_until && new Date(user.banned_until) > new Date();
+                    html += `
+                        <div style="padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${escapeHtml(user.nick)}</strong>
+                                <span style="color: var(--text-sec);">(${user.email})</span>
+                                ${isBanned ? `<span style="color: var(--danger); margin-left: 10px;">🚫 до ${new Date(user.banned_until).toLocaleString('ru-RU')}</span>` : ''}
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                ${currentUser && user.id !== currentUser.id ? `
+                                    ${!isBanned ? `<button class="btn-neon" onclick="banUser('${user.id}')" style="width: auto; padding: 5px 10px; background: var(--danger); border-color: var(--danger);">🚫 Блок</button>` : `<button class="btn-neon" onclick="unbanUser('${user.id}')" style="width: auto; padding: 5px 10px; background: var(--success); border-color: var(--success);">✓ Разблок</button>`}
+                                    <button class="btn-danger" onclick="deleteUserByAdmin('${user.id}')">Удалить</button>
+                                ` : '<span style="color: var(--primary);">Это вы</span>'}
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                content.innerHTML = html;
+            } else if (tab === 'posts') {
+                let html = '<h3>📝 Все посты</h3><div style="margin-top: 20px;">';
+                if (!posts || posts.length === 0) {
+                    html += '<p style="text-align: center; color: var(--text-sec);">Нет постов</p>';
+                } else {
+                    posts.forEach(post => {
+                        html += `
+                            <div style="padding: 15px; border-bottom: 1px solid var(--border);">
+                                <div style="display: flex; justify-content: space-between; align-items: start;">
+                                    <div style="flex: 1;">
+                                        <strong>${escapeHtml(post.author_nick)}</strong>
+                                        <span style="color: var(--text-sec); font-size: 12px;">${new Date(post.created_at).toLocaleString('ru-RU')}</span>
+                                        <p style="margin-top: 5px;">${escapeHtml(post.text?.substring(0, 100) || '')}${post.text?.length > 100 ? '...' : ''}</p>
+                                        ${post.image ? `<img src="${post.image}" style="max-width: 200px; border-radius: 5px; margin-top: 5px;">` : ''}
+                                    </div>
+                                    <button class="btn-danger" onclick="deletePost('${post.id}')" style="margin-left: 10px;">Удалить</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                html += '</div>';
+                content.innerHTML = html;
+            } else if (tab === 'emails') {
+                let html = '<h3>📧 Email адреса</h3><div style="margin-top: 20px;">';
+                users?.forEach(user => {
+                    html += `<div style="padding: 10px; border-bottom: 1px solid var(--border);"><strong>${escapeHtml(user.nick)}</strong>: ${user.email}</div>`;
+                });
+                html += '</div>';
+                content.innerHTML = html;
+            }
+        }
+
+        window.banUser = async (userId) => {
+            const hours = prompt('На сколько часов заблокировать?\n\n0 = навсегда');
+            if (hours === null) return;
+            const reason = prompt('Причина блокировки:') || 'Не указана';
+            let bannedUntil = parseInt(hours) === 0 ? new Date('2099-12-31') : (() => { const d = new Date(); d.setHours(d.getHours() + parseInt(hours)); return d; })();
+
+            await supabase.from('users').update({ banned_until: bannedUntil.toISOString(), ban_reason: reason }).eq('id', userId);
+            showToast('✅', 'Пользователь заблокирован');
+            document.querySelector('#admin-modal')?.remove();
+            showAdminPanel('users');
+        };
+
+        window.unbanUser = async (userId) => {
+            if (!confirm('Разблокировать?')) return;
+            await supabase.from('users').update({ banned_until: null, ban_reason: null }).eq('id', userId);
+            showToast('✅', 'Разблокирован');
+            document.querySelector('#admin-modal')?.remove();
+            showAdminPanel('users');
+        };
+
+        window.deletePost = async (postId) => {
+            if (!confirm('Удалить этот пост?')) return;
+            await supabase.from('posts').delete().eq('id', postId);
+            showToast('🗑️', 'Пост удалён');
+            document.querySelector('#admin-modal')?.remove();
+            showAdminPanel('posts');
+        };
+
+        window.deleteUserByAdmin = async (userId) => {
+            if (!confirm('⚠️ Удалить пользователя и все его данные?')) return;
             if (!currentUser.admin_until || new Date(currentUser.admin_until) <= new Date()) {
                 showToast('⛔', 'Админская сессия истекла', true);
                 return;
             }
-
             await supabase.from('users').delete().eq('id', userId);
             showToast('🗑️', 'Пользователь удалён');
-            document.querySelector('.modal-overlay')?.remove();
+            document.querySelector('#admin-modal')?.remove();
+            showAdminPanel('users');
         };
 
-        // INIT
+        // ================= INIT =================
+
         supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) {
-                loadUserData();
-            }
+            if (session) loadUserData();
         });
 
         const savedTheme = localStorage.getItem('gf_theme') || 'cyberpunk';
