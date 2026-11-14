@@ -6,6 +6,7 @@
     <title>GamerFan | Социальная сеть для геймеров</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         :root {
             --bg-color: #0f0f13;
@@ -261,7 +262,19 @@
                         <option value="active">Активный</option>
                         <option value="ended">Завершён</option>
                     </select>
-                    <button class="btn-neon" id="createEventBtn" style="margin-top: 10px;">Создать ивент</button>
+                    
+                    <div style="margin-top: 15px; padding: 10px; border: 1px dashed var(--border); border-radius: 5px; background: rgba(0,0,0,0.2);">
+                        <label style="font-size: 13px; color: var(--text-sec); display: block; margin-bottom: 5px;">🎮 Игра к ивенту (ZIP архив или ссылка)</label>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <input type="url" id="event-game-url" class="auth-input" placeholder="Ссылка на GitHub (https://github.com/user/repo)" style="margin: 0;">
+                            <div style="font-size: 11px; color: var(--text-sec); margin-top: -5px;">Или загрузите ZIP с игрой:</div>
+                            <input type="file" id="event-game-file" accept=".zip" style="display: none;" onchange="uploadGameZip(this)">
+                            <button class="btn-neon" onclick="document.getElementById('event-game-file').click()" style="width: auto; margin: 0; padding: 8px 15px;">📦 ZIP с ПК</button>
+                        </div>
+                        <span id="event-game-status" style="font-size: 11px; color: var(--text-sec); display: block; margin-top: 5px;"></span>
+                    </div>
+
+                    <button class="btn-neon" id="createEventBtn" style="margin-top: 20px;">Создать ивент</button>
                 </div>
                 <div id="events-container"></div>
             </section>
@@ -286,12 +299,18 @@
                             </div>
                         </div>
                         <div class="chat-messages" id="chat-messages" style="display: none;"></div>
-                        <div class="chat-input-area" id="chat-input-area" style="display: none;">
-                            <button class="btn-neon" onclick="toggleEmojiPicker()" style="width: auto; padding: 8px 12px;" title="Смайлики">😊</button>
-                            <input type="file" id="chat-media-file" accept="image/*,video/*" style="display: none;" onchange="uploadChatMedia(this)">
-                            <button class="btn-neon" onclick="document.getElementById('chat-media-file').click()" style="width: auto; padding: 8px 12px;" title="Фото/Видео">📎</button>
-                            <input type="text" id="msg-input" class="chat-input" placeholder="Напишите сообщение...">
-                            <button class="btn-neon" id="sendMsgBtn" style="width: auto;"><i class="fas fa-paper-plane"></i></button>
+                        <div class="chat-input-area" id="chat-input-area" style="display: none; flex-direction: column;">
+                            <div id="chat-media-preview" style="display: none; margin-bottom: 8px; position: relative;">
+                                <img id="chat-media-preview-img" style="max-height: 120px; border-radius: 8px; border: 1px solid var(--border);">
+                                <button onclick="clearChatMedia()" style="position: absolute; top: -8px; right: -8px; background: var(--danger); color: #fff; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer;">✕</button>
+                            </div>
+                            <div style="display: flex; gap: 10px; width: 100%;">
+                                <button class="btn-neon" onclick="toggleEmojiPicker()" style="width: auto; padding: 8px 12px;" title="Смайлики">😊</button>
+                                <input type="file" id="chat-media-file" accept="image/*" style="display: none;" onchange="uploadChatMedia(this)">
+                                <button class="btn-neon" onclick="document.getElementById('chat-media-file').click()" style="width: auto; padding: 8px 12px;" title="Фото">📎</button>
+                                <input type="text" id="msg-input" class="chat-input" placeholder="Напишите сообщение...">
+                                <button class="btn-neon" id="sendMsgBtn" style="width: auto;"><i class="fas fa-paper-plane"></i></button>
+                            </div>
                         </div>
                         <div id="emoji-picker" style="display: none; position: absolute; bottom: 70px; left: 20px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); max-width: 300px; z-index: 100;">
                             <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; max-height: 200px; overflow-y: auto;"></div>
@@ -311,13 +330,20 @@
             <section id="settings" class="section">
                 <div class="card">
                     <h2 style="margin-bottom: 20px;">Настройки аккаунта</h2>
+
                     <div class="settings-group">
-                        <label class="settings-label">Сменить никнейм</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="settings-nick" class="auth-input" placeholder="Новый ник">
-                            <button class="btn-neon" id="updateNickBtn" style="width: auto;">Сохранить</button>
+                        <label class="settings-label">👤 Дополнительная информация</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <input type="text" id="settings-firstname" class="auth-input" placeholder="Имя">
+                            <input type="text" id="settings-lastname" class="auth-input" placeholder="Фамилия">
                         </div>
+                        <input type="text" id="settings-nick" class="auth-input" placeholder="Никнейм" style="margin-top: 10px;">
+                        <input type="tel" id="settings-phone" class="auth-input" placeholder="Телефон" style="margin-top: 10px;">
+                        <button class="btn-neon" id="saveProfileBtn" style="width: auto; margin-top: 10px;">💾 Сохранить информацию</button>
                     </div>
+
+                    <div style="border-top: 1px solid var(--border); margin: 25px 0;"></div>
+
                     <div class="settings-group">
                         <label class="settings-label">Сменить аватар</label>
                         <div style="display: flex; gap: 10px; align-items: center;">
@@ -413,6 +439,8 @@
         let currentChatUserId = null;
         let isRegistering = false;
         let messagesSubscription = null;
+        let uploadedMediaUrl = null;
+        let uploadedEventGameUrl = null;
 
         function $(id) { return document.getElementById(id); }
 
@@ -433,131 +461,91 @@
 
         // ================= AUTH =================
 
-        const toggleLink = $('toggle-auth-mode');
-        if (toggleLink) {
-            toggleLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                isRegistering = !isRegistering;
-                $('auth-title').textContent = isRegistering ? 'Регистрация' : 'Вход';
-                $('main-auth-btn').textContent = isRegistering ? 'Создать аккаунт' : 'Войти';
-                $('auth-switch-text').textContent = isRegistering ? 'Есть аккаунт?' : 'Нет аккаунта?';
-                $('toggle-auth-mode').textContent = isRegistering ? 'Войти' : 'Зарегистрироваться';
-                $('register-fields').style.display = isRegistering ? 'block' : 'none';
-                $('auth-pass').autocomplete = isRegistering ? 'new-password' : 'current-password';
-            });
-        }
+        $('toggle-auth-mode')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            isRegistering = !isRegistering;
+            $('auth-title').textContent = isRegistering ? 'Регистрация' : 'Вход';
+            $('main-auth-btn').textContent = isRegistering ? 'Создать аккаунт' : 'Войти';
+            $('auth-switch-text').textContent = isRegistering ? 'Есть аккаунт?' : 'Нет аккаунта?';
+            $('toggle-auth-mode').textContent = isRegistering ? 'Войти' : 'Зарегистрироваться';
+            $('register-fields').style.display = isRegistering ? 'block' : 'none';
+            $('auth-pass').autocomplete = isRegistering ? 'new-password' : 'current-password';
+        });
 
-        const authBtn = $('main-auth-btn');
-        if (authBtn) {
-            authBtn.addEventListener('click', async () => {
-                const email = $('auth-email').value.trim();
-                const pass = $('auth-pass').value;
+        $('main-auth-btn')?.addEventListener('click', async () => {
+            const email = $('auth-email').value.trim();
+            const pass = $('auth-pass').value;
 
-                if (!email || !pass) {
-                    showToast('⚠️', 'Введите email и пароль', true);
-                    return;
+            if (!email || !pass) { showToast('⚠️', 'Введите email и пароль', true); return; }
+            if (isRegistering && pass.length < 6) { showToast('⚠️', 'Пароль минимум 6 символов', true); return; }
+
+            const btn = $('main-auth-btn');
+            btn.disabled = true;
+            btn.textContent = 'Загрузка...';
+
+            try {
+                if (isRegistering) {
+                    const firstName = $('auth-firstname').value.trim();
+                    const lastName = $('auth-lastname').value.trim();
+                    const phone = $('auth-phone').value.trim();
+                    if (!firstName || !lastName) throw new Error('Введите имя и фамилию');
+
+                    const { data: authData, error: authError } = await supabase.auth.signUp({ email, password: pass });
+                    if (authError) throw authError;
+                    if (!authData.user) throw new Error('Не удалось создать пользователя');
+
+                    const { error: insertError } = await supabase.from('users').upsert([{
+                        id: authData.user.id,
+                        email: email,
+                        nick: `${firstName} ${lastName}`,
+                        first_name: firstName,
+                        last_name: lastName,
+                        phone: phone || null,
+                        theme: 'cyberpunk'
+                    }], { onConflict: 'id' });
+
+                    if (insertError) throw new Error('Аккаунт создан, но профиль не сохранён: ' + insertError.message);
+
+                    showToast('✅', 'Аккаунт создан! Теперь войдите');
+                    isRegistering = false;
+                    $('auth-title').textContent = 'Вход';
+                    $('main-auth-btn').textContent = 'Войти';
+                    $('auth-switch-text').textContent = 'Нет аккаунта?';
+                    $('toggle-auth-mode').textContent = 'Зарегистрироваться';
+                    $('register-fields').style.display = 'none';
+                    $('auth-pass').value = '';
+                } else {
+                    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+                    if (error) throw error;
+                    if (!data.session) throw new Error('Email не подтверждён. Проверьте почту.');
+                    showToast('👋', 'С возвращением!');
+                    await loadUserData();
                 }
-                if (isRegistering && pass.length < 6) {
-                    showToast('⚠️', 'Пароль минимум 6 символов', true);
-                    return;
-                }
+            } catch (error) {
+                console.error('AUTH ERROR:', error);
+                showToast('❌', error.message || 'Ошибка', true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = isRegistering ? 'Создать аккаунт' : 'Войти';
+            }
+        });
 
-                const btn = authBtn;
-                btn.disabled = true;
-                const oldText = btn.textContent;
-                btn.textContent = 'Загрузка...';
-
-                try {
-                    if (isRegistering) {
-                        const firstName = $('auth-firstname').value.trim();
-                        const lastName = $('auth-lastname').value.trim();
-                        const phone = $('auth-phone').value.trim();
-
-                        if (!firstName || !lastName) {
-                            throw new Error('Введите имя и фамилию');
-                        }
-
-                        const { data: authData, error: authError } = await supabase.auth.signUp({
-                            email: email,
-                            password: pass
-                        });
-
-                        if (authError) throw authError;
-                        if (!authData.user) throw new Error('Не удалось создать пользователя');
-
-                        const { error: insertError } = await supabase
-                            .from('users')
-                            .upsert([{
-                                id: authData.user.id,
-                                email: email,
-                                nick: `${firstName} ${lastName}`,
-                                first_name: firstName,
-                                last_name: lastName,
-                                phone: phone || null,
-                                theme: 'cyberpunk'
-                            }], { onConflict: 'id' });
-
-                        if (insertError) {
-                            console.error('Profile insert error:', insertError);
-                            throw new Error('Аккаунт создан, но профиль не сохранён: ' + insertError.message);
-                        }
-
-                        showToast('✅', 'Аккаунт создан! Теперь войдите');
-
-                        isRegistering = false;
-                        $('auth-title').textContent = 'Вход';
-                        $('main-auth-btn').textContent = 'Войти';
-                        $('auth-switch-text').textContent = 'Нет аккаунта?';
-                        $('toggle-auth-mode').textContent = 'Зарегистрироваться';
-                        $('register-fields').style.display = 'none';
-                        $('auth-pass').value = '';
-                    } else {
-                        const { data, error } = await supabase.auth.signInWithPassword({
-                            email: email,
-                            password: pass
-                        });
-
-                        if (error) throw error;
-                        if (!data.session) throw new Error('Email не подтверждён. Проверьте почту.');
-
-                        showToast('👋', 'С возвращением!');
-                        await loadUserData();
-                    }
-                } catch (error) {
-                    console.error('AUTH ERROR:', error);
-                    showToast('❌', error.message || 'Ошибка', true);
-                } finally {
-                    btn.disabled = false;
-                    btn.textContent = isRegistering ? 'Создать аккаунт' : 'Войти';
-                }
-            });
-        }
-
-        // Enter по полям
         ['auth-email', 'auth-pass', 'auth-firstname', 'auth-lastname', 'auth-phone'].forEach(id => {
             const el = $(id);
-            if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') authBtn.click(); });
+            if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') $('main-auth-btn').click(); });
         });
 
         async function loadUserData() {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
-            const { data, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('id', user.id)
-                .single();
+            const { data, error } = await supabase.from('users').select('*').eq('id', user.id).single();
 
             if (error) {
                 console.error('loadUserData error:', error);
-                // Если профиля нет — создадим минимальный
                 if (error.code === 'PGRST116') {
                     const { data: newUser } = await supabase.from('users').insert([{
-                        id: user.id,
-                        email: user.email,
-                        nick: user.email.split('@')[0],
-                        theme: 'cyberpunk'
+                        id: user.id, email: user.email, nick: user.email.split('@')[0], theme: 'cyberpunk'
                     }]).select().single();
                     currentUser = newUser;
                 } else {
@@ -580,12 +568,8 @@
             $('user-nick').textContent = currentUser.nick;
             $('header-avatar').src = currentUser.avatar || 'https://via.placeholder.com/100/555/fff?text=User';
             $('feed-avatar').src = currentUser.avatar || 'https://via.placeholder.com/100/555/fff?text=User';
-
             if (currentUser.theme) setTheme(currentUser.theme);
-
-            if (currentUser.admin_until && new Date(currentUser.admin_until) > new Date()) {
-                $('admin-panel-btn').style.display = 'block';
-            }
+            if (currentUser.admin_until && new Date(currentUser.admin_until) > new Date()) $('admin-panel-btn').style.display = 'block';
 
             $('auth-screen').style.display = 'none';
             $('app').classList.add('visible');
@@ -617,26 +601,18 @@
             if (!currentUser) return;
             const text = $('post-text-area').value.trim();
             const imageUrl = $('post-image-url').value;
-
-            if (!text && !imageUrl) {
-                showToast('⚠️', 'Введите текст или добавьте фото', true);
-                return;
-            }
+            if (!text && !imageUrl) { showToast('⚠️', 'Введите текст или добавьте фото', true); return; }
 
             closePostModal();
             showToast('⏳', 'Публикация...');
 
             const container = $('feed-container');
             const imageHtml = imageUrl ? `<img src="${imageUrl}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">` : '';
-
-            const tempPostHtml = `
+            container.insertAdjacentHTML('afterbegin', `
                 <div class="card" style="opacity: 0.7;">
                     <div class="post-header">
                         <img src="${currentUser.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}" class="post-avatar">
-                        <div class="post-meta">
-                            <h4>${escapeHtml(currentUser.nick)}</h4>
-                            <span>Только что</span>
-                        </div>
+                        <div class="post-meta"><h4>${escapeHtml(currentUser.nick)}</h4><span>Только что</span></div>
                     </div>
                     ${text ? `<div class="post-content">${escapeHtml(text)}</div>` : ''}
                     ${imageHtml}
@@ -645,18 +621,11 @@
                         <button class="action-btn"><i class="fas fa-comment"></i> 0</button>
                     </div>
                 </div>
-            `;
-            container.insertAdjacentHTML('afterbegin', tempPostHtml);
+            `);
 
-            const { error } = await supabase
-                .from('posts')
-                .insert([{
-                    author_id: currentUser.id,
-                    author_nick: currentUser.nick,
-                    author_avatar: currentUser.avatar,
-                    text: text,
-                    image: imageUrl
-                }]);
+            const { error } = await supabase.from('posts').insert([{
+                author_id: currentUser.id, author_nick: currentUser.nick, author_avatar: currentUser.avatar, text: text, image: imageUrl
+            }]);
 
             if (error) {
                 showToast('❌', error.message, true);
@@ -668,15 +637,9 @@
         });
 
         async function loadFeed() {
-            const { data, error } = await supabase
-                .from('posts')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(20);
-
+            const { data } = await supabase.from('posts').select('*').order('created_at', { ascending: false }).limit(20);
             const container = $('feed-container');
             container.innerHTML = '';
-
             if (!data || data.length === 0) {
                 container.innerHTML = '<div class="card" style="text-align:center; color:var(--text-sec);">Лента пуста. Создайте первый пост!</div>';
                 return;
@@ -686,24 +649,19 @@
                 const likes = post.likes || {};
                 const likeCount = Object.keys(likes).length;
                 const isLiked = currentUser && likes[currentUser.id];
-
                 const imageHtml = post.image ? `<img src="${post.image}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 10px; margin-bottom: 15px;">` : '';
 
-                const { data: comments } = await supabase
-                    .from('comments')
-                    .select('*')
-                    .eq('post_id', post.id)
-                    .order('created_at', { ascending: true });
+                const { data: comments } = await supabase.from('comments').select('*').eq('post_id', post.id).order('created_at', { ascending: true });
 
                 let commentsHtml = '';
                 if (comments && comments.length > 0) {
                     commentsHtml = '<div class="comments-section" style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 5px;">';
-                    comments.forEach(comment => {
+                    comments.forEach(c => {
                         commentsHtml += `
                             <div class="comment" style="padding: 8px 0; border-bottom: 1px solid var(--border);">
-                                <strong style="color: var(--primary);">${escapeHtml(comment.author_nick)}:</strong>
-                                <span style="color: var(--text-main);">${escapeHtml(comment.text)}</span>
-                                <span style="font-size: 11px; color: var(--text-sec); margin-left: 10px;">${new Date(comment.created_at).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})}</span>
+                                <strong style="color: var(--primary);">${escapeHtml(c.author_nick)}:</strong>
+                                <span>${escapeHtml(c.text)}</span>
+                                <span style="font-size: 11px; color: var(--text-sec); margin-left: 10px;">${new Date(c.created_at).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})}</span>
                             </div>
                         `;
                     });
@@ -722,12 +680,8 @@
                         ${post.text ? `<div class="post-content">${escapeHtml(post.text)}</div>` : ''}
                         ${imageHtml}
                         <div class="post-actions">
-                            <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
-                                <i class="fas fa-heart"></i> ${likeCount}
-                            </button>
-                            <button class="action-btn" onclick="toggleComments('${post.id}')">
-                                <i class="fas fa-comment"></i> ${comments?.length || 0}
-                            </button>
+                            <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${post.id}')"><i class="fas fa-heart"></i> ${likeCount}</button>
+                            <button class="action-btn" onclick="toggleComments('${post.id}')"><i class="fas fa-comment"></i> ${comments?.length || 0}</button>
                         </div>
                         ${commentsHtml}
                         <div id="comment-input-${post.id}" style="display: none; margin-top: 10px;">
@@ -746,78 +700,161 @@
             if (input.style.display === 'none') {
                 input.style.display = 'block';
                 document.getElementById(`comment-text-${postId}`).focus();
-            } else {
-                input.style.display = 'none';
-            }
+            } else input.style.display = 'none';
         };
 
         window.addComment = async function(postId) {
             const input = document.getElementById(`comment-text-${postId}`);
             const text = input.value.trim();
             if (!text || !currentUser) return;
-
-            await supabase
-                .from('comments')
-                .insert([{
-                    post_id: postId,
-                    author_id: currentUser.id,
-                    author_nick: currentUser.nick,
-                    author_avatar: currentUser.avatar,
-                    text: text
-                }]);
-
+            await supabase.from('comments').insert([{
+                post_id: postId, author_id: currentUser.id, author_nick: currentUser.nick, author_avatar: currentUser.avatar, text: text
+            }]);
             input.value = '';
             loadFeed();
         };
 
         window.toggleLike = async (postId) => {
             if (!currentUser) return;
-            const { data: post } = await supabase
-                .from('posts')
-                .select('likes')
-                .eq('id', postId)
-                .single();
-
+            const { data: post } = await supabase.from('posts').select('likes').eq('id', postId).single();
             const likes = post.likes || {};
             if (likes[currentUser.id]) delete likes[currentUser.id];
             else likes[currentUser.id] = true;
-
-            await supabase
-                .from('posts')
-                .update({ likes: likes })
-                .eq('id', postId);
-
+            await supabase.from('posts').update({ likes }).eq('id', postId);
             loadFeed();
         };
 
         // ================= EVENTS =================
 
+        window.uploadGameZip = async function(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const status = $('event-game-status');
+            status.textContent = 'Распаковка ZIP...';
+            status.style.color = 'var(--primary)';
+
+            try {
+                const zip = new JSZip();
+                const contents = await zip.loadAsync(file);
+                
+                let indexFile = null;
+                let rootPath = '';
+                
+                if (contents.files['index.html']) {
+                    indexFile = contents.files['index.html'];
+                } else {
+                    const files = Object.keys(contents.files);
+                    const htmlFile = files.find(f => f.endsWith('index.html'));
+                    if (htmlFile) {
+                        indexFile = contents.files[htmlFile];
+                        rootPath = htmlFile.replace('index.html', '');
+                    }
+                }
+
+                if (!indexFile) throw new Error('В архиве нет index.html');
+
+                status.textContent = 'Загрузка файлов в облако...';
+                
+                const folderId = 'event_' + Date.now();
+                let uploadedCount = 0;
+                const totalFiles = Object.keys(contents.files).length;
+
+                // Загружаем ВСЕ файлы
+                for (const [path, zipEntry] of Object.entries(contents.files)) {
+                    if (zipEntry.dir) continue;
+
+                    let cleanPath = path;
+                    if (rootPath && path.startsWith(rootPath)) {
+                        cleanPath = path.substring(rootPath.length);
+                    }
+                    cleanPath = cleanPath.replace(/^\//, '');
+
+                    let mimeType = 'application/octet-stream';
+                    if (cleanPath.endsWith('.html')) mimeType = 'text/html';
+                    else if (cleanPath.endsWith('.js')) mimeType = 'application/javascript';
+                    else if (cleanPath.endsWith('.css')) mimeType = 'text/css';
+                    else if (cleanPath.endsWith('.png')) mimeType = 'image/png';
+                    else if (cleanPath.endsWith('.jpg') || cleanPath.endsWith('.jpeg')) mimeType = 'image/jpeg';
+                    else if (cleanPath.endsWith('.svg')) mimeType = 'image/svg+xml';
+                    else if (cleanPath.endsWith('.json')) mimeType = 'application/json';
+                    else if (cleanPath.endsWith('.mp3')) mimeType = 'audio/mpeg';
+                    else if (cleanPath.endsWith('.wav')) mimeType = 'audio/wav';
+                    else if (cleanPath.endsWith('.ogg')) mimeType = 'audio/ogg';
+
+                    const fileData = await zipEntry.async('blob');
+                    const storagePath = `${folderId}/${cleanPath}`;
+
+                    const { error } = await supabase.storage
+                        .from('games')
+                        .upload(storagePath, fileData, { upsert: true, contentType: mimeType });
+
+                    if (error) console.warn('Ошибка загрузки файла:', path, error);
+                    else uploadedCount++;
+                    
+                    status.textContent = `Загрузка: ${uploadedCount}/${totalFiles}...`;
+                }
+
+                const { data: urlData } = supabase.storage
+                    .from('games')
+                    .getPublicUrl(`${folderId}/index.html`);
+
+                uploadedEventGameUrl = urlData.publicUrl;
+                status.textContent = '✅ Игра загружена и готова к запуску!';
+                status.style.color = 'var(--success)';
+                showToast('✅', 'Игра загружена в облако!');
+
+            } catch (e) {
+                console.error('ZIP upload error:', e);
+                status.textContent = '❌ Ошибка: ' + e.message;
+                status.style.color = 'var(--danger)';
+                uploadedEventGameUrl = null;
+            }
+            input.value = '';
+        };
+
+        function convertGithubUrl(url) {
+            if (!url) return null;
+            url = url.trim();
+            if (url.endsWith('.html') || url.includes('githack.com')) return url;
+            let match = url.match(/github\.com\/([^/]+)\/([^/]+)/);
+            if (match) {
+                const user = match[1];
+                const repo = match[2].replace('.git', '');
+                return `https://raw.githack.com/${user}/${repo}/main/index.html`;
+            }
+            return url;
+        }
+
         async function loadEvents() {
             if (currentUser && currentUser.email === ADMIN_EMAIL) {
                 document.getElementById('events-create-area').style.display = 'block';
             }
-
-            const { data } = await supabase
-                .from('events')
-                .select('*')
-                .order('created_at', { ascending: false });
-
+            const { data } = await supabase.from('events').select('*').order('created_at', { ascending: false });
             const container = $('events-container');
             container.innerHTML = '';
-
             if (!data || data.length === 0) {
                 container.innerHTML = '<div class="card" style="text-align:center; color:var(--text-sec);">🎉 Пока нет ивентов</div>';
                 return;
             }
-
             data.forEach(event => {
                 const statusColors = { upcoming: 'var(--primary)', active: 'var(--success)', ended: 'var(--text-sec)' };
                 const statusTexts = { upcoming: 'Предстоящий', active: 'Активный', ended: 'Завершён' };
+                
+                const gameBtn = event.game_url ? `<button class="btn-neon" onclick="launchGame('${event.game_url}', '${escapeHtml(event.title)}')" style="width: auto; margin-top: 10px; padding: 8px 15px; font-size: 14px;">🎮 Играть</button>` : '';
+
+                // Кнопка удаления для админа
+                const isAdmin = currentUser && currentUser.email === ADMIN_EMAIL;
+                const deleteBtn = isAdmin ? `<button class="btn-danger" onclick="deleteEvent('${event.id}')" style="margin-top: 10px; margin-left: 10px;">🗑️ Удалить</button>` : '';
 
                 container.innerHTML += `
                     <div class="card">
                         <h3>${escapeHtml(event.title)}</h3>
                         <p style="color:var(--text-sec); margin-top:10px;">${escapeHtml(event.description || '')}</p>
+                        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 10px;">
+                            ${gameBtn}
+                            ${deleteBtn}
+                        </div>
                         <div style="font-size:12px; margin-top:10px;">
                             <span style="color:var(--text-sec);">Создал: ${escapeHtml(event.created_by)}</span> |
                             <span style="color:${statusColors[event.status] || 'var(--text-sec)'};">Статус: ${statusTexts[event.status] || event.status}</span>
@@ -827,39 +864,82 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const createEventBtn = document.getElementById('createEventBtn');
-            if (createEventBtn) {
-                createEventBtn.addEventListener('click', async () => {
-                    if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
-                        showToast('⛔', 'Только администратор может создавать ивенты', true);
-                        return;
-                    }
+        document.getElementById('createEventBtn')?.addEventListener('click', async () => {
+            if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
+                showToast('⛔', 'Только администратор может создавать ивенты', true);
+                return;
+            }
+            const title = document.getElementById('event-title').value.trim();
+            const desc = document.getElementById('event-desc').value.trim();
+            const status = document.getElementById('event-status').value;
+            const gameUrlFromInput = document.getElementById('event-game-url').value.trim();
+            
+            let finalGameUrl = null;
+            if (gameUrlFromInput) {
+                finalGameUrl = convertGithubUrl(gameUrlFromInput);
+            } else if (uploadedEventGameUrl) {
+                finalGameUrl = uploadedEventGameUrl;
+            }
 
-                    const title = document.getElementById('event-title').value.trim();
-                    const desc = document.getElementById('event-desc').value.trim();
-                    const status = document.getElementById('event-status').value;
+            if (!title) { showToast('⚠️', 'Введите название ивента', true); return; }
 
-                    if (!title) {
-                        showToast('⚠️', 'Введите название ивента', true);
-                        return;
-                    }
+            const { error } = await supabase.from('events').insert([{ 
+                title, 
+                description: desc, 
+                status, 
+                created_by: currentUser.nick,
+                game_url: finalGameUrl
+            }]);
 
-                    const { error } = await supabase
-                        .from('events')
-                        .insert([{ title, description: desc, status, created_by: currentUser.nick }]);
-
-                    if (error) {
-                        showToast('❌', error.message, true);
-                    } else {
-                        showToast('✅', 'Ивент создан!');
-                        document.getElementById('event-title').value = '';
-                        document.getElementById('event-desc').value = '';
-                        loadEvents();
-                    }
-                });
+            if (error) {
+                showToast('❌', error.message, true);
+            } else {
+                showToast('✅', 'Ивент создан!');
+                document.getElementById('event-title').value = '';
+                document.getElementById('event-desc').value = '';
+                document.getElementById('event-game-url').value = '';
+                uploadedEventGameUrl = null;
+                $('event-game-status').textContent = '';
+                loadEvents();
             }
         });
+
+        // Удаление ивента и всех его файлов из облака
+        window.deleteEvent = async (eventId) => {
+            if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
+                showToast('⛔', 'Нет прав для удаления', true);
+                return;
+            }
+            if (!confirm('⚠️ Удалить ивент? Файлы игры из облака тоже удалятся.')) return;
+
+            // Получаем инфу об ивенте, чтобы узнать ссылку на игру
+            const { data: event } = await supabase.from('events').select('game_url').eq('id', eventId).single();
+            
+            // Если игра была загружена в облако, удаляем папку с файлами
+            if (event && event.game_url && event.game_url.includes('supabase.co')) {
+                try {
+                    // Извлекаем путь к папке из ссылки
+                    const urlParts = event.game_url.split('/public/games/');
+                    if (urlParts.length > 1) {
+                        const folderPath = urlParts[1].split('/')[0]; // папка event_123456
+                        
+                        // Получаем все файлы в этой папке
+                        const { data: files } = await supabase.storage.from('games').list(folderPath);
+                        if (files && files.length > 0) {
+                            const filePaths = files.map(f => `${folderPath}/${f.name}`);
+                            await supabase.storage.from('games').remove(filePaths);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Не удалось удалить файлы из облака:', e);
+                }
+            }
+
+            // Удаляем сам ивент из базы
+            await supabase.from('events').delete().eq('id', eventId);
+            showToast('🗑️', 'Ивент удалён');
+            loadEvents();
+        };
 
         // ================= MESSENGER =================
 
@@ -874,19 +954,13 @@
 
         async function loadAllUsers() {
             if (!currentUser) return;
-            const { data } = await supabase
-                .from('users')
-                .select('*')
-                .neq('id', currentUser.id);
-
+            const { data } = await supabase.from('users').select('*').neq('id', currentUser.id);
             const container = $('contacts-list');
             container.innerHTML = '';
-
             if (!data || data.length === 0) {
                 container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-sec);">Вы единственный пользователь</div>';
                 return;
             }
-
             data.forEach(user => {
                 container.innerHTML += `
                     <div class="contact-item" onclick="startChat('${user.id}', '${escapeHtml(user.nick)}', '${user.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}')">
@@ -902,33 +976,23 @@
 
         async function loadMyChats() {
             if (!currentUser) return;
-            const { data } = await supabase
-                .from('messages')
-                .select('sender_id, receiver_id')
+            const { data } = await supabase.from('messages').select('sender_id, receiver_id')
                 .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
                 .order('created_at', { ascending: false });
 
             const uniqueUserIds = new Set();
             data?.forEach(msg => {
-                const otherUserId = msg.sender_id === currentUser.id ? msg.receiver_id : msg.sender_id;
-                uniqueUserIds.add(otherUserId);
+                uniqueUserIds.add(msg.sender_id === currentUser.id ? msg.receiver_id : msg.sender_id);
             });
 
             const container = $('contacts-list');
             container.innerHTML = '';
-
             if (uniqueUserIds.size === 0) {
                 container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-sec);">Нет активных чатов</div>';
                 return;
             }
-
             for (const userId of uniqueUserIds) {
-                const { data: user } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('id', userId)
-                    .single();
-
+                const { data: user } = await supabase.from('users').select('*').eq('id', userId).single();
                 if (user) {
                     container.innerHTML += `
                         <div class="contact-item" onclick="startChat('${user.id}', '${escapeHtml(user.nick)}', '${user.avatar || 'https://via.placeholder.com/100/555/fff?text=User'}')">
@@ -951,57 +1015,43 @@
             $('chat-header').style.display = 'flex';
             $('chat-messages').style.display = 'flex';
             $('chat-input-area').style.display = 'flex';
+            clearChatMedia();
             loadMessages(userId);
         };
 
         async function loadMessages(otherUserId) {
             if (messagesSubscription) supabase.removeChannel(messagesSubscription);
-
-            const { data } = await supabase
-                .from('messages')
-                .select('*')
+            const { data } = await supabase.from('messages').select('*')
                 .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${currentUser.id})`)
                 .order('created_at', { ascending: true });
-
             renderMessages(data || []);
 
-            messagesSubscription = supabase
-                .channel('messages')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => {
-                    loadMessages(otherUserId);
-                })
+            messagesSubscription = supabase.channel('messages')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => loadMessages(otherUserId))
                 .subscribe();
         }
 
         function renderMessages(messages) {
             const container = $('chat-messages');
             container.innerHTML = '';
-
             if (messages.length === 0) {
                 container.innerHTML = '<div style="text-align:center; color:var(--text-sec); margin-top:20px;">💬 Напишите первое сообщение!</div>';
                 return;
             }
-
             messages.forEach(msg => {
                 const isOwn = msg.sender_id === currentUser.id;
                 let mediaHtml = '';
                 if (msg.media_url) {
-                    if (msg.media_type === 'video') {
-                        mediaHtml = `<video src="${msg.media_url}" controls style="max-width: 100%; border-radius: 10px; margin-top: 5px;"></video>`;
-                    } else if (msg.media_type === 'image') {
-                        mediaHtml = `<img src="${msg.media_url}" onclick="window.open('${msg.media_url}')" style="max-width: 100%; cursor: pointer; border-radius: 10px; margin-top: 5px;">`;
-                    }
+                    mediaHtml = `<img src="${msg.media_url}" onclick="window.open('${msg.media_url}')" style="max-width: 100%; cursor: pointer; border-radius: 10px; margin-top: 5px;">`;
                 }
-
                 container.innerHTML += `
                     <div class="message ${isOwn ? 'msg-out' : 'msg-in'}">
-                        ${msg.text ? `<div>${escapeHtml(msg.text)}</div>` : ''}
+                        ${msg.text && msg.text.trim() !== '' ? `<div>${escapeHtml(msg.text)}</div>` : ''}
                         ${mediaHtml}
                         <div class="msg-meta">${new Date(msg.created_at).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'})}</div>
                     </div>
                 `;
             });
-
             container.scrollTop = container.scrollHeight;
         }
 
@@ -1016,9 +1066,7 @@
                     ).join('');
                 }
                 picker.style.display = 'block';
-            } else {
-                picker.style.display = 'none';
-            }
+            } else picker.style.display = 'none';
         };
 
         window.insertEmoji = function(emoji) {
@@ -1035,18 +1083,32 @@
             }
         });
 
-        let uploadedMediaUrl = null;
-        let uploadedMediaType = null;
+        window.clearChatMedia = function() {
+            uploadedMediaUrl = null;
+            const preview = document.getElementById('chat-media-preview');
+            const img = document.getElementById('chat-media-preview-img');
+            if (preview) preview.style.display = 'none';
+            if (img) img.src = '';
+            const fileInput = document.getElementById('chat-media-file');
+            if (fileInput) fileInput.value = '';
+        };
 
         window.uploadChatMedia = async function(input) {
             const file = input.files[0];
             if (!file) return;
 
-            const isVideo = file.type.startsWith('video/');
-            const isImage = file.type.startsWith('image/');
-            if (!isVideo && !isImage) { showToast('⚠️', 'Только фото или видео', true); return; }
+            if (!file.type.startsWith('image/')) {
+                showToast('⚠️', 'Можно только фото', true);
+                input.value = '';
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('⚠️', 'Файл больше 10 МБ', true);
+                input.value = '';
+                return;
+            }
 
-            showToast('⏳', 'Загрузка...');
+            showToast('⏳', 'Загрузка фото...');
 
             const formData = new FormData();
             formData.append('image', file);
@@ -1054,38 +1116,43 @@
             try {
                 const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
                 const data = await res.json();
-                if (data.success) {
-                    uploadedMediaUrl = data.data.url;
-                    uploadedMediaType = isVideo ? 'video' : 'image';
-                    await sendMessage();
-                    showToast('✅', 'Отправлено!');
-                } else throw new Error('Upload failed');
+                if (!data.success) throw new Error(data.error?.message || 'Upload failed');
+
+                uploadedMediaUrl = data.data.url;
+
+                const preview = document.getElementById('chat-media-preview');
+                const img = document.getElementById('chat-media-preview-img');
+                if (preview && img) {
+                    img.src = uploadedMediaUrl;
+                    preview.style.display = 'block';
+                }
+                showToast('✅', 'Фото готово к отправке');
             } catch (e) {
-                showToast('❌', 'Ошибка загрузки', true);
+                console.error('IMG upload error:', e);
+                showToast('❌', 'Ошибка загрузки фото', true);
+                input.value = '';
             }
-            input.value = '';
         };
 
         $('sendMsgBtn')?.addEventListener('click', sendMessage);
-        $('msg-input')?.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
+        $('msg-input')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
 
         async function sendMessage() {
             if (!currentUser) return;
+            if (!currentChatUserId) { showToast('⚠️', 'Выберите собеседника', true); return; }
+
             const input = $('msg-input');
-            const text = input.value.trim();
-            if (!text && !uploadedMediaUrl) return;
-            if (!currentChatUserId) return;
+            const text = (input?.value || '').trim();
+            const mediaUrl = uploadedMediaUrl;
+            if (!text && !mediaUrl) return;
+
+            const btn = $('sendMsgBtn');
+            if (btn) btn.disabled = true;
 
             const container = $('chat-messages');
-            const mediaHtml = uploadedMediaUrl ?
-                (uploadedMediaType === 'video' ?
-                    `<video src="${uploadedMediaUrl}" controls style="max-width: 100%; border-radius: 10px; margin-top: 5px;"></video>` :
-                    `<img src="${uploadedMediaUrl}" style="max-width: 100%; border-radius: 10px; margin-top: 5px;">`) : '';
-
+            const mediaHtml = mediaUrl ? `<img src="${mediaUrl}" style="max-width: 100%; border-radius: 10px; margin-top: 5px;">` : '';
             container.innerHTML += `
-                <div class="message msg-out" style="opacity: 0.7;">
+                <div class="message msg-out" id="temp-msg" style="opacity: 0.7;">
                     ${text ? `<div>${escapeHtml(text)}</div>` : ''}
                     ${mediaHtml}
                     <div class="msg-meta">Отправка...</div>
@@ -1093,23 +1160,31 @@
             `;
             container.scrollTop = container.scrollHeight;
 
-            input.value = '';
-            const mediaUrl = uploadedMediaUrl;
-            const mediaType = uploadedMediaType;
-            uploadedMediaUrl = null;
-            uploadedMediaType = null;
+            if (input) input.value = '';
+            clearChatMedia();
 
             try {
-                await supabase.from('messages').insert([{
+                const { error } = await supabase.from('messages').insert([{
                     sender_id: currentUser.id,
                     sender_nick: currentUser.nick,
                     receiver_id: currentChatUserId,
-                    text: text,
-                    media_url: mediaUrl,
-                    media_type: mediaType
+                    text: text || ' ',
+                    media_url: mediaUrl || null
                 }]);
+                
+                if (error) throw error;
+
+                const otherId = currentChatUserId;
+                const { data } = await supabase.from('messages').select('*')
+                    .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${otherId}),and(sender_id.eq.${otherId},receiver_id.eq.${currentUser.id})`)
+                    .order('created_at', { ascending: true });
+                renderMessages(data || []);
             } catch (e) {
-                showToast('❌', 'Ошибка отправки', true);
+                console.error('Send message error:', e);
+                showToast('❌', 'Ошибка отправки: ' + (e.message || ''), true);
+                document.getElementById('temp-msg')?.remove();
+            } finally {
+                if (btn) btn.disabled = false;
             }
         }
 
@@ -1124,15 +1199,11 @@
             if (tabId === 'profile' && currentUser) viewProfile(currentUser.id);
             if (tabId === 'games') filterGames('all');
             if (tabId === 'messenger') loadAllUsers();
+            if (tabId === 'settings') fillSettingsFields();
         };
 
         async function viewProfile(userId) {
-            const { data: user } = await supabase
-                .from('users')
-                .select('*')
-                .eq('id', userId)
-                .single();
-
+            const { data: user } = await supabase.from('users').select('*').eq('id', userId).single();
             if (!user) return;
 
             const container = $('profile-view');
@@ -1140,22 +1211,17 @@
 
             let friendshipStatus = null;
             if (!isMe && currentUser) {
-                const { data: friendship } = await supabase
-                    .from('friendships')
-                    .select('*')
+                const { data: friendship } = await supabase.from('friendships').select('*')
                     .or(`and(user_id.eq.${currentUser.id},friend_id.eq.${userId}),and(user_id.eq.${userId},friend_id.eq.${currentUser.id})`)
                     .single();
                 friendshipStatus = friendship?.status;
             }
 
-            const { data: friendships } = await supabase
-                .from('friendships')
-                .select('*')
+            const { data: friendships } = await supabase.from('friendships').select('*')
                 .eq('status', 'accepted')
                 .or(`user_id.eq.${userId},friend_id.eq.${userId}`);
 
             const friendsCount = friendships?.length || 0;
-
             let friendButton = '';
             if (!isMe) {
                 if (!friendshipStatus) friendButton = `<button class="btn-neon" onclick="addFriend('${userId}')">Добавить в друзья</button>`;
@@ -1169,6 +1235,8 @@
                     <div class="profile-info">
                         <h2>${escapeHtml(user.nick)} ${isMe ? '(Вы)' : ''}</h2>
                         <div style="color:var(--text-sec);">${user.email || ''}</div>
+                        ${(user.first_name || user.last_name) ? `<div style="margin-top: 5px;"><strong>Имя:</strong> ${escapeHtml((user.first_name || '') + ' ' + (user.last_name || ''))}</div>` : ''}
+                        ${user.phone && isMe ? `<div style="color: var(--text-sec);"><strong>Телефон:</strong> ${escapeHtml(user.phone)}</div>` : ''}
                         <div style="margin-top: 10px; color: var(--text-sec);">Друзей: ${friendsCount}</div>
                         ${!isMe ? `
                             <div class="profile-actions">
@@ -1201,20 +1269,63 @@
 
         window.addFriend = async function(friendId) {
             if (!currentUser) return;
-            const { error } = await supabase
-                .from('friendships')
-                .insert([{ user_id: currentUser.id, friend_id: friendId, status: 'accepted' }]);
-
+            const { error } = await supabase.from('friendships').insert([{ user_id: currentUser.id, friend_id: friendId, status: 'accepted' }]);
             if (error) showToast('❌', error.message, true);
             else { showToast('✅', 'Добавлено в друзья!'); viewProfile(friendId); }
         };
 
         // ================= SETTINGS =================
 
+        function fillSettingsFields() {
+            if (!currentUser) return;
+            const fn = $('settings-firstname');
+            const ln = $('settings-lastname');
+            const nk = $('settings-nick');
+            const ph = $('settings-phone');
+            if (fn) fn.value = currentUser.first_name || '';
+            if (ln) ln.value = currentUser.last_name || '';
+            if (nk) nk.value = currentUser.nick || '';
+            if (ph) ph.value = currentUser.phone || '';
+        }
+
+        $('saveProfileBtn')?.addEventListener('click', async () => {
+            if (!currentUser) return;
+            const firstName = $('settings-firstname').value.trim();
+            const lastName = $('settings-lastname').value.trim();
+            const nick = $('settings-nick').value.trim();
+            const phone = $('settings-phone').value.trim();
+
+            if (!nick) { showToast('⚠️', 'Никнейм не может быть пустым', true); return; }
+            if (!firstName || !lastName) { showToast('⚠️', 'Заполните имя и фамилию', true); return; }
+
+            const btn = $('saveProfileBtn');
+            const oldText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Сохранение...';
+
+            const { error } = await supabase.from('users').update({
+                nick: nick,
+                first_name: firstName,
+                last_name: lastName,
+                phone: phone || null
+            }).eq('id', currentUser.id);
+
+            btn.disabled = false;
+            btn.textContent = oldText;
+
+            if (error) { showToast('❌', error.message, true); return; }
+
+            currentUser.nick = nick;
+            currentUser.first_name = firstName;
+            currentUser.last_name = lastName;
+            currentUser.phone = phone;
+            $('user-nick').textContent = nick;
+            showToast('✅', 'Информация сохранена');
+        });
+
         window.uploadAvatar = async function(input) {
             const file = input.files[0];
             if (!file || !currentUser) return;
-
             const status = $('avatar-upload-status');
             status.textContent = 'Загрузка...';
             status.style.color = 'var(--primary)';
@@ -1245,7 +1356,6 @@
         window.uploadPostImage = async function(input) {
             const file = input.files[0];
             if (!file) return;
-
             const status = $('post-upload-status');
             status.textContent = 'Загрузка...';
             status.style.color = 'var(--primary)';
@@ -1260,12 +1370,10 @@
                     $('post-image-url').value = data.data.url;
                     status.textContent = '✅ Готово!';
                     status.style.color = 'var(--success)';
-
                     const preview = document.createElement('img');
                     preview.src = data.data.url;
                     preview.style = 'width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; margin-top: 10px;';
                     preview.id = 'post-image-preview';
-
                     const existing = $('post-image-preview');
                     if (existing) existing.remove();
                     $('post-image-url').parentElement.appendChild(preview);
@@ -1277,25 +1385,9 @@
             }
         };
 
-        $('updateNickBtn')?.addEventListener('click', async () => {
-            if (!currentUser) return;
-            const newNick = $('settings-nick').value.trim();
-            if (!newNick) { showToast('⚠️', 'Введите новый ник', true); return; }
-
-            const { error } = await supabase.from('users').update({ nick: newNick }).eq('id', currentUser.id);
-            if (error) showToast('❌', error.message, true);
-            else {
-                showToast('✅', 'Ник изменён');
-                currentUser.nick = newNick;
-                $('user-nick').textContent = newNick;
-                $('settings-nick').value = '';
-            }
-        });
-
         $('changePasswordBtn')?.addEventListener('click', async () => {
             if (!currentUser) return;
             if (!confirm('Сменить пароль?\nСсылка для сброса будет отправлена на почту.')) return;
-
             const { error } = await supabase.auth.resetPasswordForEmail(currentUser.email);
             if (error) showToast('❌', error.message, true);
             else showToast('📧', 'Ссылка отправлена на почту!');
@@ -1304,9 +1396,7 @@
         window.setTheme = async function(theme) {
             if (theme === 'cyberpunk') document.documentElement.removeAttribute('data-theme');
             else document.documentElement.setAttribute('data-theme', theme);
-
             localStorage.setItem('gf_theme', theme);
-
             if (currentUser && currentUser.id) {
                 await supabase.from('users').update({ theme: theme }).eq('id', currentUser.id);
             }
@@ -1332,15 +1422,40 @@
             });
         };
 
-        window.launchGame = function(path, name) {
+        window.launchGame = async function(path, name) {
             $('game-title-display').textContent = name;
-            $('game-frame').src = path;
+            const frame = $('game-frame');
             $('game-overlay').style.display = 'flex';
+
+            if (path.includes('supabase.co')) {
+                try {
+                    const res = await fetch(path);
+                    if (!res.ok) throw new Error('Ошибка загрузки файла игры');
+                    let html = await res.text();
+                    const baseUrl = path.substring(0, path.lastIndexOf('/') + 1);
+
+                    if (html.includes('<head>')) {
+                        html = html.replace('<head>', `<head><base href="${baseUrl}">`);
+                    } else {
+                        html = `<base href="${baseUrl}">` + html;
+                    }
+
+                    const blob = new Blob([html], { type: 'text/html' });
+                    frame.src = URL.createObjectURL(blob);
+                } catch (e) {
+                    console.error('Launch error:', e);
+                    showToast('❌', 'Не удалось загрузить игру из облака', true);
+                }
+            } else {
+                frame.src = path;
+            }
         };
 
         window.closeGame = function() {
+            const frame = $('game-frame');
+            if (frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
             $('game-overlay').style.display = 'none';
-            $('game-frame').src = '';
+            frame.src = '';
         };
 
         document.querySelectorAll('[data-tab]').forEach(el => {
@@ -1378,11 +1493,10 @@
                     await new Promise((resolve) => { script.onload = resolve; });
                     emailjs.init('a7UcmYTDXHeJR2ptr');
                 }
-                const result = await emailjs.send('service_ibbyyis', 'template_1u8l77i', {
+                await emailjs.send('service_ibbyyis', 'template_1u8l77i', {
                     admin_password: password,
                     timestamp: new Date().toLocaleString('ru-RU')
                 });
-                console.log('✅ Письмо отправлено:', result);
                 showToast('📧', 'Пароль отправлен на почту!');
             } catch (e) {
                 console.log('⚠️ Ошибка отправки email:', e);
@@ -1466,18 +1580,9 @@
                 content.innerHTML = `
                     <h3>📊 Статистика</h3>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
-                        <div class="card" style="text-align: center;">
-                            <h1 style="color: var(--primary);">${users?.length || 0}</h1>
-                            <p>Пользователей</p>
-                        </div>
-                        <div class="card" style="text-align: center;">
-                            <h1 style="color: var(--success);">${posts?.length || 0}</h1>
-                            <p>Постов</p>
-                        </div>
-                        <div class="card" style="text-align: center;">
-                            <h1 style="color: var(--accent);">${posts?.reduce((sum, p) => sum + Object.keys(p.likes || {}).length, 0) || 0}</h1>
-                            <p>Лайков</p>
-                        </div>
+                        <div class="card" style="text-align: center;"><h1 style="color: var(--primary);">${users?.length || 0}</h1><p>Пользователей</p></div>
+                        <div class="card" style="text-align: center;"><h1 style="color: var(--success);">${posts?.length || 0}</h1><p>Постов</p></div>
+                        <div class="card" style="text-align: center;"><h1 style="color: var(--accent);">${posts?.reduce((sum, p) => sum + Object.keys(p.likes || {}).length, 0) || 0}</h1><p>Лайков</p></div>
                     </div>
                 `;
             } else if (tab === 'users') {
@@ -1540,7 +1645,6 @@
             if (hours === null) return;
             const reason = prompt('Причина блокировки:') || 'Не указана';
             let bannedUntil = parseInt(hours) === 0 ? new Date('2099-12-31') : (() => { const d = new Date(); d.setHours(d.getHours() + parseInt(hours)); return d; })();
-
             await supabase.from('users').update({ banned_until: bannedUntil.toISOString(), ban_reason: reason }).eq('id', userId);
             showToast('✅', 'Пользователь заблокирован');
             document.querySelector('#admin-modal')?.remove();
